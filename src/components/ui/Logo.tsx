@@ -1,3 +1,9 @@
+const SYMBOL_PATH =
+  'M338.9 73.8 L335.6 181.2 L120.8 305.4 L110.7 305.4 L0.0 238.3 L0.0 745.0 L114.1 812.1 L191.3 765.1 L214.8 758.4 L335.6 832.2 L335.6 943.0 L419.5 993.3 L446.3 1000.0 L543.6 943.0 L543.6 832.2 L600.7 795.3 L627.5 785.2 L664.4 758.4 L677.9 758.4 L765.1 812.1 L879.2 745.0 L879.2 614.1 L761.7 681.2 L543.6 550.3 L543.6 459.7 L657.7 389.3 L674.5 382.6 L768.5 436.2 L875.8 372.5 L879.2 238.3 L781.9 298.7 L758.4 305.4 L543.6 181.2 L543.6 73.8 L443.0 130.9 L338.9 73.8Z ' +
+  'M342.3 201.3 L436.2 258.4 L533.6 201.3 L543.6 204.7 L661.1 275.2 L657.7 365.8 L436.2 493.3 L221.5 365.8 L221.5 271.8 L342.3 201.3Z ' +
+  'M23.5 382.6 L110.7 436.2 L127.5 432.9 L211.4 382.6 L258.4 416.1 L335.6 456.4 L335.6 550.3 L130.9 674.5 L117.4 681.2 L100.7 674.5 L23.5 627.5 L23.5 382.6Z ' +
+  'M345.6 570.5 L436.2 624.2 L520.1 573.8 L536.9 570.5 L661.1 647.7 L661.1 738.3 L449.7 862.4 L429.5 862.4 L221.5 738.3 L221.5 644.3 L345.6 570.5Z'
+
 interface SymbolProps {
   size?: number
   color?: string
@@ -5,33 +11,26 @@ interface SymbolProps {
 }
 
 export function LogoSymbol({ size = 40, color = '#1a1a1a', className = '' }: SymbolProps) {
-  const h = Math.round(size * 108 / 100)
+  const h = Math.round(size * 1000 / 879.19)
   return (
     <svg
       width={size}
       height={h}
-      viewBox="0 0 100 108"
+      viewBox="0 0 879.19 1000"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-hidden="true"
     >
-      <g stroke={color} strokeWidth="13" strokeLinecap="butt" strokeLinejoin="miter">
-        <path d="M32,22.5 L50,12 L68,22.5" />
-        <path d="M68,22.5 L86,33 L86,54" />
-        <path d="M86,54 L86,75 L68,85.5" />
-        <path d="M68,85.5 L50,96 L32,85.5" />
-        <path d="M32,85.5 L14,75 L14,54" />
-        <path d="M14,54 L14,33 L32,22.5" />
-      </g>
       <g fill={color}>
-        <circle cx="50" cy="12"  r="6.5" />
-        <circle cx="86" cy="33"  r="6.5" />
-        <circle cx="86" cy="75"  r="6.5" />
-        <circle cx="50" cy="96"  r="6.5" />
-        <circle cx="14" cy="75"  r="6.5" />
-        <circle cx="14" cy="33"  r="6.5" />
-        <circle cx="50" cy="54"  r="6.5" />
+        <path fillRule="evenodd" d={SYMBOL_PATH} />
+        <circle cx="439.7" cy="46.5"  r="45.7" />
+        <circle cx="115.6" cy="220.9" r="45.8" />
+        <circle cx="763.4" cy="220.0" r="45.7" />
+        <circle cx="439.6" cy="406.9" r="45.8" />
+        <circle cx="115.7" cy="595.3" r="46.0" />
+        <circle cx="763.4" cy="595.4" r="45.9" />
+        <circle cx="439.6" cy="779.9" r="45.8" />
       </g>
     </svg>
   )
@@ -44,19 +43,19 @@ interface LogoProps {
 }
 
 export function Logo({ size = 36, className = '', light = false }: LogoProps) {
-  const symbolColor = light ? '#f5f5f0' : '#1a1a1a'
-  const textColor   = light ? '#f5f5f0' : '#1a1a1a'
-  const fontSize    = Math.round(size * 0.54)
+  const color = light ? '#f5f5f0' : '#1a1a1a'
+  const textColor = light ? '#f5f5f0' : '#1a1a1a'
+  const fontSize = Math.round(size * 0.54)
 
   return (
     <div className={`flex items-center gap-3 ${className}`} aria-label="Crewficina">
-      <LogoSymbol size={size} color={symbolColor} />
+      <LogoSymbol size={size} color={color} />
       <span
         style={{
           fontSize,
-          fontWeight: 500,
+          fontWeight: 700,
           color: textColor,
-          letterSpacing: '-0.01em',
+          letterSpacing: '-0.02em',
           fontFamily: 'Inter, -apple-system, sans-serif',
           lineHeight: 1,
         }}
