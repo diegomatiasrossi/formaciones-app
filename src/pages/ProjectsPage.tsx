@@ -6,6 +6,8 @@ import { useAuth } from '@/features/auth/useAuth'
 import { useEditorStore } from '@/store/editorStore'
 import { Modal } from '@/components/ui/Modal'
 import { SkeletonGrid } from '@/components/ui/SkeletonCard'
+import { OnboardingModal } from '@/components/ui/OnboardingModal'
+import { Logo } from '@/components/ui/Logo'
 import { toggleLanguage } from '@/i18n'
 import { usePlan } from '@/hooks/usePlan'
 import type { Project, StageRatio } from '@/types'
@@ -61,6 +63,14 @@ export function ProjectsPage() {
   const [newEndDate, setNewEndDate] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<Project | null>(null)
   const [search, setSearch] = useState('')
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => !localStorage.getItem('crewficina_onboarded'),
+  )
+
+  function closeOnboarding() {
+    localStorage.setItem('crewficina_onboarded', '1')
+    setShowOnboarding(false)
+  }
 
   useEffect(() => {
     if (user) fetchProjects()
@@ -102,11 +112,8 @@ export function ProjectsPage() {
     <div className="min-h-screen bg-negro text-blanco-calido">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-borde/60 sticky top-0 z-10 bg-negro/95 backdrop-blur-sm">
-        <button onClick={() => navigate('/')} className="group">
-          <div className="text-dorado tracking-[0.2em] text-sm font-light group-hover:text-dorado/80 transition-colors">
-            FORMACIONES
-          </div>
-          <div className="text-gris text-[9px] tracking-[0.15em]">PÓLEO LAB</div>
+        <button onClick={() => navigate('/')} className="group opacity-90 hover:opacity-100 transition-opacity">
+          <Logo size={28} light />
         </button>
         <div className="flex items-center gap-4">
           <button
@@ -419,6 +426,9 @@ export function ProjectsPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Onboarding */}
+      <OnboardingModal open={showOnboarding} onClose={closeOnboarding} />
 
       {/* Modal: confirmar eliminación */}
       <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Eliminar proyecto">

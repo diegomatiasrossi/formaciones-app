@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from './useAuth'
+import { Logo } from '@/components/ui/Logo'
 
 export function AuthPage() {
   const { t } = useTranslation()
@@ -41,9 +42,8 @@ export function AuthPage() {
     <div className="min-h-screen bg-negro flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="text-dorado text-2xl font-light tracking-widest mb-1">FORMACIONES</div>
-          <div className="text-gris text-xs tracking-widest">DIEGO PÓLEO</div>
+        <div className="flex justify-center mb-10">
+          <Logo size={34} light />
         </div>
 
         <div className="bg-surface-1 border border-borde rounded-xl p-8">

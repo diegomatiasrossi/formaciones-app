@@ -1,0 +1,49 @@
+:root {
+  /* ── Paleta Crewficina ─────────────────────────── */
+  --color-negro:         #1a1a1a;
+  --color-crema:         #f5f5f0;
+  --color-rojo:          #C9343D;
+  --color-rojo-oscuro:   #a82830;
+  --color-dorado:        #C9A961;
+  --color-dorado-oscuro: #c5a028;
+  --color-blanco:        #ffffff;
+  --color-gris:          #888888;
+  --color-borde:         #333333;
+  --color-borde-light:   #e8e6e0;
+
+  /* ── Tipografía ────────────────────────────────── */
+  --font-primary:   'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --font-secondary: 'Poppins', sans-serif;
+
+  /* ── Escala tipográfica ────────────────────────── */
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  32px;
+  --text-3xl:  48px;
+
+  /* ── Border radius ─────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  /* ── Sombras ───────────────────────────────────── */
+  --shadow-xs:  0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg:  0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* ── Espaciado base ────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+  --space-16: 64px;
+}

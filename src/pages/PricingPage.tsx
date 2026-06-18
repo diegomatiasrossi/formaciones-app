@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Logo } from '@/components/ui/Logo'
 
 const PLANS = [
   {
@@ -101,7 +102,7 @@ export function PricingPage() {
         >
           ← Volver
         </button>
-        <div className="text-dorado tracking-[0.2em] text-sm font-light">FORMACIONES</div>
+        <Logo size={26} light />
       </nav>
 
       <div className="flex-1 max-w-6xl mx-auto px-8 py-16 w-full">

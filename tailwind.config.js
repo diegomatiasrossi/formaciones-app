@@ -5,18 +5,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        negro: '#1a1a1a',
-        'blanco-calido': '#faf8f5',
-        dorado: '#C9A961',
-        'dorado-oscuro': '#c5a028',
-        borde: '#333333',
-        gris: '#888888',
-        'surface-1': '#222222',
-        'surface-2': '#2a2a2a',
-        'surface-3': '#333333',
+        // ── Crewficina brand ──────────────────────────
+        negro:          '#1a1a1a',
+        crema:          '#f5f5f0',
+        rojo:           '#C9343D',
+        'rojo-oscuro':  '#a82830',
+        dorado:         '#C9A961',
+        'dorado-oscuro':'#c5a028',
+        blanco:         '#ffffff',
+        // ── Grises y bordes ───────────────────────────
+        'blanco-calido':'#faf8f5',
+        borde:          '#333333',
+        'borde-light':  '#e8e6e0',
+        gris:           '#888888',
+        'gris-light':   '#aaaaaa',
+        // ── Superficies oscuras (editor) ──────────────
+        'surface-1':    '#222222',
+        'surface-2':    '#2a2a2a',
+        'surface-3':    '#333333',
       },
       fontFamily: {
-        sans: ['-apple-system', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['Inter', 'Poppins', '-apple-system', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
+      },
+      borderRadius: {
+        sm:   '4px',
+        DEFAULT: '6px',
+        md:   '8px',
+        lg:   '12px',
+        xl:   '16px',
+        '2xl':'20px',
+      },
+      boxShadow: {
+        soft: '0 2px 8px rgba(0,0,0,0.08)',
+        card: '0 4px 16px rgba(0,0,0,0.10)',
+        lg:   '0 8px 32px rgba(0,0,0,0.12)',
       },
     },
   },
