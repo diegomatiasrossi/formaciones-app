@@ -1,0 +1,66 @@
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { LandingPage } from '@/pages/LandingPage'
+import { ProjectsPage } from '@/pages/ProjectsPage'
+import { EditorPage } from '@/pages/EditorPage'
+import { SharePage } from '@/pages/SharePage'
+import { PricingPage } from '@/pages/PricingPage'
+import { MobilePreviewPage } from '@/pages/MobilePreviewPage'
+import { AuthPage } from '@/features/auth/AuthPage'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { useAuth } from '@/features/auth/useAuth'
+import { useSessionGuard } from '@/hooks/useSessionGuard'
+import { useIsMobile } from '@/hooks/useIsMobile'
+
+function FullScreenLoader() {
+  return (
+    <div className="min-h-screen bg-negro flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-dorado border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+}
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth()
+  const location = useLocation()
+  useSessionGuard(user)
+  if (loading) return <FullScreenLoader />
+  if (!user) return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />
+  return <>{children}</>
+}
+
+function EditorOrMobile() {
+  const isMobile = useIsMobile()
+  return isMobile ? <MobilePreviewPage /> : <ErrorBoundary><EditorPage /></ErrorBoundary>
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute>
+                <ProjectsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editor/:projectId"
+            element={
+              <ProtectedRoute>
+                <EditorOrMobile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/share/:token" element={<SharePage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
+  )
+}

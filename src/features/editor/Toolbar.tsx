@@ -1,0 +1,273 @@
+import { useTranslation } from 'react-i18next'
+import { useEditorStore } from '@/store/editorStore'
+import type { DancerShape } from '@/types'
+import { SIZE_OPTIONS } from '@/types'
+import { toggleLanguage } from '@/i18n'
+import clsx from 'clsx'
+
+const SHAPES: { icon: string; value: DancerShape; title: string }[] = [
+  { icon: '●', value: 'circle',   title: 'Círculo' },
+  { icon: '■', value: 'square',   title: 'Cuadrado' },
+  { icon: '▲', value: 'triangle', title: 'Triángulo' },
+]
+
+interface Props {
+  onToggleAudio: () => void
+  showAudio: boolean
+  audioLocked?: boolean
+  onToggleStats: () => void
+  showStats: boolean
+  statsLocked?: boolean
+  onToggleChecklist: () => void
+  showChecklist: boolean
+  checklistLocked?: boolean
+  onToggleMembers: () => void
+  showMembers: boolean
+  membersLocked?: boolean
+  onPlayAnimation: () => void
+  isAnimating: boolean
+  onStopAnimation: () => void
+  animationDuration: number
+  onAnimationDurationChange: (ms: number) => void
+  onShare?: () => void
+  maxDancers?: number
+}
+
+export function Toolbar({
+  onToggleAudio, showAudio, audioLocked,
+  onToggleStats, showStats, statsLocked,
+  onToggleChecklist, showChecklist, checklistLocked,
+  onToggleMembers, showMembers, membersLocked,
+  onPlayAnimation, isAnimating, onStopAnimation,
+  animationDuration, onAnimationDurationChange,
+  onShare, maxDancers = Infinity,
+}: Props) {
+  const { t, i18n } = useTranslation()
+  const {
+    tool, setTool,
+    newColor, setNewColor,
+    newShape, setNewShape,
+    newSize, setNewSize,
+    newDancerCount, setNewDancerCount,
+    selectedIds, deleteSelected, clearAll,
+    undo, redo,
+    scenes, activeSceneId,
+  } = useEditorStore()
+
+  const activeScene = scenes.find(s => s.id === activeSceneId)
+  const dancerCount = activeScene?.dancers.length ?? 0
+
+  const btn = (active: boolean, extra?: string) =>
+    clsx(
+      'px-2.5 py-1.5 rounded border text-xs transition-colors cursor-pointer select-none',
+      active
+        ? 'bg-dorado border-dorado text-negro font-semibold'
+        : 'bg-transparent border-borde text-blanco-calido hover:border-dorado/60 hover:text-dorado',
+      extra,
+    )
+
+  const sep = <div className="w-px h-5 bg-borde mx-0.5 shrink-0" />
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 px-3 py-2 border-b border-borde bg-negro text-blanco-calido select-none shrink-0">
+
+      {/* Herramienta */}
+      <button className={btn(tool === 'select')} onClick={() => setTool('select')} title={t('editor.tool_select_hint')}>
+        ↖ {t('editor.tool_select')}
+      </button>
+      <button className={btn(tool === 'add')} onClick={() => setTool('add')} title={t('editor.tool_add_hint')}>
+        + {t('editor.tool_add')}
+      </button>
+
+      {sep}
+
+      {/* Forma */}
+      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.shape')}</span>
+      {SHAPES.map(s => (
+        <button key={s.value} className={btn(newShape === s.value)} onClick={() => setNewShape(s.value)} title={s.title}>
+          {s.icon}
+        </button>
+      ))}
+
+      {sep}
+
+      {/* Tamaño visual — 4.1 */}
+      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.size')}</span>
+      {SIZE_OPTIONS.map(s => (
+        <button
+          key={s.value}
+          onClick={() => setNewSize(s.value)}
+          title={`${s.label} (radio ${s.value}px)`}
+          className={clsx(
+            'flex items-center gap-1.5 px-2 py-1.5 rounded border text-xs transition-colors',
+            newSize === s.value
+              ? 'bg-dorado border-dorado text-negro font-semibold'
+              : 'border-borde text-blanco-calido hover:border-dorado/60 hover:text-dorado',
+          )}
+        >
+          <span
+            className="rounded-full bg-current inline-block shrink-0"
+            style={{ width: s.value * 0.75, height: s.value * 0.75, minWidth: 6, minHeight: 6 }}
+          />
+          {s.label}
+        </button>
+      ))}
+
+      {sep}
+
+      {/* Color */}
+      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.color')}</span>
+      <input
+        id="color-picker"
+        type="color"
+        value={newColor}
+        onChange={e => setNewColor(e.target.value)}
+        className="w-7 h-7 rounded cursor-pointer border border-borde bg-transparent p-0.5"
+        title={t('editor.toolbar.color')}
+      />
+
+      {sep}
+
+      {/* Cantidad */}
+      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.dancers')}</span>
+      <input
+        type="number"
+        value={newDancerCount}
+        min={1}
+        max={50}
+        onChange={e => setNewDancerCount(Number(e.target.value))}
+        className="w-12 bg-negro border border-borde rounded px-2 py-1.5 text-xs text-blanco-calido
+                   focus:outline-none focus:border-dorado"
+      />
+
+      {sep}
+
+      {/* Undo / Redo */}
+      <button className={btn(false)} onClick={undo} title={`${t('common.undo')} (Ctrl+Z)`}>↺</button>
+      <button className={btn(false)} onClick={redo} title={`${t('common.redo')} (Ctrl+Shift+Z)`}>↻</button>
+
+      {sep}
+
+      {/* Borrar */}
+      {selectedIds.length > 0 && (
+        <button
+          onClick={deleteSelected}
+          className="px-2.5 py-1.5 rounded border border-red-800 text-red-400 hover:border-red-600 text-xs transition-colors"
+        >
+          ✕ ({selectedIds.length})
+        </button>
+      )}
+      <button
+        onClick={clearAll}
+        className="px-2.5 py-1.5 rounded border border-borde text-gris hover:border-red-800 hover:text-red-400 text-xs transition-colors"
+        title={t('editor.toolbar.clear_all')}
+      >
+        Limpiar
+      </button>
+
+      {sep}
+
+      {/* Export PNG */}
+      <button className={btn(false)} onClick={() => window.dispatchEvent(new Event('export-png'))}>
+        ⬇ PNG
+      </button>
+
+      {sep}
+
+      {/* Animación — 3.1 */}
+      {isAnimating ? (
+        <button onClick={onStopAnimation} className="px-2.5 py-1.5 rounded border border-red-700 text-red-400 text-xs hover:border-red-500 transition-colors">
+          ⏹ Detener
+        </button>
+      ) : (
+        <button id="btn-preview" onClick={onPlayAnimation} className={btn(false)} title="Preview de transición entre escenas">
+          ▶ Preview
+        </button>
+      )}
+      {!isAnimating && (
+        <input
+          type="range"
+          min={500} max={3000} step={100}
+          value={animationDuration}
+          onChange={e => onAnimationDurationChange(Number(e.target.value))}
+          title={`Duración de transición: ${animationDuration}ms`}
+          className="w-16 accent-dorado"
+        />
+      )}
+
+      {sep}
+
+      {/* Audio */}
+      <button
+        onClick={onToggleAudio}
+        className={clsx(btn(showAudio && !audioLocked), audioLocked && 'opacity-50')}
+        title={audioLocked ? 'Audio requiere plan Solo Pro' : 'Panel de audio'}
+      >
+        🎵 Audio{audioLocked && ' 🔒'}
+      </button>
+
+      {/* Estadísticas */}
+      <button
+        onClick={onToggleStats}
+        className={clsx(btn(showStats && !statsLocked), statsLocked && 'opacity-50')}
+        title={statsLocked ? 'Estadísticas requieren plan Studio' : 'Panel de estadísticas'}
+      >
+        ◎ Stats{statsLocked && ' 🔒'}
+      </button>
+
+      {/* Checklist */}
+      <button
+        onClick={onToggleChecklist}
+        className={clsx(btn(showChecklist && !checklistLocked), checklistLocked && 'opacity-50')}
+        title={checklistLocked ? 'Checklist requiere plan Pro' : 'Checklist de producción'}
+      >
+        ☑ Lista{checklistLocked && ' 🔒'}
+      </button>
+
+      {/* Integrantes */}
+      <button
+        onClick={onToggleMembers}
+        className={clsx(btn(showMembers && !membersLocked), membersLocked && 'opacity-50')}
+        title={membersLocked ? 'Integrantes requiere plan Starter' : 'Base de datos de integrantes'}
+      >
+        ◉ Equipo{membersLocked && ' 🔒'}
+      </button>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Contador X/maxDancers */}
+      <span className={clsx(
+        'text-xs font-medium tabular-nums',
+        dancerCount >= maxDancers ? 'text-red-400' : dancerCount >= maxDancers * 0.9 ? 'text-orange-400' : 'text-gris',
+      )}>
+        {dancerCount} / {maxDancers === Infinity ? '∞' : maxDancers}
+        {selectedIds.length > 0 && <span className="text-dorado"> · {selectedIds.length} sel.</span>}
+      </span>
+
+      {sep}
+
+      {/* Compartir */}
+      {onShare && (
+        <button
+          id="btn-share"
+          onClick={onShare}
+          className={clsx(btn(false), 'text-dorado/80 hover:text-dorado border-dorado/30 hover:border-dorado/60')}
+          title="Compartir proyecto"
+        >
+          ↗ Compartir
+        </button>
+      )}
+
+      {sep}
+
+      {/* Idioma */}
+      <button
+        className="text-[10px] text-gris hover:text-dorado uppercase tracking-wider transition-colors"
+        onClick={toggleLanguage}
+      >
+        {i18n.language === 'es' ? 'EN' : 'ES'}
+      </button>
+    </div>
+  )
+}
