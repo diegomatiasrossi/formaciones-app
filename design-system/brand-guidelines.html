@@ -1,0 +1,183 @@
+<!-- @dsCard group="Brand" -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<title>Crewficina — Brand Guidelines</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:48px;}
+.page{max-width:1100px;margin:0 auto;}
+.header{border-bottom:2px solid #1a1a1a;padding-bottom:20px;margin-bottom:40px;display:flex;align-items:center;justify-content:space-between;}
+.header-logo{display:flex;align-items:center;gap:14px;}
+.wm{font-size:24px;font-weight:500;color:#1a1a1a;letter-spacing:-.01em;}
+.i-g{color:#C9A961;}
+.header-meta{text-align:right;}
+.header-meta div:first-child{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#888;}
+.header-meta div:last-child{font-size:12px;color:#aaa;margin-top:2px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:40px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:40px;}
+.section-title{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#aaa;margin-bottom:16px;}
+.logo-var{background:#fff;border:1.5px solid #e8e6e0;border-radius:10px;padding:28px;display:flex;align-items:center;justify-content:center;min-height:90px;}
+.logo-var.dark{background:#1a1a1a;border-color:#1a1a1a;}
+.logo-caption{font-size:10px;color:#aaa;margin-top:8px;text-align:center;}
+/* Colors */
+.colors-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.c-swatch{border-radius:8px;overflow:hidden;flex:1;min-width:80px;}
+.c-color{height:52px;}
+.c-info{background:#fff;padding:8px 10px;border:1px solid #e8e6e0;border-top:none;border-radius:0 0 8px 8px;}
+.c-name{font-size:11px;font-weight:600;color:#1a1a1a;}
+.c-hex{font-size:10px;color:#888;margin-top:1px;}
+/* Type */
+.type-row{padding:14px 0;border-bottom:1px solid #e8e6e0;display:flex;align-items:baseline;gap:16px;}
+.type-row:last-child{border:none;}
+.type-meta{width:80px;flex-shrink:0;}
+.type-size{font-size:10px;color:#C9A961;font-weight:600;}
+.type-role{font-size:9px;color:#aaa;margin-top:2px;}
+/* Tone */
+.tone-card{background:#fff;border:1.5px solid #e8e6e0;border-radius:10px;padding:20px;}
+.tone-head{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:10px;}
+.tone-list{list-style:none;}
+.tone-list li{font-size:12px;color:#555;padding:4px 0;display:flex;gap:8px;}
+.tone-list li::before{content:"→";color:#C9A961;flex-shrink:0;}
+/* Don't / Do */
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.do-box,.dont-box{border-radius:10px;padding:16px;}
+.do-box{background:#f0faf0;border:1.5px solid #4a8a4a30;}
+.dont-box{background:#faf0f0;border:1.5px solid #C9343D30;}
+.do-label{font-size:10px;font-weight:700;color:#4a8a4a;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+.dont-label{font-size:10px;font-weight:700;color:#C9343D;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+.rule{font-size:12px;color:#555;padding:3px 0;display:flex;gap:6px;}
+.rule::before{flex-shrink:0;}
+.do-box .rule::before{content:"✓";color:#4a8a4a;}
+.dont-box .rule::before{content:"✕";color:#C9343D;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">
+      <svg width="40" height="43" viewBox="0 0 100 108" fill="none">
+        <g stroke="#1a1a1a" stroke-width="13" stroke-linecap="butt" stroke-linejoin="miter">
+          <path d="M32,22.5 L50,12 L68,22.5"/><path d="M68,22.5 L86,33 L86,54"/>
+          <path d="M86,54 L86,75 L68,85.5"/><path d="M68,85.5 L50,96 L32,85.5"/>
+          <path d="M32,85.5 L14,75 L14,54"/><path d="M14,54 L14,33 L32,22.5"/>
+        </g>
+        <g fill="#1a1a1a"><circle cx="50" cy="12" r="6.5"/><circle cx="86" cy="33" r="6.5"/><circle cx="86" cy="75" r="6.5"/><circle cx="50" cy="96" r="6.5"/><circle cx="14" cy="75" r="6.5"/><circle cx="14" cy="33" r="6.5"/><circle cx="50" cy="54" r="6.5"/></g>
+      </svg>
+      <span class="wm">Crewfic<span class="i-g">i</span>na — Brand Guidelines</span>
+    </div>
+    <div class="header-meta">
+      <div>Visual Identity</div>
+      <div>v1.0 · 2026</div>
+    </div>
+  </div>
+
+  <!-- Logo section -->
+  <div class="grid-3" style="margin-bottom:12px;">
+    <div>
+      <div class="section-title">Símbolo solo</div>
+      <div class="logo-var">
+        <svg width="56" height="60" viewBox="0 0 100 108" fill="none"><g stroke="#1a1a1a" stroke-width="13" stroke-linecap="butt" stroke-linejoin="miter"><path d="M32,22.5 L50,12 L68,22.5"/><path d="M68,22.5 L86,33 L86,54"/><path d="M86,54 L86,75 L68,85.5"/><path d="M68,85.5 L50,96 L32,85.5"/><path d="M32,85.5 L14,75 L14,54"/><path d="M14,54 L14,33 L32,22.5"/></g><g fill="#1a1a1a"><circle cx="50" cy="12" r="6.5"/><circle cx="86" cy="33" r="6.5"/><circle cx="86" cy="75" r="6.5"/><circle cx="50" cy="96" r="6.5"/><circle cx="14" cy="75" r="6.5"/><circle cx="14" cy="33" r="6.5"/><circle cx="50" cy="54" r="6.5"/></g></svg>
+      </div>
+      <div class="logo-caption">Negro sobre crema · default</div>
+    </div>
+    <div>
+      <div class="section-title">Horizontal</div>
+      <div class="logo-var">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="40" height="43" viewBox="0 0 100 108" fill="none"><g stroke="#1a1a1a" stroke-width="13" stroke-linecap="butt" stroke-linejoin="miter"><path d="M32,22.5 L50,12 L68,22.5"/><path d="M68,22.5 L86,33 L86,54"/><path d="M86,54 L86,75 L68,85.5"/><path d="M68,85.5 L50,96 L32,85.5"/><path d="M32,85.5 L14,75 L14,54"/><path d="M14,54 L14,33 L32,22.5"/></g><g fill="#1a1a1a"><circle cx="50" cy="12" r="6.5"/><circle cx="86" cy="33" r="6.5"/><circle cx="86" cy="75" r="6.5"/><circle cx="50" cy="96" r="6.5"/><circle cx="14" cy="75" r="6.5"/><circle cx="14" cy="33" r="6.5"/><circle cx="50" cy="54" r="6.5"/></g></svg>
+          <span style="font-size:20px;font-weight:500;color:#1a1a1a;letter-spacing:-.01em;">Crewfic<span style="color:#C9A961;">i</span>na</span>
+        </div>
+      </div>
+      <div class="logo-caption">Símbolo + wordmark · Inter 500</div>
+    </div>
+    <div>
+      <div class="section-title">Inverso</div>
+      <div class="logo-var dark">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="40" height="43" viewBox="0 0 100 108" fill="none"><g stroke="#f5f5f0" stroke-width="13" stroke-linecap="butt" stroke-linejoin="miter"><path d="M32,22.5 L50,12 L68,22.5"/><path d="M68,22.5 L86,33 L86,54"/><path d="M86,54 L86,75 L68,85.5"/><path d="M68,85.5 L50,96 L32,85.5"/><path d="M32,85.5 L14,75 L14,54"/><path d="M14,54 L14,33 L32,22.5"/></g><g fill="#f5f5f0"><circle cx="50" cy="12" r="6.5"/><circle cx="86" cy="33" r="6.5"/><circle cx="86" cy="75" r="6.5"/><circle cx="50" cy="96" r="6.5"/><circle cx="14" cy="75" r="6.5"/><circle cx="14" cy="33" r="6.5"/><circle cx="50" cy="54" r="6.5"/></g></svg>
+          <span style="font-size:20px;font-weight:500;color:#f5f5f0;letter-spacing:-.01em;">Crewfic<span style="color:#C9A961;">i</span>na</span>
+        </div>
+      </div>
+      <div class="logo-caption">Crema sobre negro · sobre oscuro</div>
+    </div>
+  </div>
+
+  <!-- Do / Don't -->
+  <div style="margin-bottom:36px;">
+    <div class="section-title">Logo — Do's &amp; Don'ts</div>
+    <div class="do-dont">
+      <div class="do-box">
+        <div class="do-label">✓ Hacer</div>
+        <div class="rule">Usar sobre fondos crema, blanco o negro</div>
+        <div class="rule">Mantener espacio claro mínimo de 1× el alto del símbolo</div>
+        <div class="rule">Usar solo el símbolo cuando el espacio es menor a 24px</div>
+        <div class="rule">Punto de "i" siempre en #C9A961 (oro champagne)</div>
+      </div>
+      <div class="dont-box">
+        <div class="dont-label">✕ No hacer</div>
+        <div class="rule">Cambiar colores del símbolo</div>
+        <div class="rule">Rotar o distorsionar el logo</div>
+        <div class="rule">Usar sobre fondos con textura o foto sin overlay</div>
+        <div class="rule">Cambiar la tipografía del wordmark</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color + Type -->
+  <div class="grid-2">
+    <div>
+      <div class="section-title">Paleta de color</div>
+      <div class="colors-row">
+        <div class="c-swatch"><div class="c-color" style="background:#1a1a1a;"></div><div class="c-info"><div class="c-name">Negro</div><div class="c-hex">#1a1a1a · rgb(26,26,26)</div></div></div>
+        <div class="c-swatch"><div class="c-color" style="background:#f5f5f0;border:1px solid #e8e6e0;"></div><div class="c-info"><div class="c-name">Crema</div><div class="c-hex">#f5f5f0 · rgb(245,245,240)</div></div></div>
+      </div>
+      <div class="colors-row">
+        <div class="c-swatch"><div class="c-color" style="background:#C9343D;"></div><div class="c-info"><div class="c-name">Rojo</div><div class="c-hex">#C9343D · rgb(201,52,61)</div></div></div>
+        <div class="c-swatch"><div class="c-color" style="background:#C9A961;"></div><div class="c-info"><div class="c-name">Dorado</div><div class="c-hex">#C9A961 · rgb(201,169,97)</div></div></div>
+        <div class="c-swatch"><div class="c-color" style="background:#fff;border:1px solid #e8e6e0;"></div><div class="c-info"><div class="c-name">Blanco</div><div class="c-hex">#ffffff · rgb(255,255,255)</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">Tipografía</div>
+      <div class="type-row"><div class="type-meta"><div class="type-size">48 / 700</div><div class="type-role">Display</div></div><span style="font-size:32px;font-weight:700;">Crewficina</span></div>
+      <div class="type-row"><div class="type-meta"><div class="type-size">24 / 600</div><div class="type-role">H1</div></div><span style="font-size:24px;font-weight:600;">Mis proyectos</span></div>
+      <div class="type-row"><div class="type-meta"><div class="type-size">16 / 400</div><div class="type-role">Body</div></div><span style="font-size:16px;color:#555;">Canvas drag & drop para planificar formaciones.</span></div>
+      <div class="type-row"><div class="type-meta"><div class="type-size">12 / 500</div><div class="type-role">Caption</div></div><span style="font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#888;">ESPACIO · TIEMPO · EQUIPO</span></div>
+    </div>
+  </div>
+
+  <!-- Tone of voice -->
+  <div class="grid-2" style="margin-bottom:0;">
+    <div class="tone-card">
+      <div class="tone-head">Tono de voz</div>
+      <div style="font-size:12px;color:#C9343D;font-weight:600;margin-bottom:12px;font-style:italic;">"Profesional, directo, para quien crea en serio."</div>
+      <ul class="tone-list">
+        <li>Hablar al coreógrafo que ya sabe lo que hace</li>
+        <li>Sin jerga académica ni lenguaje técnico innecesario</li>
+        <li>Frases cortas, verbos de acción</li>
+        <li>Nunca subestimar ni sobreexplicar</li>
+        <li>El humor existe, pero nunca en funciones críticas</li>
+      </ul>
+    </div>
+    <div class="tone-card">
+      <div class="tone-head">Principios UI</div>
+      <ul class="tone-list">
+        <li>Espacio en blanco generoso — mínimo 16px entre componentes</li>
+        <li>Tipografía clara como jerarquía visual principal</li>
+        <li>Sin gradientes agresivos, neón ni 3D</li>
+        <li>Sombras suaves: max box-shadow 0 4px 16px rgba(0,0,0,.1)</li>
+        <li>Bordes: 6–12px border-radius según tamaño de componente</li>
+        <li>Referencia de estilo: Notion, Figma, Linear</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

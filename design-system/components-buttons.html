@@ -1,0 +1,98 @@
+<!-- @dsCard group="Components" -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Crewficina — Buttons</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#f5f5f0;padding:40px;}
+h1{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:32px;}
+.section{margin-bottom:32px;}
+.section-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#aaa;margin-bottom:14px;}
+.row{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+button{font-family:'Inter',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;}
+/* Primary */
+.btn-primary{background:#C9343D;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;}
+.btn-primary:hover{background:#a82830;}
+.btn-primary.sm{padding:7px 14px;font-size:12px;border-radius:6px;}
+.btn-primary.lg{padding:14px 28px;font-size:15px;border-radius:10px;}
+/* Secondary */
+.btn-secondary{background:#fff;color:#1a1a1a;border:1.5px solid #C9A961;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;}
+.btn-secondary:hover{background:#C9A96110;}
+/* Ghost */
+.btn-ghost{background:transparent;color:#1a1a1a;border:1.5px solid #e8e6e0;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;}
+.btn-ghost:hover{border-color:#888;background:#fff;}
+/* Destructive */
+.btn-danger{background:transparent;color:#C9343D;border:1.5px solid #C9343D30;border-radius:8px;padding:9px 18px;font-size:13px;}
+.btn-danger:hover{background:#C9343D10;}
+/* Icon */
+.btn-icon{background:#fff;color:#1a1a1a;border:1.5px solid #e8e6e0;border-radius:8px;padding:9px 10px;font-size:14px;width:38px;height:38px;justify-content:center;}
+/* Disabled */
+.btn-disabled{background:#e8e6e0;color:#bbb;border:none;border-radius:8px;padding:10px 20px;font-size:13px;cursor:not-allowed;}
+/* Dark section */
+.dark-section{background:#1a1a1a;border-radius:12px;padding:24px;margin-top:8px;}
+.btn-primary-dark{background:#C9343D;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;}
+.btn-secondary-dark{background:transparent;color:#C9A961;border:1.5px solid #C9A961;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;}
+.btn-ghost-dark{background:transparent;color:#f5f5f0;border:1.5px solid #2a2a2a;border-radius:8px;padding:9px 18px;font-size:13px;}
+</style>
+</head>
+<body>
+<h1>Crewficina · Buttons</h1>
+
+<div class="section">
+  <div class="section-label">Primary — Rojo #C9343D</div>
+  <div class="row">
+    <button class="btn-primary sm">Guardar</button>
+    <button class="btn-primary">Crear proyecto</button>
+    <button class="btn-primary lg">Comenzar →</button>
+  </div>
+  <div class="row">
+    <button class="btn-primary">+ Nuevo</button>
+    <button class="btn-primary">☁ Sincronizar</button>
+    <button class="btn-primary">Empezar Solo Pro →</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Secondary — Borde dorado</div>
+  <div class="row">
+    <button class="btn-secondary">Exportar PNG</button>
+    <button class="btn-secondary">⬡ Ver formaciones</button>
+    <button class="btn-secondary">◎ Estadísticas</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Ghost — Borde sutil</div>
+  <div class="row">
+    <button class="btn-ghost">Cancelar</button>
+    <button class="btn-ghost">↺ Deshacer</button>
+    <button class="btn-ghost">◧ Zonas</button>
+    <button class="btn-icon">×</button>
+    <button class="btn-icon">↺</button>
+    <button class="btn-icon">⬡</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Destructive</div>
+  <div class="row">
+    <button class="btn-danger">Eliminar proyecto</button>
+    <button class="btn-disabled" disabled>Plan requerido</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">On dark background</div>
+  <div class="dark-section">
+    <div class="row">
+      <button class="btn-primary-dark">+ Crear →</button>
+      <button class="btn-secondary-dark">⬡ Nuevo proyecto</button>
+      <button class="btn-ghost-dark">Cancelar</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
