@@ -7,6 +7,8 @@ export type PlanName = 'free' | 'solo_pro' | 'studio'
 export interface PlanFeatures {
   maxDancers: number       // Infinity = sin límite
   maxProjects: number      // Infinity = sin límite
+  membersEnabled: boolean
+  checklistEnabled: boolean
   audioEnabled: boolean
   canonEnabled: boolean
   statsEnabled: boolean
@@ -18,6 +20,8 @@ export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
   free: {
     maxDancers:       15,
     maxProjects:      2,
+    membersEnabled:   false,
+    checklistEnabled: false,
     audioEnabled:     false,
     canonEnabled:     false,
     statsEnabled:     false,
@@ -27,6 +31,8 @@ export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
   solo_pro: {
     maxDancers:       50,
     maxProjects:      Infinity,
+    membersEnabled:   true,
+    checklistEnabled: true,
     audioEnabled:     true,
     canonEnabled:     true,
     statsEnabled:     false,
@@ -36,6 +42,8 @@ export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
   studio: {
     maxDancers:       Infinity,
     maxProjects:      Infinity,
+    membersEnabled:   true,
+    checklistEnabled: true,
     audioEnabled:     true,
     canonEnabled:     true,
     statsEnabled:     true,
