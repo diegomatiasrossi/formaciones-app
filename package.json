@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "start": "node server.js",
+    "start": "node --env-file=.env server.js",
     "test": "vitest"
   },
   "dependencies": {
