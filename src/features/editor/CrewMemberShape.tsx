@@ -21,20 +21,19 @@ interface Props {
 
 const GOLD = '#C9A961'
 
-// Forma M con dos picos claramente definidos.
-// Basada en: "M -16 16 L -10 4 L 0 10 L 10 4 L 16 16 Z"
-// Ratios exactos del path de referencia:
-//   peak_x = bw * 0.625  (10/16)
-//   peak_y = bh * 0.25   (4/16)  — los picos están bien arriba
-//   valley_y = bh * 0.625 (10/16) — valle claramente más bajo que los picos
+// Forma M con picos muy pronunciados y valle casi a la altura de la base.
+// Path de referencia: "M -16 16 L -8 2 L 0 14 L 8 2 L 16 16 Z"
+//   peak_x  = bw * 0.5    (8/16)
+//   peak_y  = bh * 0.125  (2/16)  — picos muy altos
+//   valley_y= bh * 0.875  (14/16) — valle casi tan abajo como la base
 function mShapePoints(bw: number, bh: number): number[] {
-  const px = bw * 0.625  // x del pico
-  const py = bh * 0.25   // y del pico — picos bien altos
-  const vy = bh * 0.625  // y del valle — valle profundo entre picos
+  const px = bw * 0.50   // x del pico
+  const py = bh * 0.125  // y del pico — muy arriba
+  const vy = bh * 0.875  // y del valle — casi en la base
   return [
     -bw, bh,   // base izquierda
     -px, py,   // PICO izquierdo
-      0, vy,   // VALLE central (más bajo que los picos)
+      0, vy,   // VALLE central (casi tan abajo como la base)
      px, py,   // PICO derecho
      bw, bh,   // base derecha
   ]
