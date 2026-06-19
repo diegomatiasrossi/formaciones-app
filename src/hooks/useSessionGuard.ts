@@ -11,30 +11,12 @@ export function useSessionGuard(user: User | null) {
 
     if (detectIncognito() && !warnedIncognito.current) {
       warnedIncognito.current = true
-      // Solo advertencia, no bloqueamos
-      console.warn('[FORMACIONES] Modo incógnito detectado. El guardado local puede no funcionar.')
+      console.warn('[CREWFICINA] Modo incógnito detectado.')
     }
 
-    let intervalId: ReturnType<typeof setInterval>
+    // Registrar sesión sin bloquear — validación multi-dispositivo desactivada
+    // hasta estabilizar el flujo de auth. Re-activar en v3.
+    registerSession(user.id).catch(() => {})
 
-    validateSession(user.id).then(valid => {
-      if (!valid) {
-        supabase.auth.signOut()
-        // Mostrar mensaje al usuario
-        const msg = document.createElement('div')
-        msg.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:12px 16px;background:#1a0000;color:#ff6b6b;font-size:13px;text-align:center;border-bottom:1px solid #ff0000;'
-        msg.textContent = 'Tu sesión fue iniciada en otro dispositivo. Por favor, volvé a ingresar.'
-        document.body.prepend(msg)
-        return
-      }
-
-      intervalId = setInterval(() => {
-        refreshSession(user.id).catch(() => {})
-      }, 5 * 60 * 1000)
-    }).catch(() => {})
-
-    return () => {
-      if (intervalId) clearInterval(intervalId)
-    }
   }, [user])
 }
