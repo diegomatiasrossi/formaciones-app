@@ -16,7 +16,11 @@ export async function registerSession(userId: string): Promise<void> {
 
 export async function validateSession(userId: string): Promise<boolean> {
   const localToken = localStorage.getItem(SESSION_KEY)
-  if (!localToken) return false
+  // Sin token local → primera carga o race condition al login: registrar y permitir
+  if (!localToken) {
+    await registerSession(userId)
+    return true
+  }
   const { data } = await supabase
     .from('user_sessions')
     .select('session_token')

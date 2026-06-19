@@ -247,7 +247,7 @@ app.post('/api/stripe/portal', async (req, res) => {
 
 // ── SPA fallback ─────────────────────────────────────────────────────────────
 
-app.get('*', (_req, res) => {
+app.use((_req, res) => {
   res.sendFile(path.join(DIST, 'index.html'))
 })
 
