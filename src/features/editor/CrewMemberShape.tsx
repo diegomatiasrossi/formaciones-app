@@ -21,21 +21,25 @@ interface Props {
 
 const GOLD = '#C9A961'
 
-// Forma M con picos muy pronunciados y valle casi a la altura de la base.
-// Path de referencia: "M -16 16 L -8 2 L 0 14 L 8 2 L 16 16 Z"
-//   peak_x  = bw * 0.5    (8/16)
-//   peak_y  = bh * 0.125  (2/16)  — picos muy altos
-//   valley_y= bh * 0.875  (14/16) — valle casi tan abajo como la base
-function mShapePoints(bw: number, bh: number): number[] {
-  const px = bw * 0.50   // x del pico
-  const py = bh * 0.125  // y del pico — muy arriba
-  const vy = bh * 0.875  // y del valle — casi en la base
+// Layout: y=0 = centro de la cabeza.
+// Los picos de la M quedan exactamente al nivel del borde inferior de la cabeza (y=headR),
+// por lo que la cabeza encaja entre los dos picos — igual que en el logo.
+//
+// Forma M (coordenadas relativas al centro del Group = centro de la cabeza):
+//   pico_y  = headR           — al ras del borde inferior de la cabeza
+//   valle_y = headR + bh*0.70 — valle profundo (70% de la altura del cuerpo)
+//   base_y  = headR + bh      — base de la M
+function mShapePoints(bw: number, bh: number, headR: number): number[] {
+  const px = bw * 0.62           // picos a 62% del semiancho — más anchos que la cabeza
+  const peakY  = headR           // picos justo al borde inferior de la cabeza
+  const valleyY = headR + bh * 0.70  // valle profundo
+  const baseY   = headR + bh         // base de la M
   return [
-    -bw, bh,   // base izquierda
-    -px, py,   // PICO izquierdo
-      0, vy,   // VALLE central (casi tan abajo como la base)
-     px, py,   // PICO derecho
-     bw, bh,   // base derecha
+    -bw,  baseY,    // base izquierda
+    -px,  peakY,    // PICO izquierdo — a nivel del borde inferior de la cabeza
+      0,  valleyY,  // VALLE central  — bien profundo y visible
+     px,  peakY,    // PICO derecho
+     bw,  baseY,    // base derecha
   ]
 }
 
@@ -66,9 +70,9 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 
   const fillColor = dancer.leader === true ? GOLD : color
 
-  const headR = size * 0.56          // cabeza moderada para que la M sea visible
-  const bw    = size * 1.20          // M más ancha
-  const bh    = size * 1.35          // M más alta = picos más pronunciados
+  const headR = size * 0.52    // cabeza
+  const bw    = size * 1.15   // semiancho de la M (más ancha que la cabeza)
+  const bh    = size * 0.90   // altura del cuerpo bajo los picos
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
@@ -89,12 +93,12 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Anillo de selección */}
+      {/* Anillo de selección — centrado en el cuerpo completo */}
       {selected && (
         <Circle
           x={0}
-          y={bh * 0.5}
-          radius={headR + bh * 0.6}
+          y={headR + bh * 0.5}
+          radius={bw * 0.85}
           fill="transparent"
           stroke={GOLD}
           strokeWidth={1.5 / levelScale}
@@ -108,8 +112,8 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       {outsideStage && (
         <Circle
           x={0}
-          y={bh * 0.5}
-          radius={headR + bh * 0.6 + 3}
+          y={headR + bh * 0.5}
+          radius={bw * 0.85 + 3}
           fill="transparent"
           stroke="#E53E3E"
           strokeWidth={2 / levelScale}
@@ -118,14 +122,14 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         />
       )}
 
-      {/* Cuerpo — forma M rellena sólida */}
+      {/* Cuerpo — forma M rellena (picos al borde inferior de la cabeza) */}
       <Line
-        points={mShapePoints(bw, bh)}
+        points={mShapePoints(bw, bh, headR)}
         closed
         fill={fillColor}
         stroke="transparent"
         x={0}
-        y={headR * 0.35}
+        y={0}
         shadowColor={fillColor}
         shadowBlur={selected ? 8 : 2}
         shadowOpacity={0.3}
