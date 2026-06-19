@@ -55,13 +55,15 @@ function parseProject(row: Record<string, unknown>): Project {
   }
 }
 
-function projectToRow(project: Project) {
+async function projectToRow(project: Project) {
+  const { data: { user } } = await supabase.auth.getUser()
   return {
     id: project.id,
     name: project.name,
     group_name: project.groupName ?? null,
     choreography_name: project.choreographyName ?? null,
     stage_ratio: project.stageRatio ?? '16:9',
+    owner_id: project.ownerId ?? user?.id ?? null,
     data: {
       scenes: project.scenes,
       activeSceneId: project.activeSceneId,
@@ -99,7 +101,7 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
   saveProject: async project => {
     set({ loading: true, error: null })
     try {
-      const { error } = await supabase.from('projects').upsert(projectToRow(project))
+      const { error } = await supabase.from('projects').upsert(await projectToRow(project))
       if (error) throw error
       set(s => ({
         projects: s.projects.some(p => p.id === project.id)
@@ -119,7 +121,7 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
       )
       const updated = projects.find(p => p.id === id)
       if (updated) {
-        supabase.from('projects').upsert(projectToRow(updated)).then(({ error }) => {
+        projectToRow(updated).then(row => supabase.from('projects').upsert(row)).then(({ error }) => {
           if (error) console.error('Error saving project meta:', error)
         })
       }
