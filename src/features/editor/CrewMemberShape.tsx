@@ -90,19 +90,19 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         />
       )}
 
-      {/* Cuerpo — V invertida (brazos abiertos) */}
+      {/* Cuerpo — ∧ brazos levantados, como en el logo */}
       <Path
         data={chevronPath(bodyW, bodyH)}
         x={0}
-        y={headR * 1.1}
+        y={headR * 0.9}
         stroke={fillColor}
-        strokeWidth={size * 0.38}
+        strokeWidth={size * 0.55}
         fill="transparent"
-        lineCap="round"
-        lineJoin="round"
+        lineCap="butt"
+        lineJoin="miter"
         shadowColor={fillColor}
         shadowBlur={selected ? 8 : 0}
-        shadowOpacity={0.5}
+        shadowOpacity={0.4}
         listening={false}
       />
 
