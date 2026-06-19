@@ -37,35 +37,27 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 
   const fillColor = dancer.leader === true ? '#C9A961' : color
 
-  // Dos factores separados: la M del logo es mucho más ancha que alta.
-  // kh = escala vertical (cabeza + altura de la M)
-  // kw = escala horizontal (ancho de la M ≈ 3.5× el diámetro de la cabeza)
-  const kh = size / 16   // escala Y
-  const kw = size / 9    // escala X — M considerablemente más ancha
+  // DOS TRIÁNGULOS separados — evita el problema de relleno de polígono cóncavo
+  const kh = size / 16   // escala vertical
+  const kw = size / 9    // escala horizontal (M más ancha que la cabeza)
 
-  // CRÍTICO: array PLANO — Konva no acepta pares anidados
-  // Y crece hacia ABAJO en canvas:
-  //   y=2  → ARRIBA (picos)
-  //   y=14 → ABAJO  (valle, casi en la base)
-  //   y=16 → BASE
-  const bodyPoints = [
-    -16 * kw,  16 * kh,   // base izquierda
-     -8 * kw,   2 * kh,   // PICO izquierdo (arriba)
-      0,        14 * kh,  // VALLE (abajo, casi en la base)
-      8 * kw,   2 * kh,   // PICO derecho (arriba)
-     16 * kw,  16 * kh,   // base derecha
-  ]
+  const ph = 2 * kh    // y de los picos (bien arriba)
+  const bh = 16 * kh   // y de la base
+  const pw = 8 * kw    // x de los picos
+  const bw = 16 * kw   // x de la base exterior
+  const gap = 2 * kw   // hueco entre los dos brazos en la base
 
-  // Cabeza: borde inferior en y=2*kh (nivel de los picos)
+  // Brazo izquierdo: base-exterior-izq → pico-izq → base-interior-izq
+  const leftArm  = [-bw, bh,  -pw, ph,  -gap, bh]
+  // Brazo derecho: base-interior-der → pico-der → base-exterior-der
+  const rightArm = [ gap, bh,   pw, ph,   bw,  bh]
+
+  // Cabeza: centro arriba, borde inferior toca el nivel de los picos
   const headRadius  = 7 * kh
-  const headCenterY = -5 * kh
+  const headCenterY = ph - headRadius   // borde inferior = ph = nivel de picos
 
   const strokeColor = outsideStage ? '#E53E3E' : selected ? '#C9A961' : undefined
   const strokeWidth = (outsideStage || selected) ? 2 * kh : 0
-
-  // Diagnóstico temporal
-  console.log('CrewMemberShape bodyPoints:', bodyPoints)
-  console.log('kh:', kh, 'kw:', kw, 'size:', size, 'headCenterY:', headCenterY)
 
   return (
     <Group
@@ -84,14 +76,24 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Cuerpo en M — closed=true, tension sin definir (=0 por defecto) */}
+      {/* Brazo izquierdo */}
       <Line
-        points={bodyPoints}
+        points={leftArm}
         closed={true}
         fill={fillColor}
-        lineJoin="miter"
         stroke={strokeColor}
         strokeWidth={strokeWidth}
+        lineJoin="miter"
+        listening={false}
+      />
+      {/* Brazo derecho */}
+      <Line
+        points={rightArm}
+        closed={true}
+        fill={fillColor}
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
+        lineJoin="miter"
         listening={false}
       />
 
