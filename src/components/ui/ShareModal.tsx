@@ -60,7 +60,7 @@ export function ShareModal({ project, onClose }: Props) {
         <div className="space-y-4">
           {/* Toggle mostrar nombres */}
           <div className="flex items-center justify-between py-2 border-b border-borde/50">
-            <span className="text-sm text-blanco-calido/80">Mostrar nombres de bailarines</span>
+            <span className="text-sm text-blanco-calido/80">Mostrar nombres de integrantes</span>
             <button
               onClick={() => handleToggleNames(!(project.shareShowNames ?? true))}
               className={`relative w-10 h-5 rounded-full transition-colors ${

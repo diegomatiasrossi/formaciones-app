@@ -92,7 +92,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
 
       {/* Contador general */}
       <div className="flex gap-2 mb-4">
-        <Stat value={dancers.length} label="Bailarines" color="text-dorado" />
+        <Stat value={dancers.length} label="Integrantes" color="text-dorado" />
         <Stat value={allScenes.length} label="Escenas" color="text-blanco-calido/70" />
         <Stat value={`${density}%`} label="Densidad" color={density > 80 ? 'text-red-400' : 'text-green-400'} />
       </div>

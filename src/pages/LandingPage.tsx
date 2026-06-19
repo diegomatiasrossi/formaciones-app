@@ -25,9 +25,9 @@ const STATS = [
 ]
 
 const PLANS = [
-  { name: 'Free', price: '$0', period: '', desc: 'Para explorar', features: ['15 bailarines', '2 proyectos', 'Formaciones + preview', 'Link de solo lectura'], cta: 'Empezar gratis', highlight: false },
-  { name: 'Solo Pro', price: '$9.99', period: '/mes', desc: 'Para coreógrafos activos', features: ['50 bailarines', 'Proyectos ilimitados', 'Audio + timeline', 'Canon + PDF', '14 días gratis'], cta: 'Empezar Solo Pro', highlight: true },
-  { name: 'Studio', price: '$24.99', period: '/mes', desc: 'Para academias', features: ['Bailarines ilimitados', 'Todo de Solo Pro', 'Estadísticas avanzadas', 'Hasta 5 usuarios', 'Soporte prioritario'], cta: 'Empezar Studio', highlight: false },
+  { name: 'Free', price: '$0', period: '', desc: 'Para explorar', features: ['15 integrantes', '2 proyectos', 'Formaciones + preview', 'Link de solo lectura'], cta: 'Empezar gratis', highlight: false },
+  { name: 'Solo Pro', price: '$9.99', period: '/mes', desc: 'Para coreógrafos activos', features: ['50 integrantes', 'Proyectos ilimitados', 'Audio + timeline', 'Canon + PDF', '14 días gratis'], cta: 'Empezar Solo Pro', highlight: true },
+  { name: 'Studio', price: '$24.99', period: '/mes', desc: 'Para academias', features: ['Integrantes ilimitados', 'Todo de Solo Pro', 'Estadísticas avanzadas', 'Hasta 5 usuarios', 'Soporte prioritario'], cta: 'Empezar Studio', highlight: false },
 ]
 
 export function LandingPage() {

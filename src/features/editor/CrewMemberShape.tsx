@@ -19,19 +19,21 @@ interface Props {
   outsideStage?: boolean
 }
 
-const GOLD = '#B8962E'
+const GOLD = '#C9A961'
 
-// Polígono ∨ relleno: brazos abren arriba, vértice abajo
-// La cabeza queda sobre la apertura. 6 puntos en sentido horario.
-function chevronPolygon(bw: number, bh: number, t: number): number[] {
-  const iv = (t * bh) / bw   // offset del vértice interior
+// Forma M: dos picos que apuntan ARRIBA, valle en el centro-abajo.
+// Referencia: "M -14 14 L -7 4 L 0 10 L 7 4 L 14 14"
+// Cabeza (Circle) queda encima del espacio central de la M.
+function mShapePoints(bw: number, bh: number): number[] {
+  const px = bw * 0.50   // x del pico (mitad del ancho)
+  const py = bh * 0.29   // y del pico (arriba, cerca de la cabeza)
+  const vy = bh * 0.71   // y del valle (centro-abajo)
   return [
-    -bw,       0,       // extremo izquierdo arriba
-     0,        bh,      // vértice exterior (abajo)
-     bw,       0,       // extremo derecho arriba
-     bw - t,   0,       // interior derecho arriba
-     0,        bh - iv, // vértice interior (ligeramente arriba del exterior)
-    -(bw - t), 0,       // interior izquierdo arriba
+    -bw, bh,   // esquina exterior izquierda abajo
+    -px, py,   // pico izquierdo (arriba)
+      0, vy,   // valle central (abajo)
+     px, py,   // pico derecho (arriba)
+     bw, bh,   // esquina exterior derecha abajo
   ]
 }
 
@@ -62,11 +64,9 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 
   const fillColor = (dancer as any).leader === true ? GOLD : color
 
-  // dimensiones proporcionales al tamaño del integrante
-  const headR = size * 0.68          // cabeza grande — ocupa la apertura de la V
-  const bw    = size * 1.25          // V ancha
-  const bh    = size * 0.80          // V poco profunda (chevron plano)
-  const t     = size * 0.62          // brazos gruesos
+  const headR = size * 0.62
+  const bw    = size * 1.05   // ancho medio de la M
+  const bh    = size * 1.05   // altura de la M
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
@@ -91,8 +91,8 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       {selected && (
         <Circle
           x={0}
-          y={bh * 0.55}
-          radius={headR + bh * 0.65}
+          y={bh * 0.5}
+          radius={headR + bh * 0.6}
           fill="transparent"
           stroke={GOLD}
           strokeWidth={1.5 / levelScale}
@@ -106,8 +106,8 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       {outsideStage && (
         <Circle
           x={0}
-          y={bh * 0.55}
-          radius={headR + bh * 0.65 + 3}
+          y={bh * 0.5}
+          radius={headR + bh * 0.6 + 3}
           fill="transparent"
           stroke="#E53E3E"
           strokeWidth={2 / levelScale}
@@ -116,21 +116,21 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         />
       )}
 
-      {/* Cuerpo — polígono ∧ relleno (v con punto encima) */}
+      {/* Cuerpo — forma M rellena sólida */}
       <Line
-        points={chevronPolygon(bw, bh, t)}
+        points={mShapePoints(bw, bh)}
         closed
         fill={fillColor}
         stroke="transparent"
         x={0}
-        y={headR * 0.45}
+        y={headR * 0.55}
         shadowColor={fillColor}
         shadowBlur={selected ? 8 : 2}
         shadowOpacity={0.3}
         listening={false}
       />
 
-      {/* Cabeza — círculo */}
+      {/* Cabeza — círculo sobre el espacio central de la M */}
       <Circle
         x={0}
         y={0}
@@ -147,7 +147,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       {showLabel && (
         <Text
           x={-20 / levelScale}
-          y={headR + bh + 4}
+          y={headR * 0.55 + bh + 4}
           width={40 / levelScale}
           text={name}
           fontSize={8}
@@ -157,7 +157,6 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         />
       )}
 
-      {/* Flecha de entrada/salida */}
       {selected && arrowDir && (
         <Arrow
           points={[

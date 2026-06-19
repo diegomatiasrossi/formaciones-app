@@ -84,7 +84,7 @@ export function PricingPage() {
               <div className="text-3xl font-semibold">$0</div>
             </div>
             <ul className="space-y-2 flex-1">
-              {['15 bailarines por escena', '2 proyectos', 'Canvas drag & drop', '20+ formaciones', 'Link de solo lectura'].map(f => (
+              {['15 integrantes por escena', '2 proyectos', 'Canvas drag & drop', '20+ formaciones', 'Link de solo lectura'].map(f => (
                 <li key={f} className="flex items-start gap-2 text-xs text-negro/75">
                   <span className="text-green-600 mt-0.5 shrink-0">✓</span>{f}
                 </li>
@@ -117,7 +117,7 @@ export function PricingPage() {
               )}
             </div>
             <ul className="space-y-2 flex-1">
-              {['50 bailarines por escena', 'Proyectos ilimitados', 'Todo de Free', 'Audio + timeline', 'Transiciones en canon', 'PDF sin marca de agua'].map(f => (
+              {['50 integrantes por escena', 'Proyectos ilimitados', 'Todo de Free', 'Audio + timeline', 'Transiciones en canon', 'PDF sin marca de agua'].map(f => (
                 <li key={f} className="flex items-start gap-2 text-xs text-negro/75">
                   <span className="text-green-600 mt-0.5 shrink-0">✓</span>{f}
                 </li>
@@ -148,7 +148,7 @@ export function PricingPage() {
               </div>
             </div>
             <ul className="space-y-2 flex-1">
-              {['Bailarines ilimitados', 'Proyectos ilimitados', 'Todo de Solo Pro', 'Estadísticas + mapa de zonas', 'Hasta 5 usuarios', 'Soporte prioritario'].map(f => (
+              {['Integrantes ilimitados', 'Proyectos ilimitados', 'Todo de Solo Pro', 'Estadísticas + mapa de zonas', 'Hasta 5 usuarios', 'Soporte prioritario'].map(f => (
                 <li key={f} className="flex items-start gap-2 text-xs text-negro/75">
                   <span className="text-green-600 mt-0.5 shrink-0">✓</span>{f}
                 </li>
