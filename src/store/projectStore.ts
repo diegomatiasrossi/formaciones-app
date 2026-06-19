@@ -86,9 +86,12 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
   fetchProjects: async () => {
     set({ loading: true, error: null })
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { set({ projects: [], loading: false }); return }
       const { data, error } = await supabase
         .from('projects')
         .select('*')
+        .eq('owner_id', user.id)
         .order('updated_at', { ascending: false })
       if (error) throw error
       const projects: Project[] = (data ?? []).map(parseProject)
