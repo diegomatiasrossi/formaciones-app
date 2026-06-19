@@ -387,25 +387,21 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
             const dx = anim?.x ?? dancer.x
             const dy = anim?.y ?? dancer.y
             const outsideStage = dx < sx || dx > sx + sw || dy < sy || dy > sy + sh
+            const d = { ...dancer, x: dx, y: dy }
             return (
               <CrewMemberShape
                 key={dancer.id}
-                x={dx}
-                y={dy}
-                color={dancer.color}
-                size={dancer.size}
-                name={dancer.name}
+                dancer={d}
                 selected={selectedIds.includes(dancer.id)}
                 showLabel={showLabels}
-                isLeader={(dancer as any).leader === true}
-                opacity={anim?.opacity ?? 1}
-                scaleX={1}
-                scaleY={1}
+                animOpacity={anim?.opacity}
+                animX={dx}
+                animY={dy}
                 outsideStage={outsideStage}
-                onDragEnd={(nx, ny) => handleDragEnd(dancer.id, nx, ny)}
-                onDragStart={() => handleDragStart(dancer.id)}
-                onClick={(meta) => handleDancerClick(dancer.id, meta)}
-                onDblClick={() => handleDancerDblClick(dancer.id)}
+                onDragEnd={handleDragEnd}
+                onDragStart={handleDragStart}
+                onClick={handleDancerClick}
+                onDblClick={handleDancerDblClick}
                 onMouseEnter={handleDancerMouseEnter}
                 onMouseLeave={handleDancerMouseLeave}
               />
