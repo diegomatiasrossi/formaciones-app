@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Group, Circle, Line, Text, Arrow } from 'react-konva'
+import { Group, Circle, Line } from 'react-konva'
 import { LEVEL_OPACITY, LEVEL_SCALE } from '@/types'
 import type { Dancer } from '@/types'
 
@@ -19,15 +19,6 @@ interface Props {
   outsideStage?: boolean
 }
 
-const GOLD = '#C9A961'
-
-const EDGE_ARROW: Record<string, [number, number]> = {
-  top:    [0, -1],
-  bottom: [0,  1],
-  left:   [-1, 0],
-  right:  [1,  0],
-}
-
 export const CrewMemberShape = memo(function CrewMemberShape({
   dancer, selected, showLabel,
   animOpacity, animX, animY,
@@ -37,35 +28,42 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 }: Props) {
   if (dancer.active === false) return null
 
-  const { id, color, size, name, level } = dancer
-
+  const { id, color, size, level } = dancer
   const levelOpacity = LEVEL_OPACITY[level]
   const levelScale   = LEVEL_SCALE[level]
-
   const x = animX ?? dancer.x
   const y = animY ?? dancer.y
   const opacity = animOpacity ?? levelOpacity
 
-  const fillColor = dancer.leader === true ? GOLD : color
+  const fillColor = dancer.leader === true ? '#C9A961' : color
 
-  // Escala respecto al path de referencia (igual que Claude Design)
-  // Referencia: "M -16 16 L -8 2 L 0 14 L 8 2 L 16 16 Z"
+  // Escala respecto al path de referencia: size=16 → 1:1
   const k = size / 16
 
-  // Cuerpo M — array PLANO, sin tension, puntos del path de referencia escalados
+  // CRÍTICO: array PLANO — Konva no acepta pares anidados
+  // Y crece hacia ABAJO en canvas:
+  //   y=2  → ARRIBA (picos)
+  //   y=14 → ABAJO  (valle, casi en la base)
+  //   y=16 → BASE
   const bodyPoints = [
-    -16, 16,  // base izquierda
-     -8,  2,  // PICO izquierdo  (y pequeña = arriba en canvas)
-      0, 14,  // VALLE           (y grande = abajo, casi en la base)
-      8,  2,  // PICO derecho
-     16, 16,  // base derecha
-  ].map(v => v * k)
+    -16 * k,  16 * k,   // base izquierda
+     -8 * k,   2 * k,   // PICO izquierdo (arriba)
+      0 * k,  14 * k,   // VALLE (abajo, casi en la base)
+      8 * k,   2 * k,   // PICO derecho (arriba)
+     16 * k,  16 * k,   // base derecha
+  ]
 
-  // Cabeza: centro en y = -5k → borde inferior en y = (-5+7)k = 2k = nivel de los picos
-  const headR      = 7 * k
+  // Cabeza: borde inferior en y=2*k (nivel de los picos)
+  // Centro en y = 2*k - 7*k = -5*k (arriba del origen del Group)
+  const headRadius  = 7 * k
   const headCenterY = -5 * k
 
-  const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
+  const strokeColor = outsideStage ? '#E53E3E' : selected ? '#C9A961' : undefined
+  const strokeWidth = (outsideStage || selected) ? 2 * k : 0
+
+  // Diagnóstico temporal
+  console.log('CrewMemberShape bodyPoints:', bodyPoints)
+  console.log('k:', k, 'size:', size, 'headCenterY:', headCenterY)
 
   return (
     <Group
@@ -84,88 +82,32 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Anillo de selección */}
-      {selected && (
-        <Circle
-          x={0}
-          y={5 * k}
-          radius={18 * k}
-          fill="transparent"
-          stroke={GOLD}
-          strokeWidth={1.5 / levelScale}
-          dash={[3 / levelScale, 2 / levelScale]}
-          opacity={0.85}
-          listening={false}
-        />
-      )}
-
-      {/* Alerta fuera del escenario */}
-      {outsideStage && (
-        <Circle
-          x={0}
-          y={5 * k}
-          radius={20 * k}
-          fill="transparent"
-          stroke="#E53E3E"
-          strokeWidth={2 / levelScale}
-          opacity={0.9}
-          listening={false}
-        />
-      )}
-
-      {/* Cuerpo en M — array plano, closed, sin tension */}
+      {/* Cuerpo en M — closed=true, tension sin definir (=0 por defecto) */}
       <Line
         points={bodyPoints}
-        closed
+        closed={true}
         fill={fillColor}
-        stroke={selected ? GOLD : (outsideStage ? '#E53E3E' : 'transparent')}
-        strokeWidth={selected || outsideStage ? 1.5 * k : 0}
         lineJoin="miter"
-        shadowColor={fillColor}
-        shadowBlur={selected ? 8 : 2}
-        shadowOpacity={0.3}
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
         listening={false}
       />
 
-      {/* Cabeza — borde inferior coincide con la línea de los picos */}
+      {/* Cabeza encajada entre los picos — borde inferior en y=2*k */}
       <Circle
         x={0}
         y={headCenterY}
-        radius={headR}
+        radius={headRadius}
         fill={fillColor}
-        stroke={selected ? GOLD : (outsideStage ? '#E53E3E' : 'transparent')}
-        strokeWidth={selected || outsideStage ? 1.5 * k : 0}
-        shadowColor={fillColor}
-        shadowBlur={selected ? 10 : 3}
-        shadowOpacity={0.4}
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
       />
 
-      {/* Etiqueta */}
       {showLabel && (
-        <Text
-          x={-20 / levelScale}
-          y={16 * k + 4}
-          width={40 / levelScale}
-          text={name}
-          fontSize={8}
-          fill={fillColor === GOLD ? GOLD : '#bbb'}
-          align="center"
+        <Line
+          points={[0, 0]}  // placeholder para mantener z-order
           listening={false}
-        />
-      )}
-
-      {selected && arrowDir && (
-        <Arrow
-          points={[
-            arrowDir[0] * (headR + 10), arrowDir[1] * (headR + 10),
-            arrowDir[0] * (headR + 18), arrowDir[1] * (headR + 18),
-          ]}
-          pointerLength={5}
-          pointerWidth={5}
-          fill="#888"
-          stroke="#888"
-          strokeWidth={1.5}
-          listening={false}
+          opacity={0}
         />
       )}
     </Group>
