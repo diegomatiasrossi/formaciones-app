@@ -37,8 +37,11 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 
   const fillColor = dancer.leader === true ? '#C9A961' : color
 
-  // Escala respecto al path de referencia: size=16 → 1:1
-  const k = size / 16
+  // Dos factores separados: la M del logo es mucho más ancha que alta.
+  // kh = escala vertical (cabeza + altura de la M)
+  // kw = escala horizontal (ancho de la M ≈ 3.5× el diámetro de la cabeza)
+  const kh = size / 16   // escala Y
+  const kw = size / 9    // escala X — M considerablemente más ancha
 
   // CRÍTICO: array PLANO — Konva no acepta pares anidados
   // Y crece hacia ABAJO en canvas:
@@ -46,17 +49,16 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   //   y=14 → ABAJO  (valle, casi en la base)
   //   y=16 → BASE
   const bodyPoints = [
-    -16 * k,  16 * k,   // base izquierda
-     -8 * k,   2 * k,   // PICO izquierdo (arriba)
-      0 * k,  14 * k,   // VALLE (abajo, casi en la base)
-      8 * k,   2 * k,   // PICO derecho (arriba)
-     16 * k,  16 * k,   // base derecha
+    -16 * kw,  16 * kh,   // base izquierda
+     -8 * kw,   2 * kh,   // PICO izquierdo (arriba)
+      0,        14 * kh,  // VALLE (abajo, casi en la base)
+      8 * kw,   2 * kh,   // PICO derecho (arriba)
+     16 * kw,  16 * kh,   // base derecha
   ]
 
-  // Cabeza: borde inferior en y=2*k (nivel de los picos)
-  // Centro en y = 2*k - 7*k = -5*k (arriba del origen del Group)
-  const headRadius  = 7 * k
-  const headCenterY = -5 * k
+  // Cabeza: borde inferior en y=2*kh (nivel de los picos)
+  const headRadius  = 7 * kh
+  const headCenterY = -5 * kh
 
   const strokeColor = outsideStage ? '#E53E3E' : selected ? '#C9A961' : undefined
   const strokeWidth = (outsideStage || selected) ? 2 * k : 0
