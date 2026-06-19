@@ -11,6 +11,7 @@ import clsx from 'clsx'
 export function Sidebar() {
   const { t } = useTranslation()
   const [showArticles, setShowArticles] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1280)
   const {
     rotateAll, mirrorH, mirrorV, scaleFormation,
     showGrid, setShowGrid,
@@ -53,14 +54,40 @@ export function Sidebar() {
     </label>
   )
 
+  if (collapsed) {
+    return (
+      <aside className="w-10 shrink-0 border-r border-borde bg-negro flex flex-col items-center py-3 gap-3">
+        <button
+          onClick={() => setCollapsed(false)}
+          className="text-gris hover:text-dorado transition-colors p-1"
+          title={t('editor.sidebar.expand')}
+        >
+          ›
+        </button>
+        <div className="w-px h-3 bg-borde" />
+        <button onClick={() => rotateAll(-15)} className="text-gris hover:text-dorado text-xs" title="−15°">↶</button>
+        <button onClick={() => rotateAll(15)}  className="text-gris hover:text-dorado text-xs" title="+15°">↷</button>
+        <button onClick={mirrorH} className="text-gris hover:text-dorado text-xs" title="Espejo H">↔</button>
+        <button onClick={mirrorV} className="text-gris hover:text-dorado text-xs" title="Espejo V">↕</button>
+      </aside>
+    )
+  }
+
   return (
     <aside className="w-48 shrink-0 border-r border-borde bg-negro overflow-y-auto p-3 text-sm flex flex-col">
+
+      {/* ── Botón colapsar ─────────────────────────────────────── */}
+      <button
+        onClick={() => setCollapsed(true)}
+        className="self-end text-gris hover:text-dorado transition-colors text-sm mb-2"
+        title={t('editor.sidebar.collapse')}
+      >‹</button>
 
       {/* ── Panel de selección múltiple ─────────────────────────── */}
       {selectedDancers.length > 1 && (
         <div className="mb-3 p-2.5 rounded-lg border border-dorado/30 bg-dorado/5">
           <div className="text-[10px] text-dorado uppercase tracking-wider mb-2">
-            {selectedDancers.length} bailarines seleccionados
+            {selectedDancers.length} integrantes seleccionados
           </div>
 
           {/* Color en bloque */}

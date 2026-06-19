@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, memo } from 'react'
 import { Stage, Layer, Line, Rect, Text, Group } from 'react-konva'
 import type Konva from 'konva'
 import { useEditorStore } from '@/store/editorStore'
-import { DancerNode } from './DancerNode'
+import { CrewMemberShape } from './CrewMemberShape'
 import { DancerPropertiesPanel } from '@/components/ui/DancerPropertiesPanel'
 import type { StageRatio } from '@/types'
 
@@ -381,22 +381,31 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
           <Text x={sx} y={sy + sh + 8} width={sw} text="▼  PÚBLICO  ▼"
             fontSize={9} fill="#C9A961" align="center" opacity={0.5} listening={false} />
 
-          {/* Bailarines */}
+          {/* Integrantes */}
           {dancers.map(dancer => {
             const anim = animationOverride?.dancers.find(a => a.id === dancer.id)
+            const dx = anim?.x ?? dancer.x
+            const dy = anim?.y ?? dancer.y
+            const outsideStage = dx < sx || dx > sx + sw || dy < sy || dy > sy + sh
             return (
-              <DancerNode
+              <CrewMemberShape
                 key={dancer.id}
-                dancer={dancer}
+                x={dx}
+                y={dy}
+                color={dancer.color}
+                size={dancer.size}
+                name={dancer.name}
                 selected={selectedIds.includes(dancer.id)}
                 showLabel={showLabels}
-                animOpacity={anim?.opacity}
-                animX={anim?.x}
-                animY={anim?.y}
-                onDragEnd={handleDragEnd}
-                onDragStart={handleDragStart}
-                onClick={handleDancerClick}
-                onDblClick={handleDancerDblClick}
+                isLeader={(dancer as any).leader === true}
+                opacity={anim?.opacity ?? 1}
+                scaleX={1}
+                scaleY={1}
+                outsideStage={outsideStage}
+                onDragEnd={(nx, ny) => handleDragEnd(dancer.id, nx, ny)}
+                onDragStart={() => handleDragStart(dancer.id)}
+                onClick={(meta) => handleDancerClick(dancer.id, meta)}
+                onDblClick={() => handleDancerDblClick(dancer.id)}
                 onMouseEnter={handleDancerMouseEnter}
                 onMouseLeave={handleDancerMouseLeave}
               />

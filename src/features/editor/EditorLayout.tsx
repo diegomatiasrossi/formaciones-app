@@ -105,9 +105,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-dorado tracking-widest hidden md:block">FORMACIONES</span>
-          <span className="text-dorado/50 text-xs hidden md:block">/</span>
-          <span className="text-gris text-xs hidden md:block">PÓLEO LAB</span>
+          <span className="text-[10px] text-dorado tracking-widest hidden md:block">Crewficina</span>
           <div className="w-px h-4 bg-borde mx-1" />
           <button
             onClick={() => setShowShortcuts(true)}

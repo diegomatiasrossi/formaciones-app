@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toggleLanguage } from '@/i18n'
+import { toggleLanguage, getLangLabel } from '@/i18n'
 import { FormationDemo } from '@/components/ui/FormationDemo'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
@@ -18,10 +18,10 @@ const FEATURES = [
 ]
 
 const STATS = [
-  { value: '20+', label: 'Formaciones' },
-  { value: '50', label: 'Bailarines/escena' },
-  { value: '4', label: 'Niveles' },
-  { value: '∞', label: 'Escenas' },
+  { value: '20+', labelKey: 'landing.stats_formations' },
+  { value: '50',  labelKey: 'landing.stats_members' },
+  { value: '4',   labelKey: 'landing.stats_levels' },
+  { value: '∞',   labelKey: 'landing.stats_scenes' },
 ]
 
 const PLANS = [
@@ -34,8 +34,8 @@ export function LandingPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [showDemo, setShowDemo] = useState(false)
-  const [demoDancers, setDemoDancers] = useState(12)
-  const [demoColor, setDemoColor] = useState('#C9343D')
+  const [demoDancers, setDemoDancers] = useState(7)
+  const [demoColor, setDemoColor] = useState('#B8962E')
 
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -57,7 +57,7 @@ export function LandingPage() {
         <Logo size={30} />
         <div className="flex items-center gap-5">
           <button className="text-[10px] text-gris hover:text-negro uppercase tracking-wider transition-colors" onClick={toggleLanguage}>
-            {i18n.language === 'es' ? 'EN' : 'ES'}
+            {getLangLabel(i18n.language)}
           </button>
           <button onClick={() => navigate('/login')} className="text-sm text-gris hover:text-negro transition-colors">
             {t('auth.sign_in')}
@@ -71,33 +71,31 @@ export function LandingPage() {
       {/* Hero */}
       <section className="flex-1 flex items-center max-w-6xl mx-auto px-8 py-24 gap-20 w-full">
         <div className="flex-1 min-w-0">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-dorado/40 bg-dorado/10 mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-dorado animate-pulse" />
-            <span className="text-dorado-oscuro text-[10px] tracking-[0.2em] uppercase font-semibold">Arquitectura coreográfica</span>
-          </div>
-          <h1 className="text-5xl md:text-6xl font-semibold leading-[1.1] tracking-tight mb-6">
-            Diseñá el escenario.<br />
-            <span className="text-rojo">Antes de que empiece<br />la música.</span>
+          <h1 className="text-5xl md:text-6xl font-semibold leading-[1.1] tracking-tight mb-4">
+            {t('landing.headline')}
           </h1>
-          <p className="text-gris text-lg leading-relaxed mb-10 max-w-md">
-            Tu oficina de planificación coreográfica. Diseñá formaciones, organizá tu crew y analizá el espacio antes del primer ensayo.
+          <p className="text-xl font-light text-negro/70 mb-4 max-w-lg">
+            {t('landing.subheadline')}
+          </p>
+          <p className="text-gris text-base leading-relaxed mb-10 max-w-md">
+            {t('landing.body')}
           </p>
           <div className="flex gap-4 flex-wrap">
-            <button onClick={() => navigate('/projects')} className="px-8 py-3.5 bg-rojo hover:bg-rojo-oscuro text-blanco font-semibold rounded-xl transition-all text-sm shadow-card hover:-translate-y-0.5">
-              Empezar gratis →
+            <button onClick={() => navigate('/projects')} className="px-8 py-3.5 bg-negro hover:bg-negro/90 text-crema font-semibold rounded-xl transition-all text-sm shadow-card hover:-translate-y-0.5">
+              {t('landing.cta')} →
             </button>
             <button onClick={() => setShowDemo(true)} className="px-8 py-3.5 border border-borde-light hover:border-dorado text-negro/80 hover:text-negro rounded-xl transition-colors text-sm bg-blanco">
-              Ver demo →
+              {t('landing.cta_demo')} →
             </button>
           </div>
         </div>
         <div className="w-80 shrink-0 hidden md:block">
           <div className="relative">
             <div className="rounded-2xl border border-borde-light bg-negro overflow-hidden shadow-card">
-              <FormationDemo width={320} height={220} dancerCount={12} color="#C9A961" />
+              <FormationDemo width={320} height={220} dancerCount={7} color="#B8962E" />
             </div>
             <div className="absolute -bottom-3 -right-3 bg-blanco border border-borde-light rounded-xl px-3 py-2 shadow-card">
-              <div className="text-rojo text-xs font-semibold">12 integrantes</div>
+              <div className="text-dorado text-xs font-semibold">7 integrantes</div>
               <div className="text-gris text-[10px]">Demo en vivo</div>
             </div>
           </div>
@@ -108,9 +106,9 @@ export function LandingPage() {
       <section className="border-y border-borde-light bg-blanco">
         <div className="max-w-6xl mx-auto px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
           {STATS.map(s => (
-            <div key={s.label} className="text-center">
+            <div key={s.labelKey} className="text-center">
               <div className="text-2xl font-semibold text-negro tabular-nums">{s.value}</div>
-              <div className="text-[10px] text-gris uppercase tracking-wider mt-1">{s.label}</div>
+              <div className="text-[10px] text-gris uppercase tracking-wider mt-1">{t(s.labelKey as any)}</div>
             </div>
           ))}
         </div>
@@ -145,7 +143,7 @@ export function LandingPage() {
               Diego <span className="text-dorado-oscuro">"Póleo"</span> Rossi
             </h2>
             <p className="text-gris text-sm leading-relaxed max-w-xl">
-              Juez internacional en competencias coreográficas y bailarín. Esta herramienta la construí porque no existía lo que yo necesitaba como juez: ver el espacio, los niveles y las transiciones antes del primer ensayo.
+              {t('landing.who_text')}
             </p>
             <a href="https://diegopoleo.com" target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-[11px] text-dorado-oscuro hover:text-dorado transition-colors">
               diegopoleo.com ↗
@@ -221,38 +219,47 @@ export function LandingPage() {
       <section className="border-t border-borde-light bg-negro">
         <div className="max-w-xl mx-auto px-8 py-20 text-center">
           <div className="text-[10px] text-dorado uppercase tracking-[0.3em] mb-4 font-semibold">Acceso anticipado</div>
-          <h2 className="text-3xl font-semibold tracking-tight mb-3 text-crema">Sé de los primeros 100</h2>
-          <p className="text-gris text-sm mb-8 leading-relaxed">
-            Los primeros 100 usuarios tienen acceso fundador: plan Solo Pro gratis de por vida, sin límite de tiempo.
-          </p>
+          <h2 className="text-3xl font-semibold tracking-tight mb-3 text-crema">{t('landing.waitlist_headline')}</h2>
+          <p className="text-gris text-sm mb-8 leading-relaxed">{t('landing.waitlist_body')}</p>
 
           {waitlistStatus === 'success' ? (
             <div className="flex flex-col items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-green-500/15 border border-green-500/40 flex items-center justify-center text-green-400 text-xl">✓</div>
-              <p className="text-green-400 text-sm">¡Anotado! Te avisamos cuando abramos.</p>
+              <p className="text-green-400 text-sm">{t('landing.waitlist_success')}</p>
             </div>
           ) : (
             <form onSubmit={handleWaitlist} className="flex gap-2 max-w-sm mx-auto">
-              <input type="email" required value={waitlistEmail} onChange={e => setWaitlistEmail(e.target.value)} placeholder="tu@email.com"
+              <input type="email" required value={waitlistEmail} onChange={e => setWaitlistEmail(e.target.value)} placeholder={t('landing.waitlist_placeholder')}
                 className="flex-1 bg-[#2a2a2a] border border-[#3a3a3a] rounded-xl px-4 py-3 text-sm text-crema placeholder:text-gris focus:outline-none focus:border-dorado transition-colors" />
               <button type="submit" disabled={waitlistStatus === 'loading'}
-                className="px-5 py-3 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-xl transition-colors disabled:opacity-60 shrink-0">
-                {waitlistStatus === 'loading' ? '...' : 'Anotarme'}
+                className="px-5 py-3 bg-dorado hover:bg-dorado-oscuro text-negro text-sm font-semibold rounded-xl transition-colors disabled:opacity-60 shrink-0">
+                {waitlistStatus === 'loading' ? '...' : t('landing.waitlist_cta')}
               </button>
             </form>
           )}
           {waitlistStatus === 'error' && <p className="text-rojo text-xs mt-3">Hubo un error. Intentá de nuevo.</p>}
-          <p className="text-gris/60 text-[10px] mt-5">Sin spam. Solo el aviso de apertura.</p>
+          <p className="text-gris/60 text-[10px] mt-5">{t('landing.waitlist_no_spam')}</p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="px-8 py-5 border-t border-borde-light flex justify-between items-center text-[10px] text-gris bg-crema">
-        <span>© 2026 Crewficina — Diego "Póleo" Rossi · crewficina.com</span>
-        <span className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          MVP v1.0
-        </span>
+      <footer className="border-t border-borde-light bg-crema">
+        <div className="max-w-6xl mx-auto px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <Logo size={24} />
+          <nav className="flex items-center gap-6 text-xs text-gris flex-wrap justify-center">
+            <button onClick={() => navigate('/')} className="hover:text-negro transition-colors">Inicio</button>
+            <button onClick={() => navigate('/pricing')} className="hover:text-negro transition-colors">Precios</button>
+            <a href="mailto:hola@crewficina.com" className="hover:text-negro transition-colors">hola@crewficina.com</a>
+            <button onClick={() => navigate('/privacidad')} className="hover:text-negro transition-colors">Privacidad</button>
+          </nav>
+          <div className="flex items-center gap-3 text-[10px] text-gris/60">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              En vivo
+            </span>
+            <span>© 2026 Crewficina</span>
+          </div>
+        </div>
       </footer>
 
       {/* Modal demo */}

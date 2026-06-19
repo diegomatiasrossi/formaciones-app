@@ -4,9 +4,11 @@ import { ProjectsPage } from '@/pages/ProjectsPage'
 import { EditorPage } from '@/pages/EditorPage'
 import { SharePage } from '@/pages/SharePage'
 import { PricingPage } from '@/pages/PricingPage'
+import { PrivacyPage } from '@/pages/PrivacyPage'
 import { MobilePreviewPage } from '@/pages/MobilePreviewPage'
 import { AuthPage } from '@/features/auth/AuthPage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import { CookieBanner } from '@/components/ui/CookieBanner'
 import { useAuth } from '@/features/auth/useAuth'
 import { useSessionGuard } from '@/hooks/useSessionGuard'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -36,6 +38,7 @@ function EditorOrMobile() {
 export default function App() {
   return (
     <ErrorBoundary>
+      <CookieBanner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -58,6 +61,8 @@ export default function App() {
           <Route path="/share/:token" element={<SharePage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/login" element={<AuthPage />} />
+          <Route path="/privacidad" element={<PrivacyPage />} />
+          <Route path="/privacy" element={<Navigate to="/privacidad" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

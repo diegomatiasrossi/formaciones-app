@@ -19,13 +19,14 @@ export default {
     tool_select: 'Selección',
     tool_add: 'Agregar',
     tool_select_hint: 'Click para seleccionar · Ctrl+Click múltiple · Arrastrar para mover',
-    tool_add_hint: 'Click en el escenario para colocar un bailarín',
+    tool_add_hint: 'Click en el escenario para colocar un integrante',
+    outside_stage: 'Este integrante está fuera del escenario',
     toolbar: {
       style: 'Estilo',
       shape: 'Forma',
       size: 'Tamaño',
       color: 'Color',
-      dancers: 'Bailarines',
+      dancers: 'Integrantes',
       shape_circle: 'Círculo',
       shape_triangle: 'Triángulo',
       shape_square: 'Cuadrado',
@@ -51,6 +52,8 @@ export default {
       show_labels: 'Etiquetas',
       show_zones: 'Zonas',
       snap: 'Snap a grid',
+      collapse: 'Colapsar panel',
+      expand: 'Expandir panel',
     },
     stage: {
       audience: '▼ PÚBLICO ▼',
@@ -61,13 +64,14 @@ export default {
       stage_right: 'Der',
     },
     status: {
-      dancers_count_one: '{{count}} bailarín',
-      dancers_count_other: '{{count}} bailarines',
+      dancers_count_one: '{{count}} integrante',
+      dancers_count_other: '{{count}} integrantes',
       selected_one: '{{count}} seleccionado',
       selected_other: '{{count}} seleccionados',
     },
   },
   formations: {
+    preset: 'Formaciones para elegir',
     line_h: 'Línea horizontal',
     line_v: 'Línea vertical',
     diagonal: 'Diagonal',
@@ -90,7 +94,7 @@ export default {
     fan: 'Abanico',
     cards: {
       line_h: {
-        adv1: 'Visibilidad total de todos los bailarines desde el frente',
+        adv1: 'Visibilidad total de todos los integrantes desde el frente',
         adv2: 'Fácil de ejecutar y sincronizar',
         risk1: 'Monotonía visual si se abusa de ella',
         feeling: 'Claridad, orden, fuerza colectiva',
@@ -105,7 +109,7 @@ export default {
       diagonal: {
         adv1: 'Dinamismo: el ojo del público recorre toda la formación',
         adv2: 'Muy fotogénica',
-        risk1: 'Algunos bailarines pueden quedar ocultos según el ángulo',
+        risk1: 'Algunos integrantes pueden quedar ocultos según el ángulo',
         feeling: 'Movimiento, energía, modernidad',
         bestUse: 'Momentos de transición, solos que emergen de la formación',
       },
@@ -118,7 +122,7 @@ export default {
       },
       inverted_v: {
         adv1: 'Marco natural que envuelve el centro del escenario',
-        risk1: 'Puede parecer "pesada" si los bailarines no están activos',
+        risk1: 'Puede parecer "pesada" si los integrantes no están activos',
         feeling: 'Protección, contención, fuerza que converge',
         bestUse: 'Abrazar a un solista en el centro, crecer desde abajo',
       },
@@ -144,7 +148,7 @@ export default {
       },
       diamond: {
         adv1: 'Elegante y geométrica, impacto visual inmediato',
-        risk1: 'Difícil de mantener con muchos bailarines',
+        risk1: 'Difícil de mantener con muchos integrantes',
         feeling: 'Precisión, elegancia, simetría tensa',
         bestUse: 'Momentos de pausa, poses estáticas de alto impacto',
       },
@@ -177,7 +181,7 @@ export default {
       spiral: {
         adv1: 'Hipnótica, crea ilusión de movimiento en reposo',
         adv2: 'Excelente punto de partida para movimientos en cascada',
-        risk1: 'Los bailarines del interior quedan muy apretados',
+        risk1: 'Los integrantes del interior quedan muy apretados',
         feeling: 'Vértigo, tiempo que se enrolla, profundidad',
         bestUse: 'Transiciones dramáticas, finales impactantes',
       },
@@ -189,10 +193,10 @@ export default {
       },
       blocks: {
         adv1: 'Organización modular: fácil de recordar y ejecutar',
-        adv2: 'Versátil para cualquier número de bailarines',
+        adv2: 'Versátil para cualquier número de integrantes',
         risk1: 'Puede parecer una clase de gimnasia si no se estiliza',
         feeling: 'Arquitectura, solidez, fuerza colectiva',
-        bestUse: 'Secciones de unísono, numerosos bailarines',
+        bestUse: 'Secciones de unísono, numerosos integrantes',
       },
       fractal: {
         adv1: 'Visualmente único y moderno',
@@ -257,10 +261,22 @@ export default {
     name_placeholder: 'Nombre del proyecto',
   },
   landing: {
-    headline: 'Diseñá tus coreografías\ncon conciencia espacial total',
-    subtitle: 'Formaciones, niveles, estadísticas y pedagogía escénica. En español.',
+    headline: 'Tu oficina coreográfica.',
+    subheadline: 'Todo lo que pasa antes de pisar el escenario, en un solo lugar.',
+    body: 'Diseñá formaciones, organizá tu crew y analizá el espacio antes del primer ensayo.',
     cta: 'Empezar gratis',
     cta_demo: 'Ver demo',
+    stats_formations: 'Más de 20 formaciones para elegir',
+    stats_members: 'De 1 a 50 integrantes en escena',
+    stats_levels: 'Niveles',
+    stats_scenes: 'Escenas',
+    who_text: 'Me hubiera encantado tener el orden que esta plataforma brinda cuando empezaba a dar clases y armaba coreografías para academias y competencias. Soy juez internacional en competencias coreográficas y bailarín. Construí esta herramienta porque no existía lo que yo necesitaba como juez: ver el espacio, los niveles y las transiciones antes del primer ensayo.',
+    waitlist_headline: 'Sé de los primeros 30',
+    waitlist_body: 'Los primeros 30 usuarios tienen acceso fundador: plan Solo Pro gratis de por vida, sin límite de tiempo.',
+    waitlist_cta: 'Anotarme',
+    waitlist_success: '¡Anotado! Te avisamos cuando abramos.',
+    waitlist_no_spam: 'Sin spam. Solo el aviso de apertura.',
+    waitlist_placeholder: 'tu@email.com',
   },
   transition: {
     title: 'Transición de entrada',
@@ -272,7 +288,7 @@ export default {
     order_center_out: 'Centro → Bordes',
     delay_label: 'Delay',
     duration_hint: 'Duración estimada: ~{{s}}s',
-    canon_tooltip: 'Canon: los bailarines se mueven en cascada, uno tras otro. Genera dinamismo y dirección visual.',
+    canon_tooltip: 'Canon: los integrantes se mueven en cascada, uno tras otro. Genera dinamismo y dirección visual.',
   },
   articles: {
     section_title: 'Aprender más',
@@ -284,5 +300,14 @@ export default {
   },
   splash: {
     skip: 'Continuar →',
+  },
+  cookies: {
+    message: 'Usamos cookies para mejorar tu experiencia. Podés aceptar todas o solo las esenciales.',
+    accept_all: 'Aceptar todas',
+    essential_only: 'Solo esenciales',
+  },
+  privacy: {
+    title: 'Política de Privacidad',
+    last_updated: 'Última actualización: junio 2026',
   },
 } as const

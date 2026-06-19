@@ -6,12 +6,12 @@ export default {
     extend: {
       colors: {
         // ── Crewficina brand ──────────────────────────
-        negro:          '#1a1a1a',
-        crema:          '#f5f5f0',
+        negro:          '#1C1C1C',
+        crema:          '#F2F0EB',
         rojo:           '#C9343D',
         'rojo-oscuro':  '#a82830',
-        dorado:         '#C9A961',
-        'dorado-oscuro':'#c5a028',
+        dorado:         '#B8962E',
+        'dorado-oscuro':'#9a7d24',
         blanco:         '#ffffff',
         // ── Grises y bordes ───────────────────────────
         'blanco-calido':'#faf8f5',

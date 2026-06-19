@@ -19,13 +19,14 @@ export default {
     tool_select: 'Select',
     tool_add: 'Add',
     tool_select_hint: 'Click to select · Ctrl+Click for multiple · Drag to move',
-    tool_add_hint: 'Click on stage to place a dancer',
+    tool_add_hint: 'Click on stage to place a member',
+    outside_stage: 'This member is outside the stage',
     toolbar: {
       style: 'Style',
       shape: 'Shape',
       size: 'Size',
       color: 'Color',
-      dancers: 'Dancers',
+      dancers: 'Members',
       shape_circle: 'Circle',
       shape_triangle: 'Triangle',
       shape_square: 'Square',
@@ -51,6 +52,8 @@ export default {
       show_labels: 'Labels',
       show_zones: 'Zones',
       snap: 'Snap to grid',
+      collapse: 'Collapse panel',
+      expand: 'Expand panel',
     },
     stage: {
       audience: '▼ AUDIENCE ▼',
@@ -61,13 +64,14 @@ export default {
       stage_right: 'SR',
     },
     status: {
-      dancers_count_one: '{{count}} dancer',
-      dancers_count_other: '{{count}} dancers',
+      dancers_count_one: '{{count}} member',
+      dancers_count_other: '{{count}} members',
       selected_one: '{{count}} selected',
       selected_other: '{{count}} selected',
     },
   },
   formations: {
+    preset: 'Choose a formation',
     line_h: 'Horizontal Line',
     line_v: 'Vertical Line',
     diagonal: 'Diagonal',
@@ -90,7 +94,7 @@ export default {
     fan: 'Fan',
     cards: {
       line_h: {
-        adv1: 'Full visibility for all dancers from the front',
+        adv1: 'Full visibility for all members from the front',
         adv2: 'Easy to execute and synchronize',
         risk1: 'Visually monotonous if overused',
         feeling: 'Clarity, order, collective strength',
@@ -105,7 +109,7 @@ export default {
       diagonal: {
         adv1: 'Dynamic: the audience eye travels the entire formation',
         adv2: 'Very photogenic',
-        risk1: 'Some dancers may be hidden depending on angle',
+        risk1: 'Some members may be hidden depending on angle',
         feeling: 'Movement, energy, modernity',
         bestUse: 'Transition moments, solos emerging from the formation',
       },
@@ -118,7 +122,7 @@ export default {
       },
       inverted_v: {
         adv1: 'Natural frame that wraps around center stage',
-        risk1: 'Can feel "heavy" if dancers are not active',
+        risk1: 'Can feel "heavy" if members are not active',
         feeling: 'Protection, containment, converging strength',
         bestUse: 'Framing a center soloist, growing from below',
       },
@@ -144,7 +148,7 @@ export default {
       },
       diamond: {
         adv1: 'Elegant and geometric, immediate visual impact',
-        risk1: 'Hard to maintain with many dancers',
+        risk1: 'Hard to maintain with many members',
         feeling: 'Precision, elegance, tense symmetry',
         bestUse: 'Pause moments, high-impact static poses',
       },
@@ -177,7 +181,7 @@ export default {
       spiral: {
         adv1: 'Hypnotic, creates illusion of movement at rest',
         adv2: 'Excellent starting point for cascade movements',
-        risk1: 'Inner dancers get very close together',
+        risk1: 'Inner members get very close together',
         feeling: 'Vertigo, time winding, depth',
         bestUse: 'Dramatic transitions, impactful finales',
       },
@@ -189,10 +193,10 @@ export default {
       },
       blocks: {
         adv1: 'Modular organization: easy to remember and execute',
-        adv2: 'Versatile for any number of dancers',
+        adv2: 'Versatile for any number of members',
         risk1: 'Can look like a gym class if not stylized',
         feeling: 'Architecture, solidity, collective strength',
-        bestUse: 'Unison sections, many dancers',
+        bestUse: 'Unison sections, many members',
       },
       fractal: {
         adv1: 'Visually unique and modern',
@@ -257,10 +261,22 @@ export default {
     name_placeholder: 'Project name',
   },
   landing: {
-    headline: 'Design your choreographies\nwith total spatial awareness',
-    subtitle: 'Formations, levels, statistics, and scenic pedagogy. In Spanish and English.',
+    headline: 'Your choreographic office.',
+    subheadline: 'Everything that happens before hitting the stage, in one place.',
+    body: 'Design formations, organize your crew, and analyze the space before the first rehearsal.',
     cta: 'Start for free',
     cta_demo: 'See demo',
+    stats_formations: '20+ formations to choose from',
+    stats_members: 'From 1 to 50 members on stage',
+    stats_levels: 'Levels',
+    stats_scenes: 'Scenes',
+    who_text: "I would have loved to have the order this platform provides when I started teaching and choreographing for academies and competitions. I'm an international judge in choreographic competitions and a dancer. I built this tool because what I needed as a judge didn't exist: seeing the space, levels, and transitions before the first rehearsal.",
+    waitlist_headline: 'Be among the first 30',
+    waitlist_body: 'The first 30 users get founder access: free Solo Pro plan for life, no time limit.',
+    waitlist_cta: 'Join the list',
+    waitlist_success: "You're in! We'll notify you when we open.",
+    waitlist_no_spam: 'No spam. Just the opening announcement.',
+    waitlist_placeholder: 'your@email.com',
   },
   transition: {
     title: 'Entry transition',
@@ -272,7 +288,7 @@ export default {
     order_center_out: 'Center → Out',
     delay_label: 'Delay',
     duration_hint: 'Estimated duration: ~{{s}}s',
-    canon_tooltip: 'Canon: dancers move in cascade, one after another. Creates dynamism and visual direction.',
+    canon_tooltip: 'Canon: members move in cascade, one after another. Creates dynamism and visual direction.',
   },
   articles: {
     section_title: 'Learn more',
@@ -284,5 +300,14 @@ export default {
   },
   splash: {
     skip: 'Continue →',
+  },
+  cookies: {
+    message: 'We use cookies to improve your experience. You can accept all or only essential ones.',
+    accept_all: 'Accept all',
+    essential_only: 'Essential only',
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    last_updated: 'Last updated: June 2026',
   },
 } as const
