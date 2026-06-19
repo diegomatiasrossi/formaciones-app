@@ -59,7 +59,7 @@ function SceneMiniature({ dancers }: { dancers: { x: number; y: number; color: s
   }
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="w-full h-full">
-      <rect x={5} y={4} width={W - 10} height={H - 8} fill="none" stroke="#B8962E" strokeWidth={0.6} strokeDasharray="4,3" rx={2} />
+      <rect x={5} y={4} width={W - 10} height={H - 8} fill="none" stroke="#C9A961" strokeWidth={0.6} strokeDasharray="4,3" rx={2} />
       {dancers.slice(0, 50).map((d, i) => (
         <MiniMember
           key={i}
@@ -267,45 +267,45 @@ export function ProjectsPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">
-              Nombre del proyecto <span className="text-rojo">*</span>
+              {t('projects.name_placeholder')} <span className="text-rojo">{t('projects.form_required')}</span>
             </label>
             <input autoFocus type="text" value={newName} onChange={e => setNewName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleCreate()} placeholder={t('projects.untitled')} maxLength={200}
               className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo placeholder:text-gris/50" />
           </div>
           <div>
-            <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">Grupo / Crew <span className="text-gris/50">(opcional)</span></label>
+            <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">{t('projects.form_group')} <span className="text-gris/50">{t('projects.form_optional')}</span></label>
             <input type="text" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} placeholder="Ej: Crew Nexus" maxLength={200}
               className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo placeholder:text-gris/50" />
           </div>
           <div>
-            <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">Nombre de la coreografía <span className="text-gris/50">(opcional)</span></label>
+            <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">{t('projects.form_choreo')} <span className="text-gris/50">{t('projects.form_optional')}</span></label>
             <input type="text" value={newChoreographyName} onChange={e => setNewChoreographyName(e.target.value)} placeholder="Ej: Show fin de año" maxLength={200}
               className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo placeholder:text-gris/50" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">Fecha inicio <span className="text-gris/50">(opcional)</span></label>
+              <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">{t('projects.form_start')} <span className="text-gris/50">{t('projects.form_optional')}</span></label>
               <input type="date" value={newStartDate} onChange={e => setNewStartDate(e.target.value)}
                 className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo" />
             </div>
             <div>
-              <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">Fecha evento <span className="text-gris/50">(opcional)</span></label>
+              <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">{t('projects.form_end')} <span className="text-gris/50">{t('projects.form_optional')}</span></label>
               <input type="date" value={newEndDate} onChange={e => setNewEndDate(e.target.value)}
                 className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo" />
             </div>
           </div>
           {newStartDate && newEndDate && (() => {
             const weeks = Math.max(0, Math.round((new Date(newEndDate).getTime() - new Date(newStartDate).getTime()) / (7 * 24 * 3600 * 1000)))
-            return <p className="text-[10px] text-dorado-oscuro -mt-1">{weeks} semana{weeks !== 1 ? 's' : ''} de preparación</p>
+            return <p className="text-[10px] text-dorado-oscuro -mt-1">{t('projects.weeks_prep_other', { count: weeks })}</p>
           })()}
           <div>
-            <label className="block text-xs text-gris uppercase tracking-wider mb-2">Proporción del escenario</label>
+            <label className="block text-xs text-gris uppercase tracking-wider mb-2">{t('projects.stage_ratio')}</label>
             <div className="flex gap-2">
               {([
-                { id: '1:1'  as StageRatio, label: '1:1',  title: 'Cuadrado',   w: 32, h: 32 },
-                { id: '16:9' as StageRatio, label: '16:9', title: 'Horizontal', w: 48, h: 27 },
-                { id: '9:16' as StageRatio, label: '9:16', title: 'Vertical',   w: 24, h: 42 },
+                { id: '1:1'  as StageRatio, label: '1:1',  titleKey: 'projects.ratio_square',      w: 32, h: 32 },
+                { id: '16:9' as StageRatio, label: '16:9', titleKey: 'projects.ratio_horizontal',  w: 48, h: 27 },
+                { id: '9:16' as StageRatio, label: '9:16', titleKey: 'projects.ratio_vertical',    w: 24, h: 42 },
               ] as const).map(opt => (
                 <button key={opt.id} type="button" onClick={() => setNewStageRatio(opt.id)}
                   className={clsx('flex-1 flex flex-col items-center gap-2 py-3 rounded-lg border transition-all',
@@ -314,29 +314,30 @@ export function ProjectsPage() {
                     <rect x={1} y={1} width={opt.w - 2} height={opt.h - 2} rx={2} fill="none" stroke={newStageRatio === opt.id ? '#C9343D' : '#bbb'} strokeWidth={1.5} />
                   </svg>
                   <span className="text-[10px] font-mono leading-none">{opt.label}</span>
-                  <span className="text-[9px] opacity-70">{opt.title}</span>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <span className="text-[9px] opacity-70">{t(opt.titleKey as any)}</span>
                 </button>
               ))}
             </div>
           </div>
           <div className="flex gap-3 justify-end pt-1">
             <button onClick={resetForm} className="px-4 py-2 text-sm text-gris hover:text-negro transition-colors">{t('common.cancel')}</button>
-            <button onClick={handleCreate} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">Crear →</button>
+            <button onClick={handleCreate} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">{t('projects.create_cta')}</button>
           </div>
         </div>
       </Modal>
 
       {/* Modal eliminar */}
-      <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Eliminar proyecto">
+      <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title={t('common.delete')}>
         <div className="space-y-4">
           <p className="text-sm text-negro/80">
-            ¿Eliminar <strong className="text-negro">{confirmDelete?.name}</strong>?
-            <span className="text-gris"> Esta acción no se puede deshacer.</span>
+            {t('projects.delete_confirm')} <strong className="text-negro">{confirmDelete?.name}</strong>?
+            <span className="text-gris"> {t('projects.delete_warning')}</span>
           </p>
           <div className="flex gap-3 justify-end">
             <button onClick={() => setConfirmDelete(null)} className="px-4 py-2 text-sm text-gris hover:text-negro transition-colors">{t('common.cancel')}</button>
             <button onClick={() => { deleteProject(confirmDelete!.id); setConfirmDelete(null) }}
-              className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">Eliminar</button>
+              className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">{t('common.delete')}</button>
           </div>
         </div>
       </Modal>

@@ -35,7 +35,7 @@ export function LandingPage() {
   const navigate = useNavigate()
   const [showDemo, setShowDemo] = useState(false)
   const [demoDancers, setDemoDancers] = useState(7)
-  const [demoColor, setDemoColor] = useState('#B8962E')
+  const [demoColor, setDemoColor] = useState('#C9A961')
 
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -92,7 +92,7 @@ export function LandingPage() {
         <div className="w-80 shrink-0 hidden md:block">
           <div className="relative">
             <div className="rounded-2xl border border-borde-light bg-negro overflow-hidden shadow-card">
-              <FormationDemo width={320} height={220} dancerCount={7} color="#B8962E" />
+              <FormationDemo width={320} height={220} dancerCount={7} color="#C9A961" />
             </div>
             <div className="absolute -bottom-3 -right-3 bg-blanco border border-borde-light rounded-xl px-3 py-2 shadow-card">
               <div className="text-dorado text-xs font-semibold">7 integrantes</div>

@@ -56,7 +56,7 @@ export function CookieBanner() {
           onClick={accept}
           style={{
             padding: '8px 16px', fontSize: 12, fontWeight: 700,
-            background: '#B8962E', color: '#1C1C1C',
+            background: '#C9A961', color: '#1C1C1C',
             border: 'none', borderRadius: 7,
             cursor: 'pointer', fontFamily: 'Inter, sans-serif',
           }}

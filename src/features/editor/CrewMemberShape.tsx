@@ -21,19 +21,22 @@ interface Props {
 
 const GOLD = '#C9A961'
 
-// Forma M: dos picos que apuntan ARRIBA, valle en el centro-abajo.
-// Referencia: "M -14 14 L -7 4 L 0 10 L 7 4 L 14 14"
-// Cabeza (Circle) queda encima del espacio central de la M.
+// Forma M con dos picos claramente definidos.
+// Basada en: "M -16 16 L -10 4 L 0 10 L 10 4 L 16 16 Z"
+// Ratios exactos del path de referencia:
+//   peak_x = bw * 0.625  (10/16)
+//   peak_y = bh * 0.25   (4/16)  — los picos están bien arriba
+//   valley_y = bh * 0.625 (10/16) — valle claramente más bajo que los picos
 function mShapePoints(bw: number, bh: number): number[] {
-  const px = bw * 0.50   // x del pico (mitad del ancho)
-  const py = bh * 0.29   // y del pico (arriba, cerca de la cabeza)
-  const vy = bh * 0.71   // y del valle (centro-abajo)
+  const px = bw * 0.625  // x del pico
+  const py = bh * 0.25   // y del pico — picos bien altos
+  const vy = bh * 0.625  // y del valle — valle profundo entre picos
   return [
-    -bw, bh,   // esquina exterior izquierda abajo
-    -px, py,   // pico izquierdo (arriba)
-      0, vy,   // valle central (abajo)
-     px, py,   // pico derecho (arriba)
-     bw, bh,   // esquina exterior derecha abajo
+    -bw, bh,   // base izquierda
+    -px, py,   // PICO izquierdo
+      0, vy,   // VALLE central (más bajo que los picos)
+     px, py,   // PICO derecho
+     bw, bh,   // base derecha
   ]
 }
 
@@ -64,9 +67,9 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 
   const fillColor = dancer.leader === true ? GOLD : color
 
-  const headR = size * 0.62
-  const bw    = size * 1.05   // ancho medio de la M
-  const bh    = size * 1.05   // altura de la M
+  const headR = size * 0.56          // cabeza moderada para que la M sea visible
+  const bw    = size * 1.20          // M más ancha
+  const bh    = size * 1.35          // M más alta = picos más pronunciados
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
@@ -123,7 +126,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         fill={fillColor}
         stroke="transparent"
         x={0}
-        y={headR * 0.55}
+        y={headR * 0.35}
         shadowColor={fillColor}
         shadowBlur={selected ? 8 : 2}
         shadowOpacity={0.3}
