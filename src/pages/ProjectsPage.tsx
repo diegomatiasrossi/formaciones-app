@@ -47,12 +47,13 @@ function MiniMember({ cx, cy, r, color }: { cx: number; cy: number; r: number; c
 }
 
 function SceneMiniature({ dancers }: { dancers: { x: number; y: number; color: string; size: number }[] }) {
+  const { t } = useTranslation()
   const W = 240; const H = 135
   const sx = W / 800; const sy = H / 560
   if (dancers.length === 0) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <span className="text-gris/40 text-xs">Sin integrantes</span>
+        <span className="text-gris/40 text-xs">{t('projects.no_members_preview')}</span>
       </div>
     )
   }

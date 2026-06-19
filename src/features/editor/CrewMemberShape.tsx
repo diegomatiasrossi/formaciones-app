@@ -62,7 +62,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const y = animY ?? dancer.y
   const opacity = animOpacity ?? levelOpacity
 
-  const fillColor = (dancer as any).leader === true ? GOLD : color
+  const fillColor = dancer.leader === true ? GOLD : color
 
   const headR = size * 0.62
   const bw    = size * 1.05   // ancho medio de la M

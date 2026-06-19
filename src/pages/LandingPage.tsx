@@ -108,6 +108,7 @@ export function LandingPage() {
           {STATS.map(s => (
             <div key={s.labelKey} className="text-center">
               <div className="text-2xl font-semibold text-negro tabular-nums">{s.value}</div>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <div className="text-[10px] text-gris uppercase tracking-wider mt-1">{t(s.labelKey as any)}</div>
             </div>
           ))}

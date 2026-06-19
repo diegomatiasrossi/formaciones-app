@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, memo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react'
 import { Stage, Layer, Line, Rect, Text, Group } from 'react-konva'
 import type Konva from 'konva'
 import { useEditorStore } from '@/store/editorStore'
@@ -57,8 +57,11 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
     undo, redo,
   } = useEditorStore()
 
-  const activeScene = scenes.find(s => s.id === activeSceneId)
-  const dancers = activeScene?.dancers ?? []
+  const activeScene = useMemo(
+    () => scenes.find(s => s.id === activeSceneId),
+    [scenes, activeSceneId],
+  )
+  const dancers = useMemo(() => activeScene?.dancers ?? [], [activeScene])
 
   const [lasso, setLasso] = useState<LassoState>({ active: false, x1: 0, y1: 0, x2: 0, y2: 0 })
   const [propsDancerId, setPropsDancerId] = useState<string | null>(null)

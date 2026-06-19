@@ -27,6 +27,7 @@ export interface Dancer {
   shape: DancerShape
   size: number
   level: DancerLevel
+  leader?: boolean
   active?: boolean
   entryEdge?: EdgeSide
   exitEdge?: EdgeSide

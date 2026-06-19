@@ -279,6 +279,7 @@ export function TutorialOverlay({ onFinish }: Props) {
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function isTutorialDone(): boolean {
   return localStorage.getItem(STORAGE_KEY) === 'true'
 }

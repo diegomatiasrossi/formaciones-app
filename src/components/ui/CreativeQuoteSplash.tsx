@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { QUOTES } from '@/data/quotes'
 
@@ -20,7 +20,7 @@ interface Props {
 export function CreativeQuoteSplash({ onDone }: Props) {
   const { i18n } = useTranslation()
   const lang = i18n.language.startsWith('en') ? 'en' : 'es'
-  const quote = useRef(pickQuote())
+  const [quote] = useState(pickQuote)
 
   const [phase, setPhase] = useState<'in' | 'hold' | 'out'>('in')
 
@@ -41,11 +41,11 @@ export function CreativeQuoteSplash({ onDone }: Props) {
       <div className={`flex flex-col items-center text-center max-w-lg transition-all duration-500 ${opacity}`}>
         <div className="text-dorado/30 text-5xl mb-6 font-serif leading-none">"</div>
         <p className="text-blanco-calido text-xl font-light leading-relaxed tracking-wide mb-4">
-          {quote.current[lang]}
+          {quote[lang]}
         </p>
-        {quote.current.author && (
+        {quote.author && (
           <p className="text-dorado text-xs uppercase tracking-widest">
-            — {quote.current.author}
+            — {quote.author}
           </p>
         )}
       </div>
