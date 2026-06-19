@@ -21,18 +21,17 @@ interface Props {
 
 const GOLD = '#B8962E'
 
-// Polígono ∧ relleno: vértice arriba, brazos abriéndose hacia abajo
-// 6 puntos: outer-top → outer-right-bottom → inner-right-bottom → inner-top → inner-left-bottom → outer-left-bottom
+// Polígono ∨ relleno: brazos abren arriba, vértice abajo
+// La cabeza queda sobre la apertura. 6 puntos en sentido horario.
 function chevronPolygon(bw: number, bh: number, t: number): number[] {
-  // inner vertex y = aproximación geométrica de donde se cruzan los bordes internos
-  const iv = (t * bh) / bw
+  const iv = (t * bh) / bw   // offset del vértice interior
   return [
-     0,       0,       // vértice exterior (arriba)
-     bw,      bh,      // esquina exterior derecha abajo
-     bw - t,  bh,      // esquina interior derecha abajo
-     0,       iv,      // vértice interior (un poco más abajo que el exterior)
-    -(bw - t), bh,     // esquina interior izquierda abajo
-    -bw,      bh,      // esquina exterior izquierda abajo
+    -bw,       0,       // extremo izquierdo arriba
+     0,        bh,      // vértice exterior (abajo)
+     bw,       0,       // extremo derecho arriba
+     bw - t,   0,       // interior derecho arriba
+     0,        bh - iv, // vértice interior (ligeramente arriba del exterior)
+    -(bw - t), 0,       // interior izquierdo arriba
   ]
 }
 
