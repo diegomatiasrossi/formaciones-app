@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Group, Circle, Line } from 'react-konva'
+import { Group, Circle, Rect, Text, Arrow } from 'react-konva'
 import { LEVEL_OPACITY, LEVEL_SCALE } from '@/types'
 import type { Dancer } from '@/types'
 
@@ -19,6 +19,15 @@ interface Props {
   outsideStage?: boolean
 }
 
+const GOLD = '#C9A961'
+
+const EDGE_ARROW: Record<string, [number, number]> = {
+  top:    [0, -1],
+  bottom: [0,  1],
+  left:   [-1, 0],
+  right:  [1,  0],
+}
+
 export const CrewMemberShape = memo(function CrewMemberShape({
   dancer, selected, showLabel,
   animOpacity, animX, animY,
@@ -35,29 +44,22 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const y = animY ?? dancer.y
   const opacity = animOpacity ?? levelOpacity
 
-  const fillColor = dancer.leader === true ? '#C9A961' : color
+  const fillColor = dancer.leader === true ? GOLD : color
 
-  // DOS TRIÁNGULOS separados — evita el problema de relleno de polígono cóncavo
-  const kh = size / 16   // escala vertical
-  const kw = size / 9    // escala horizontal (M más ancha que la cabeza)
+  // Personita en forma de "i" — igual que la letra del logo Crewficina:
+  // Punto (círculo) arriba + tallo (rectángulo) abajo
+  const headR  = size * 0.55          // radio del círculo (punto de la i)
+  const stemW  = size * 0.45          // ancho del tallo
+  const stemH  = size * 1.10          // alto del tallo
+  const gap    = size * 0.05          // pequeño espacio entre cabeza y tallo
 
-  const ph = 2 * kh    // y de los picos (bien arriba)
-  const bh = 16 * kh   // y de la base
-  const pw = 8 * kw    // x de los picos
-  const bw = 16 * kw   // x de la base exterior
-  const gap = 2 * kw   // hueco entre los dos brazos en la base
+  const stemY  = headR + gap          // y donde empieza el tallo
+  const totalH = headR + gap + stemH  // altura total de la figura
 
-  // Brazo izquierdo: base-exterior-izq → pico-izq → base-interior-izq
-  const leftArm  = [-bw, bh,  -pw, ph,  -gap, bh]
-  // Brazo derecho: base-interior-der → pico-der → base-exterior-der
-  const rightArm = [ gap, bh,   pw, ph,   bw,  bh]
+  const strokeW  = 2 / levelScale
+  const selStroke = selected ? GOLD : outsideStage ? '#E53E3E' : undefined
 
-  // Cabeza: centro arriba, borde inferior toca el nivel de los picos
-  const headRadius  = 7 * kh
-  const headCenterY = ph - headRadius   // borde inferior = ph = nivel de picos
-
-  const strokeColor = outsideStage ? '#E53E3E' : selected ? '#C9A961' : undefined
-  const strokeWidth = (outsideStage || selected) ? 2 * kh : 0
+  const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
   return (
     <Group
@@ -76,42 +78,90 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Brazo izquierdo */}
-      <Line
-        points={leftArm}
-        closed={true}
+      {/* Anillo de selección */}
+      {selected && (
+        <Circle
+          x={0}
+          y={totalH / 2 - headR}
+          radius={Math.max(headR, stemW / 2) + 6}
+          fill="transparent"
+          stroke={GOLD}
+          strokeWidth={1.5 / levelScale}
+          dash={[3 / levelScale, 2 / levelScale]}
+          opacity={0.85}
+          listening={false}
+        />
+      )}
+
+      {/* Alerta fuera del escenario */}
+      {outsideStage && (
+        <Circle
+          x={0}
+          y={totalH / 2 - headR}
+          radius={Math.max(headR, stemW / 2) + 8}
+          fill="transparent"
+          stroke="#E53E3E"
+          strokeWidth={2 / levelScale}
+          opacity={0.9}
+          listening={false}
+        />
+      )}
+
+      {/* Tallo — rectángulo (cuerpo de la i) */}
+      <Rect
+        x={-stemW / 2}
+        y={stemY}
+        width={stemW}
+        height={stemH}
         fill={fillColor}
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        lineJoin="miter"
-        listening={false}
-      />
-      {/* Brazo derecho */}
-      <Line
-        points={rightArm}
-        closed={true}
-        fill={fillColor}
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        lineJoin="miter"
+        cornerRadius={stemW * 0.15}
+        stroke={selStroke}
+        strokeWidth={selStroke ? strokeW : 0}
+        shadowColor={fillColor}
+        shadowBlur={selected ? 8 : 2}
+        shadowOpacity={0.3}
         listening={false}
       />
 
-      {/* Cabeza encajada entre los picos — borde inferior en y=2*k */}
+      {/* Punto — círculo (cabeza de la i) */}
       <Circle
         x={0}
-        y={headCenterY}
-        radius={headRadius}
+        y={0}
+        radius={headR}
         fill={fillColor}
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
+        stroke={selStroke}
+        strokeWidth={selStroke ? strokeW : 0}
+        shadowColor={fillColor}
+        shadowBlur={selected ? 10 : 3}
+        shadowOpacity={0.4}
       />
 
+      {/* Etiqueta */}
       {showLabel && (
-        <Line
-          points={[0, 0]}  // placeholder para mantener z-order
+        <Text
+          x={-20 / levelScale}
+          y={stemY + stemH + 3}
+          width={40 / levelScale}
+          text={dancer.name}
+          fontSize={8}
+          fill={fillColor === GOLD ? GOLD : '#bbb'}
+          align="center"
           listening={false}
-          opacity={0}
+        />
+      )}
+
+      {selected && arrowDir && (
+        <Arrow
+          points={[
+            arrowDir[0] * (headR + 10), arrowDir[1] * (headR + 10),
+            arrowDir[0] * (headR + 18), arrowDir[1] * (headR + 18),
+          ]}
+          pointerLength={5}
+          pointerWidth={5}
+          fill="#888"
+          stroke="#888"
+          strokeWidth={1.5}
+          listening={false}
         />
       )}
     </Group>
