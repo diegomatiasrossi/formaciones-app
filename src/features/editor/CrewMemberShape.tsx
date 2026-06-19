@@ -63,10 +63,10 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const fillColor = (dancer as any).leader === true ? GOLD : color
 
   // dimensiones proporcionales al tamaño del integrante
-  const headR = size * 0.52
-  const bw    = size * 0.88   // ancho externo del ∧
-  const bh    = size * 1.15   // alto del ∧
-  const t     = size * 0.46   // grosor del brazo
+  const headR = size * 0.68          // cabeza grande — ocupa la apertura de la V
+  const bw    = size * 1.25          // V ancha
+  const bh    = size * 0.80          // V poco profunda (chevron plano)
+  const t     = size * 0.62          // brazos gruesos
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
@@ -123,7 +123,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         fill={fillColor}
         stroke="transparent"
         x={0}
-        y={headR * 0.85}
+        y={headR * 0.45}
         shadowColor={fillColor}
         shadowBlur={selected ? 8 : 2}
         shadowOpacity={0.3}
