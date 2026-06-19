@@ -21,28 +21,6 @@ interface Props {
 
 const GOLD = '#C9A961'
 
-// Layout: y=0 = centro de la cabeza.
-// Los picos de la M quedan exactamente al nivel del borde inferior de la cabeza (y=headR),
-// por lo que la cabeza encaja entre los dos picos — igual que en el logo.
-//
-// Forma M (coordenadas relativas al centro del Group = centro de la cabeza):
-//   pico_y  = headR           — al ras del borde inferior de la cabeza
-//   valle_y = headR + bh*0.70 — valle profundo (70% de la altura del cuerpo)
-//   base_y  = headR + bh      — base de la M
-function mShapePoints(bw: number, bh: number, headR: number): number[] {
-  const px = bw * 0.62           // picos a 62% del semiancho — más anchos que la cabeza
-  const peakY  = headR           // picos justo al borde inferior de la cabeza
-  const valleyY = headR + bh * 0.70  // valle profundo
-  const baseY   = headR + bh         // base de la M
-  return [
-    -bw,  baseY,    // base izquierda
-    -px,  peakY,    // PICO izquierdo — a nivel del borde inferior de la cabeza
-      0,  valleyY,  // VALLE central  — bien profundo y visible
-     px,  peakY,    // PICO derecho
-     bw,  baseY,    // base derecha
-  ]
-}
-
 const EDGE_ARROW: Record<string, [number, number]> = {
   top:    [0, -1],
   bottom: [0,  1],
@@ -70,9 +48,22 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 
   const fillColor = dancer.leader === true ? GOLD : color
 
-  const headR = size * 0.52    // cabeza
-  const bw    = size * 1.15   // semiancho de la M (más ancha que la cabeza)
-  const bh    = size * 0.90   // altura del cuerpo bajo los picos
+  // Escala respecto al path de referencia (igual que Claude Design)
+  // Referencia: "M -16 16 L -8 2 L 0 14 L 8 2 L 16 16 Z"
+  const k = size / 16
+
+  // Cuerpo M — array PLANO, sin tension, puntos del path de referencia escalados
+  const bodyPoints = [
+    -16, 16,  // base izquierda
+     -8,  2,  // PICO izquierdo  (y pequeña = arriba en canvas)
+      0, 14,  // VALLE           (y grande = abajo, casi en la base)
+      8,  2,  // PICO derecho
+     16, 16,  // base derecha
+  ].map(v => v * k)
+
+  // Cabeza: centro en y = -5k → borde inferior en y = (-5+7)k = 2k = nivel de los picos
+  const headR      = 7 * k
+  const headCenterY = -5 * k
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
@@ -93,12 +84,12 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Anillo de selección — centrado en el cuerpo completo */}
+      {/* Anillo de selección */}
       {selected && (
         <Circle
           x={0}
-          y={headR + bh * 0.5}
-          radius={bw * 0.85}
+          y={5 * k}
+          radius={18 * k}
           fill="transparent"
           stroke={GOLD}
           strokeWidth={1.5 / levelScale}
@@ -112,8 +103,8 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       {outsideStage && (
         <Circle
           x={0}
-          y={headR + bh * 0.5}
-          radius={bw * 0.85 + 3}
+          y={5 * k}
+          radius={20 * k}
           fill="transparent"
           stroke="#E53E3E"
           strokeWidth={2 / levelScale}
@@ -122,28 +113,28 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         />
       )}
 
-      {/* Cuerpo — forma M rellena (picos al borde inferior de la cabeza) */}
+      {/* Cuerpo en M — array plano, closed, sin tension */}
       <Line
-        points={mShapePoints(bw, bh, headR)}
+        points={bodyPoints}
         closed
         fill={fillColor}
-        stroke="transparent"
-        x={0}
-        y={0}
+        stroke={selected ? GOLD : (outsideStage ? '#E53E3E' : 'transparent')}
+        strokeWidth={selected || outsideStage ? 1.5 * k : 0}
+        lineJoin="miter"
         shadowColor={fillColor}
         shadowBlur={selected ? 8 : 2}
         shadowOpacity={0.3}
         listening={false}
       />
 
-      {/* Cabeza — círculo sobre el espacio central de la M */}
+      {/* Cabeza — borde inferior coincide con la línea de los picos */}
       <Circle
         x={0}
-        y={0}
+        y={headCenterY}
         radius={headR}
         fill={fillColor}
         stroke={selected ? GOLD : (outsideStage ? '#E53E3E' : 'transparent')}
-        strokeWidth={selected || outsideStage ? 2 / levelScale : 0}
+        strokeWidth={selected || outsideStage ? 1.5 * k : 0}
         shadowColor={fillColor}
         shadowBlur={selected ? 10 : 3}
         shadowOpacity={0.4}
@@ -153,7 +144,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       {showLabel && (
         <Text
           x={-20 / levelScale}
-          y={headR * 0.55 + bh + 4}
+          y={16 * k + 4}
           width={40 / levelScale}
           text={name}
           fontSize={8}
