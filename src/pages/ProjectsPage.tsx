@@ -50,7 +50,7 @@ export function ProjectsPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
-  const { projects, loading, fetchProjects, createLocalProject, deleteProject } = useProjectStore()
+  const { projects, loading, fetchProjects, createLocalProject, saveProject, deleteProject } = useProjectStore()
   const loadScenes = useEditorStore(s => s.loadScenes)
 
   const { canCreateProject: canCreate } = usePlan()
@@ -81,7 +81,7 @@ export function ProjectsPage() {
     navigate(`/editor/${project.id}`)
   }
 
-  function handleCreate() {
+  async function handleCreate() {
     const name = newName.trim() || t('projects.untitled')
     const project = createLocalProject({
       name,
@@ -91,6 +91,7 @@ export function ProjectsPage() {
       startDate: newStartDate || undefined,
       endDate: newEndDate || undefined,
     })
+    await saveProject(project)
     setShowNew(false)
     setNewName('')
     setNewGroupName('')

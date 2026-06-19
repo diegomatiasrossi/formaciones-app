@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { validateSession, refreshSession, detectIncognito } from '@/features/auth/sessionGuard'
+import { registerSession, detectIncognito } from '@/features/auth/sessionGuard'
 import { supabase } from '@/features/auth/supabaseClient'
 
 export function useSessionGuard(user: User | null) {
