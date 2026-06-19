@@ -15,23 +15,34 @@
   }
 
   body {
-    @apply bg-negro text-blanco-calido;
+    @apply bg-crema text-negro;
     font-family: 'Inter', 'Poppins', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   }
 
-  /* Scrollbar oscura */
+  /* Scrollbar clara */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: #f5f5f0;
   }
   ::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 3px;
+    background: #d8d6d0;
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
+    background: #c0bdb5;
+  }
+
+  /* Scrollbar oscura — solo dentro del editor (.dark-scope) */
+  .dark-scope ::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+  .dark-scope ::-webkit-scrollbar-thumb {
+    background: #333;
+  }
+  .dark-scope ::-webkit-scrollbar-thumb:hover {
     background: #444;
   }
 }

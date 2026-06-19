@@ -39,20 +39,20 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-negro flex items-center justify-center px-4">
+    <div className="min-h-screen bg-crema flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex justify-center mb-10">
-          <Logo size={34} light />
+          <Logo size={34} />
         </div>
 
-        <div className="bg-surface-1 border border-borde rounded-xl p-8">
-          <h1 className="text-blanco-calido text-lg font-medium mb-6">
+        <div className="bg-blanco border border-borde-light rounded-2xl shadow-soft p-8">
+          <h1 className="text-negro text-lg font-semibold mb-6">
             {mode === 'signin' ? t('auth.sign_in') : t('auth.sign_up')}
           </h1>
 
           {error && (
-            <div className="bg-red-900/30 border border-red-700 rounded-lg px-4 py-3 text-red-300 text-sm mb-4">
+            <div className="bg-rojo/8 border border-rojo/30 rounded-lg px-4 py-3 text-rojo text-sm mb-4">
               {error}
             </div>
           )}
@@ -67,8 +67,8 @@ export function AuthPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full bg-negro border border-borde rounded-lg px-4 py-2.5 text-sm text-blanco-calido
-                           focus:outline-none focus:border-dorado transition-colors"
+                className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro
+                           focus:outline-none focus:border-rojo transition-colors"
               />
             </div>
             <div>
@@ -81,14 +81,14 @@ export function AuthPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full bg-negro border border-borde rounded-lg px-4 py-2.5 text-sm text-blanco-calido
-                           focus:outline-none focus:border-dorado transition-colors"
+                className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro
+                           focus:outline-none focus:border-rojo transition-colors"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-dorado hover:bg-dorado-oscuro text-negro font-medium py-2.5 rounded-lg
+              className="w-full bg-rojo hover:bg-rojo-oscuro text-blanco font-semibold py-2.5 rounded-lg
                          transition-colors text-sm disabled:opacity-50"
             >
               {loading ? t('common.loading') : (mode === 'signin' ? t('auth.sign_in') : t('auth.sign_up'))}
@@ -96,17 +96,17 @@ export function AuthPage() {
           </form>
 
           <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-borde" />
+            <div className="flex-1 h-px bg-borde-light" />
             <span className="text-gris text-xs">{t('auth.or')}</span>
-            <div className="flex-1 h-px bg-borde" />
+            <div className="flex-1 h-px bg-borde-light" />
           </div>
 
           <button
             onClick={handleGoogle}
-            className="w-full border border-borde hover:border-dorado/50 rounded-lg py-2.5 text-sm
-                       text-blanco-calido flex items-center justify-center gap-2 transition-colors"
+            className="w-full border border-borde-light hover:border-gris rounded-lg py-2.5 text-sm
+                       text-negro flex items-center justify-center gap-2 transition-colors bg-blanco"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="16" height="16" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -119,7 +119,7 @@ export function AuthPage() {
             {mode === 'signin' ? t('auth.no_account') : t('auth.have_account')}{' '}
             <button
               onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-              className="text-dorado hover:text-dorado-oscuro transition-colors"
+              className="text-rojo hover:text-rojo-oscuro font-medium transition-colors"
             >
               {mode === 'signin' ? t('auth.sign_up') : t('auth.sign_in')}
             </button>

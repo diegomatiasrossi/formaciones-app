@@ -13,8 +13,8 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 
 function FullScreenLoader() {
   return (
-    <div className="min-h-screen bg-negro flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-dorado border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen bg-crema flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-rojo border-t-transparent rounded-full animate-spin" />
     </div>
   )
 }

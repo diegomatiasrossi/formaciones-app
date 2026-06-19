@@ -1,11 +1,11 @@
 export function SkeletonCard() {
   return (
-    <div className="bg-[#141414] border border-borde/40 rounded-xl p-5 animate-pulse">
-      <div className="h-4 bg-borde/40 rounded w-2/3 mb-3" />
-      <div className="h-24 bg-borde/20 rounded-lg mb-3" />
+    <div className="bg-blanco border border-borde-light rounded-2xl p-5 animate-pulse">
+      <div className="h-24 bg-borde-light rounded-lg mb-3" />
+      <div className="h-4 bg-borde-light rounded w-2/3 mb-3" />
       <div className="flex gap-2">
-        <div className="h-3 bg-borde/30 rounded w-16" />
-        <div className="h-3 bg-borde/20 rounded w-12" />
+        <div className="h-3 bg-borde-light rounded w-16" />
+        <div className="h-3 bg-borde-light/60 rounded w-12" />
       </div>
     </div>
   )
