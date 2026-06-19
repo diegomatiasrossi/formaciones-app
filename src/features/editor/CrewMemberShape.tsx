@@ -48,8 +48,8 @@ export const CrewMemberShape = memo(function CrewMemberShape({
 
   // Personita en forma de "i" — igual que la letra del logo Crewficina:
   // Punto (círculo) arriba + tallo (rectángulo) abajo
-  const headR  = size * 0.55          // radio del círculo (punto de la i)
-  const stemW  = size * 0.45          // ancho del tallo
+  const headR  = size * 0.38          // radio del círculo (punto de la i)
+  const stemW  = size * 0.40          // ancho del tallo
   const stemH  = size * 1.10          // alto del tallo
   const gap    = size * 0.05          // pequeño espacio entre cabeza y tallo
 
