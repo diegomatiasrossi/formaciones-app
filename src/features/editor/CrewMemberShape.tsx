@@ -23,10 +23,9 @@ interface Props {
   outsideStage?: boolean
 }
 
-// Chevron/V invertida — representa el cuerpo con brazos abiertos
-// M -w 0 L 0 h L w 0 → Forma de V invertida (abierta arriba)
+// ∧ brazos levantados: vértice arriba, brazos se abren hacia abajo-afuera
 function chevronPath(w: number, h: number): string {
-  return `M ${-w} ${-h * 0.3} L 0 ${h * 0.7} L ${w} ${-h * 0.3}`
+  return `M ${-w} ${h} L 0 ${h * 0.05} L ${w} ${h}`
 }
 
 const GOLD = '#B8962E'
