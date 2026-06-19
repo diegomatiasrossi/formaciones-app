@@ -61,11 +61,11 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const headCenterY = -5 * kh
 
   const strokeColor = outsideStage ? '#E53E3E' : selected ? '#C9A961' : undefined
-  const strokeWidth = (outsideStage || selected) ? 2 * k : 0
+  const strokeWidth = (outsideStage || selected) ? 2 * kh : 0
 
   // Diagnóstico temporal
   console.log('CrewMemberShape bodyPoints:', bodyPoints)
-  console.log('k:', k, 'size:', size, 'headCenterY:', headCenterY)
+  console.log('kh:', kh, 'kw:', kw, 'size:', size, 'headCenterY:', headCenterY)
 
   return (
     <Group
