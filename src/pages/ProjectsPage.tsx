@@ -24,6 +24,28 @@ function relativeTime(iso: string) {
   return `hace ${days} día${days > 1 ? 's' : ''}`
 }
 
+function MiniMember({ cx, cy, r, color }: { cx: number; cy: number; r: number; color: string }) {
+  const hr = Math.max(1.5, r * 0.55)
+  const bw = r * 0.9
+  const bh = r * 1.0
+  const by = cy + hr * 0.9
+  return (
+    <g opacity={0.9}>
+      {/* Cuerpo ∧ */}
+      <path
+        d={`M ${cx - bw} ${by + bh} L ${cx} ${by} L ${cx + bw} ${by + bh}`}
+        stroke={color}
+        strokeWidth={r * 0.55}
+        fill="none"
+        strokeLinecap="butt"
+        strokeLinejoin="miter"
+      />
+      {/* Cabeza */}
+      <circle cx={cx} cy={cy} r={hr} fill={color} />
+    </g>
+  )
+}
+
 function SceneMiniature({ dancers }: { dancers: { x: number; y: number; color: string; size: number }[] }) {
   const W = 240; const H = 135
   const sx = W / 800; const sy = H / 560
@@ -36,9 +58,15 @@ function SceneMiniature({ dancers }: { dancers: { x: number; y: number; color: s
   }
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="w-full h-full">
-      <rect x={5} y={4} width={W - 10} height={H - 8} fill="none" stroke="#C9A961" strokeWidth={0.6} strokeDasharray="4,3" rx={2} />
+      <rect x={5} y={4} width={W - 10} height={H - 8} fill="none" stroke="#B8962E" strokeWidth={0.6} strokeDasharray="4,3" rx={2} />
       {dancers.slice(0, 50).map((d, i) => (
-        <circle key={i} cx={d.x * sx} cy={d.y * sy} r={Math.max(2, d.size * 0.4)} fill={d.color} opacity={0.85} />
+        <MiniMember
+          key={i}
+          cx={d.x * sx}
+          cy={d.y * sy}
+          r={Math.max(2.5, d.size * 0.38)}
+          color={d.color}
+        />
       ))}
     </svg>
   )
