@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from '@/features/auth/supabaseClient'
+import { useWorkspaceStore } from './workspaceStore'
 import type {
   CrewMember, CrewGroup, CrewEvent, Activity,
   MemberType, MemberLevel, ActivityContext,
@@ -11,6 +12,7 @@ function rowToMember(r: Record<string, unknown>): CrewMember {
   return {
     id: r.id as string,
     ownerId: r.owner_id as string | undefined,
+    organizationId: (r.organization_id as string | null) ?? null,
     firstName: r.first_name as string,
     lastName: (r.last_name as string | null) ?? undefined,
     nickname: (r.nickname as string | null) ?? undefined,
@@ -28,6 +30,7 @@ function rowToGroup(r: Record<string, unknown>): CrewGroup {
   return {
     id: r.id as string,
     ownerId: r.owner_id as string | undefined,
+    organizationId: (r.organization_id as string | null) ?? null,
     name: r.name as string,
     createdAt: r.created_at as string | undefined,
   }
@@ -37,6 +40,7 @@ function rowToEvent(r: Record<string, unknown>): CrewEvent {
   return {
     id: r.id as string,
     ownerId: r.owner_id as string | undefined,
+    organizationId: (r.organization_id as string | null) ?? null,
     name: r.name as string,
     eventDate: (r.event_date as string | null) ?? undefined,
     location: (r.location as string | null) ?? undefined,
@@ -49,6 +53,7 @@ function rowToActivity(r: Record<string, unknown>): Activity {
   return {
     id: r.id as string,
     ownerId: r.owner_id as string | undefined,
+    organizationId: (r.organization_id as string | null) ?? null,
     title: r.title as string,
     done: Boolean(r.done),
     contextType: r.context_type as ActivityContext,
@@ -112,14 +117,35 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
     const owner = await uid()
     if (!owner) return
     set({ loading: true, error: null })
+
+    const orgId = useWorkspaceStore.getState().activeOrgId()
+
     try {
-      const [mRes, gRes, eRes, aRes, gmRes] = await Promise.all([
-        supabase.from('members').select('*').eq('owner_id', owner).order('created_at', { ascending: true }),
-        supabase.from('groups').select('*').eq('owner_id', owner).order('created_at', { ascending: true }),
-        supabase.from('events').select('*').eq('owner_id', owner).order('event_date', { ascending: true }),
-        supabase.from('activities').select('*').eq('owner_id', owner),
-        supabase.from('group_members').select('*'),
-      ])
+      // Build base queries scoped to the active workspace
+      const membersQ   = orgId
+        ? supabase.from('members').select('*').eq('organization_id', orgId).order('created_at', { ascending: true })
+        : supabase.from('members').select('*').eq('owner_id', owner).is('organization_id', null).order('created_at', { ascending: true })
+
+      const groupsQ    = orgId
+        ? supabase.from('groups').select('*').eq('organization_id', orgId).order('created_at', { ascending: true })
+        : supabase.from('groups').select('*').eq('owner_id', owner).is('organization_id', null).order('created_at', { ascending: true })
+
+      const eventsQ    = orgId
+        ? supabase.from('events').select('*').eq('organization_id', orgId).order('event_date', { ascending: true })
+        : supabase.from('events').select('*').eq('owner_id', owner).is('organization_id', null).order('event_date', { ascending: true })
+
+      const activitiesQ = orgId
+        ? supabase.from('activities').select('*').eq('organization_id', orgId)
+        : supabase.from('activities').select('*').eq('owner_id', owner).is('organization_id', null)
+
+      const [mRes, gRes, eRes, aRes] = await Promise.all([membersQ, groupsQ, eventsQ, activitiesQ])
+
+      // Fetch group_members only for the groups we loaded (scoped to workspace)
+      const groupIds = (gRes.data ?? []).map((g: Record<string, unknown>) => g.id as string)
+      const gmRes = groupIds.length > 0
+        ? await supabase.from('group_members').select('*').in('group_id', groupIds)
+        : { data: [] as Record<string, unknown>[] }
+
       const memberships: Record<string, string[]> = {}
       ;(gmRes.data ?? []).forEach((gm: Record<string, unknown>) => {
         const gId = gm.group_id as string
@@ -143,8 +169,10 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
   createMember: async m => {
     const owner = await uid()
     if (!owner) return
+    const orgId = useWorkspaceStore.getState().activeOrgId()
     const { data, error } = await supabase.from('members').insert({
       owner_id: owner,
+      organization_id: orgId,
       first_name: m.firstName,
       last_name: m.lastName ?? null,
       nickname: m.nickname ?? null,
@@ -185,7 +213,8 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
   createGroup: async name => {
     const owner = await uid()
     if (!owner) return null
-    const { data, error } = await supabase.from('groups').insert({ owner_id: owner, name }).select().single()
+    const orgId = useWorkspaceStore.getState().activeOrgId()
+    const { data, error } = await supabase.from('groups').insert({ owner_id: owner, organization_id: orgId, name }).select().single()
     if (error || !data) { set({ error: String(error?.message) }); return null }
     const g = rowToGroup(data)
     set(s => ({ groups: [...s.groups, g] }))
@@ -239,8 +268,10 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
   createEvent: async e => {
     const owner = await uid()
     if (!owner) return null
+    const orgId = useWorkspaceStore.getState().activeOrgId()
     const { data, error } = await supabase.from('events').insert({
       owner_id: owner,
+      organization_id: orgId,
       name: e.name,
       event_date: e.eventDate ?? null,
       location: e.location ?? null,
@@ -273,8 +304,9 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
   createActivity: async (title, contextType, contextId, isPreset = false) => {
     const owner = await uid()
     if (!owner) return
+    const orgId = useWorkspaceStore.getState().activeOrgId()
     const { data, error } = await supabase.from('activities').insert({
-      owner_id: owner, title, context_type: contextType, context_id: contextId, is_preset: isPreset,
+      owner_id: owner, organization_id: orgId, title, context_type: contextType, context_id: contextId, is_preset: isPreset,
     }).select().single()
     if (error || !data) { set({ error: String(error?.message) }); return }
     set(s => ({ activities: [...s.activities, rowToActivity(data)] }))

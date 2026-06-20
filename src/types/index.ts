@@ -42,6 +42,7 @@ export type MemberLevel = 'beginner' | 'intermediate' | 'advanced' | 'profession
 export interface CrewMember {
   id: string
   ownerId?: string
+  organizationId?: string | null
   firstName: string
   lastName?: string
   nickname?: string
@@ -58,6 +59,7 @@ export interface CrewMember {
 export interface CrewGroup {
   id: string
   ownerId?: string
+  organizationId?: string | null
   name: string
   createdAt?: string
 }
@@ -65,6 +67,7 @@ export interface CrewGroup {
 export interface CrewEvent {
   id: string
   ownerId?: string
+  organizationId?: string | null
   name: string
   eventDate?: string
   location?: string
@@ -77,12 +80,55 @@ export type ActivityContext = 'event' | 'group'
 export interface Activity {
   id: string
   ownerId?: string
+  organizationId?: string | null
   title: string
   done: boolean
   contextType: ActivityContext
   contextId: string
   isPreset?: boolean
   createdAt?: string
+}
+
+// ── Organizaciones (Studio) ────────────────────────────────────────────────
+
+export type OrgRole = 'admin' | 'editor' | 'viewer'
+
+export interface Organization {
+  id: string
+  name: string
+  createdAt?: string
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
+  includedSeats: number
+  extraSeatPriceCents: number
+  subscriptionStatus?: string
+}
+
+export interface OrgMembership {
+  organizationId: string
+  organizationName: string
+  role: OrgRole
+  joinedAt?: string
+}
+
+export interface OrgMember {
+  userId: string
+  email?: string
+  role: OrgRole
+  invitedAt?: string
+  joinedAt?: string
+}
+
+export interface OrgInvite {
+  id: string
+  organizationId: string
+  email: string
+  role: OrgRole
+  invitedBy?: string
+  token: string
+  createdAt?: string
+  acceptedAt?: string
+  expiresAt?: string
 }
 
 export interface Scene {
