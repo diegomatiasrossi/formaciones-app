@@ -56,10 +56,10 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const stemY  = headR + gap          // y donde empieza el tallo
   const totalH = headR + gap + stemH  // altura total de la figura
 
-  const strokeW  = 2 / levelScale
-  // Borde siempre visible — permite ver el integrante de atrás cuando hay superposición
-  const depthStroke = 'rgba(255,255,255,0.35)'   // blanco semitransparente sobre canvas oscuro
-  const selStroke = selected ? GOLD : outsideStage ? '#E53E3E' : depthStroke
+  const strokeW     = selected || outsideStage ? 1.5 / levelScale : 0.8 / levelScale
+  // Borde fino siempre visible para detectar superposición
+  const depthStroke = 'rgba(255,255,255,0.22)'
+  const selStroke   = selected ? GOLD : outsideStage ? '#E53E3E' : depthStroke
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
@@ -119,9 +119,6 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         cornerRadius={stemW * 0.15}
         stroke={selStroke}
         strokeWidth={strokeW}
-        shadowColor={fillColor}
-        shadowBlur={selected ? 8 : 2}
-        shadowOpacity={0.3}
         listening={false}
       />
 
@@ -133,9 +130,9 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         fill={fillColor}
         stroke={selStroke}
         strokeWidth={strokeW}
-        shadowColor={fillColor}
-        shadowBlur={selected ? 10 : 3}
-        shadowOpacity={0.4}
+        shadowColor={selected ? GOLD : undefined}
+        shadowBlur={selected ? 8 : 0}
+        shadowOpacity={0.5}
       />
 
       {/* Etiqueta */}
