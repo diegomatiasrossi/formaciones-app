@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCrewStore } from '@/store/crewStore'
+import { usePlan } from '@/hooks/usePlan'
+import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import type { ActivityContext } from '@/types'
 import clsx from 'clsx'
 
@@ -11,8 +13,13 @@ interface Props {
 
 export function ActivitiesPanel({ contextType, contextId }: Props) {
   const { t } = useTranslation()
+  const { can } = usePlan()
   const { activitiesFor, createActivity, toggleActivity, deleteActivity } = useCrewStore()
   const [newTitle, setNewTitle] = useState('')
+
+  if (!can('checklistEnabled')) {
+    return <UpgradeGate requiredPlan="solo_pro" featureName={t('activities.title')} />
+  }
 
   const items = activitiesFor(contextType, contextId)
   const done = items.filter(a => a.done).length

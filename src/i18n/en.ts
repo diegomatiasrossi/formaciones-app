@@ -34,6 +34,8 @@ export default {
   },
   activities: {
     title: 'Activities', placeholder: 'Add task...', empty: 'No activities yet.',
+    suggested_tasks: 'Suggested tasks',
+    suggested_tasks_hint: 'Choose the ones you want to add (optional)',
   },
   common: {
     save: 'Save',

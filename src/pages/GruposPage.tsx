@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCrewStore } from '@/store/crewStore'
 import { useAuth } from '@/features/auth/useAuth'
+import { usePlan } from '@/hooks/usePlan'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
+import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
 import type { CrewGroup } from '@/types'
 
 export function GruposPage() {
@@ -16,11 +18,13 @@ export function GruposPage() {
   const {
     groups, events, loading, fetchAll,
     createGroup, updateGroup, deleteGroup,
-    membersOfGroup,
+    membersOfGroup, createActivity,
   } = useCrewStore()
+  const { can } = usePlan()
 
   const [showNew, setShowNew] = useState(false)
   const [newName, setNewName] = useState('')
+  const [selectedPresets, setSelectedPresets] = useState<string[]>([])
   const [active, setActive] = useState<CrewGroup | null>(null)
   const [rename, setRename] = useState<CrewGroup | null>(null)
   const [renameVal, setRenameVal] = useState('')
@@ -30,8 +34,13 @@ export function GruposPage() {
 
   async function create() {
     if (!newName.trim()) return
-    await createGroup(newName.trim())
-    setNewName(''); setShowNew(false)
+    const newGroup = await createGroup(newName.trim())
+    if (newGroup && selectedPresets.length > 0) {
+      await Promise.all(
+        selectedPresets.map(title => createActivity(title, 'group', newGroup.id, true))
+      )
+    }
+    setNewName(''); setSelectedPresets([]); setShowNew(false)
   }
 
   // ── Vista detalle de un grupo ──────────────────────────────────────────────
@@ -142,12 +151,15 @@ export function GruposPage() {
         )}
       </main>
 
-      <Modal open={showNew} onClose={() => setShowNew(false)} title={t('groups.new')}>
+      <Modal open={showNew} onClose={() => { setShowNew(false); setSelectedPresets([]) }} title={t('groups.new')}>
         <div className="space-y-3">
           <input autoFocus value={newName} onChange={e => setNewName(e.target.value)} onKeyDown={e => e.key === 'Enter' && create()}
             placeholder={t('groups.name_placeholder')} className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-rojo" />
+          {can('checklistEnabled') && (
+            <PresetChecklistSelector onSelectionChange={setSelectedPresets} />
+          )}
           <div className="flex gap-3 justify-end">
-            <button onClick={() => setShowNew(false)} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
+            <button onClick={() => { setShowNew(false); setSelectedPresets([]) }} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
             <button onClick={create} disabled={!newName.trim()} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">{t('common.save')}</button>
           </div>
         </div>

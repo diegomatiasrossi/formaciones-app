@@ -4,21 +4,25 @@ import { useTranslation } from 'react-i18next'
 import { useCrewStore } from '@/store/crewStore'
 import { useProjectStore } from '@/store/projectStore'
 import { useAuth } from '@/features/auth/useAuth'
+import { usePlan } from '@/hooks/usePlan'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
+import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
 import type { CrewEvent } from '@/types'
 
 export function EventosPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { events, groups, loading, fetchAll, createEvent, deleteEvent } = useCrewStore()
+  const { events, groups, loading, fetchAll, createEvent, deleteEvent, createActivity } = useCrewStore()
   const { projects, fetchProjects } = useProjectStore()
+  const { can } = usePlan()
 
   const [showNew, setShowNew] = useState(false)
   const [form, setForm] = useState({ name: '', eventDate: '', location: '', groupId: '' })
+  const [selectedPresets, setSelectedPresets] = useState<string[]>([])
   const [active, setActive] = useState<CrewEvent | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<CrewEvent | null>(null)
 
@@ -26,13 +30,19 @@ export function EventosPage() {
 
   async function create() {
     if (!form.name.trim()) return
-    await createEvent({
+    const newEvent = await createEvent({
       name: form.name.trim(),
       eventDate: form.eventDate || undefined,
       location: form.location || undefined,
       groupId: form.groupId || null,
     })
+    if (newEvent && selectedPresets.length > 0) {
+      await Promise.all(
+        selectedPresets.map(title => createActivity(title, 'event', newEvent.id, true))
+      )
+    }
     setForm({ name: '', eventDate: '', location: '', groupId: '' })
+    setSelectedPresets([])
     setShowNew(false)
   }
 
@@ -137,7 +147,7 @@ export function EventosPage() {
         )}
       </main>
 
-      <Modal open={showNew} onClose={() => setShowNew(false)} title={t('events.new')}>
+      <Modal open={showNew} onClose={() => { setShowNew(false); setSelectedPresets([]) }} title={t('events.new')}>
         <div className="space-y-3">
           <div>
             <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">{t('events.name')} <span className="text-rojo">*</span></label>
@@ -164,8 +174,11 @@ export function EventosPage() {
               {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
             </select>
           </div>
+          {can('checklistEnabled') && (
+            <PresetChecklistSelector onSelectionChange={setSelectedPresets} />
+          )}
           <div className="flex gap-3 justify-end pt-1">
-            <button onClick={() => setShowNew(false)} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
+            <button onClick={() => { setShowNew(false); setSelectedPresets([]) }} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
             <button onClick={create} disabled={!form.name.trim()} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">{t('common.save')}</button>
           </div>
         </div>
