@@ -5,6 +5,7 @@ import { useProjectStore } from '@/store/projectStore'
 import { useCrewStore } from '@/store/crewStore'
 import { EditorLayout } from '@/features/editor/EditorLayout'
 import { ShareModal } from '@/components/ui/ShareModal'
+import { MobileWarningBanner } from '@/components/ui/MobileWarningBanner'
 import { TutorialOverlay, isTutorialDone } from '@/features/tutorial/TutorialOverlay'
 import { CreativeQuoteSplash } from '@/components/ui/CreativeQuoteSplash'
 import type { Project } from '@/types'
@@ -88,6 +89,7 @@ export function EditorPage() {
 
   return (
     <>
+      <MobileWarningBanner />
       {showSplash && <CreativeQuoteSplash onDone={() => setShowSplash(false)} />}
       <EditorLayout
         projectName={project.name}

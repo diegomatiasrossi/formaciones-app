@@ -48,6 +48,7 @@ export default {
     tool_select_hint: 'Click para seleccionar · Ctrl+Click múltiple · Arrastrar para mover',
     tool_add_hint: 'Click en el escenario para colocar un integrante',
     outside_stage: 'Este integrante está fuera del escenario',
+    mobile_warning: 'Para mejor experiencia, usá Crewficina en desktop o tablet horizontal.',
     toolbar: {
       style: 'Estilo',
       shape: 'Forma',

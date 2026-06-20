@@ -48,6 +48,7 @@ export default {
     tool_select_hint: 'Click to select · Ctrl+Click for multiple · Drag to move',
     tool_add_hint: 'Click on stage to place a member',
     outside_stage: 'This member is outside the stage',
+    mobile_warning: 'For the best experience, use Crewficina on desktop or landscape tablet.',
     toolbar: {
       style: 'Style',
       shape: 'Shape',
