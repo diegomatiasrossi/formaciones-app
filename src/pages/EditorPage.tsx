@@ -72,6 +72,8 @@ export function EditorPage() {
         groupName={project.groupName}
         choreographyName={project.choreographyName}
         stageRatio={project.stageRatio}
+        customStageW={project.stageWidth}
+        customStageH={project.stageHeight}
         onBack={() => navigate('/projects')}
         onSave={handleSave}
         onShare={() => setShowShare(true)}

@@ -30,6 +30,8 @@ interface AnimatedDancers {
 interface Props {
   animationOverride?: AnimatedDancers | null
   stageRatio?: StageRatio
+  customStageW?: number | null
+  customStageH?: number | null
   maxDancers?: number
 }
 
@@ -37,7 +39,7 @@ interface Props {
 const MIN_SCALE = 0.3
 const MAX_SCALE = 4
 
-export const StageCanvas = memo(function StageCanvas({ animationOverride, stageRatio = '16:9', maxDancers = Infinity }: Props) {
+export const StageCanvas = memo(function StageCanvas({ animationOverride, stageRatio = '16:9', customStageW, customStageH, maxDancers = Infinity }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
   const isDraggingDancer = useRef(false)
@@ -126,12 +128,24 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
     return () => window.removeEventListener('export-png', handler)
   }, [scale, stagePos])
 
-  // ── Coords del escenario (respeta stageRatio) ────────────────
+  // ── Coords del escenario (respeta stageRatio o dimensiones custom) ──────
   const sx = STAGE_PADDING; const sy = STAGE_PADDING
-  const availW = stageWidth - STAGE_PADDING * 2
+  const availW = stageWidth  - STAGE_PADDING * 2
   const availH = stageHeight - STAGE_PADDING * 2
-  const sw = stageRatio === '9:16' ? Math.round(availH * 9 / 16) : availW
-  const sh = stageRatio === '1:1'  ? availW : availH
+
+  let sw: number, sh: number
+  if (stageRatio === 'custom' && customStageW && customStageH) {
+    const aspect     = customStageW / customStageH
+    const availAspect = availW / availH
+    if (aspect > availAspect) { sw = availW; sh = Math.round(availW / aspect) }
+    else                      { sh = availH; sw = Math.round(availH * aspect) }
+  } else if (stageRatio === '9:16') {
+    sw = Math.round(availH * 9 / 16); sh = availH
+  } else if (stageRatio === '1:1') {
+    sw = availW; sh = availW
+  } else {
+    sw = availW; sh = availH
+  }
 
   // ── Grid ──────────────────────────────────────────────────────
   const gridLines: React.ReactNode[] = []

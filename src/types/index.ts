@@ -50,7 +50,7 @@ export interface SceneMarker {
   timestampMs: number
 }
 
-export type StageRatio = '1:1' | '16:9' | '9:16'
+export type StageRatio = '1:1' | '16:9' | '9:16' | 'custom'
 
 export interface Project {
   id: string
@@ -58,6 +58,8 @@ export interface Project {
   groupName?: string
   choreographyName?: string
   stageRatio: StageRatio
+  stageWidth?: number | null   // metros — solo para stageRatio='custom'
+  stageHeight?: number | null  // metros — solo para stageRatio='custom'
   scenes: Scene[]
   activeSceneId: string
   audioMarkers: SceneMarker[]

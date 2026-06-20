@@ -15,6 +15,8 @@ interface CreateProjectOpts {
   groupName?: string
   choreographyName?: string
   stageRatio?: StageRatio
+  stageWidth?: number | null
+  stageHeight?: number | null
   startDate?: string
   endDate?: string
 }
@@ -39,6 +41,8 @@ function parseProject(row: Record<string, unknown>): Project {
     groupName: (row.group_name as string | null) ?? undefined,
     choreographyName: (row.choreography_name as string | null) ?? undefined,
     stageRatio: ((row.stage_ratio as StageRatio) ?? '16:9') as StageRatio,
+    stageWidth:  (row.stage_width  as number | null) ?? null,
+    stageHeight: (row.stage_height as number | null) ?? null,
     scenes: (row.data as Record<string, unknown>)?.scenes as Project['scenes'] ?? [],
     activeSceneId: (row.data as Record<string, unknown>)?.activeSceneId as string ?? '',
     audioMarkers: (row.data as Record<string, unknown>)?.audioMarkers as Project['audioMarkers'] ?? [],
@@ -62,7 +66,9 @@ async function projectToRow(project: Project) {
     name: project.name,
     group_name: project.groupName ?? null,
     choreography_name: project.choreographyName ?? null,
-    stage_ratio: project.stageRatio ?? '16:9',
+    stage_ratio:  project.stageRatio ?? '16:9',
+    stage_width:  project.stageWidth  ?? null,
+    stage_height: project.stageHeight ?? null,
     owner_id: project.ownerId ?? user?.id ?? null,
     data: {
       scenes: project.scenes,
@@ -154,7 +160,9 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
       name: opts.name,
       groupName: opts.groupName,
       choreographyName: opts.choreographyName,
-      stageRatio: opts.stageRatio ?? '16:9',
+      stageRatio:  opts.stageRatio ?? '16:9',
+      stageWidth:  opts.stageWidth  ?? null,
+      stageHeight: opts.stageHeight ?? null,
       scenes: [{ id: nanoid(), name: 'Escena 1', dancers: [] }],
       activeSceneId: '',
       audioMarkers: [],

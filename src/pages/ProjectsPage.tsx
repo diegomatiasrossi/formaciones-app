@@ -86,6 +86,8 @@ export function ProjectsPage() {
   const [newGroupName, setNewGroupName] = useState('')
   const [newChoreographyName, setNewChoreographyName] = useState('')
   const [newStageRatio, setNewStageRatio] = useState<StageRatio>('16:9')
+  const [newStageWidth, setNewStageWidth]   = useState('')
+  const [newStageHeight, setNewStageHeight] = useState('')
   const [newStartDate, setNewStartDate] = useState('')
   const [newEndDate, setNewEndDate] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<Project | null>(null)
@@ -108,13 +110,21 @@ export function ProjectsPage() {
     navigate(`/editor/${project.id}`)
   }
 
+  const customValid = newStageRatio !== 'custom' || (
+    parseFloat(newStageWidth) >= 1 && parseFloat(newStageWidth) <= 50 &&
+    parseFloat(newStageHeight) >= 1 && parseFloat(newStageHeight) <= 50
+  )
+
   async function handleCreate() {
+    if (!customValid) return
     const name = newName.trim() || t('projects.untitled')
     const project = createLocalProject({
       name,
       groupName: newGroupName.trim() || undefined,
       choreographyName: newChoreographyName.trim() || undefined,
       stageRatio: newStageRatio,
+      stageWidth:  newStageRatio === 'custom' ? parseFloat(newStageWidth)  : null,
+      stageHeight: newStageRatio === 'custom' ? parseFloat(newStageHeight) : null,
       startDate: newStartDate || undefined,
       endDate: newEndDate || undefined,
     })
@@ -134,7 +144,8 @@ export function ProjectsPage() {
 
   const resetForm = () => {
     setShowNew(false); setNewName(''); setNewGroupName(''); setNewChoreographyName('')
-    setNewStageRatio('16:9'); setNewStartDate(''); setNewEndDate('')
+    setNewStageRatio('16:9'); setNewStageWidth(''); setNewStageHeight('')
+    setNewStartDate(''); setNewEndDate('')
   }
 
   return (
@@ -318,11 +329,61 @@ export function ProjectsPage() {
                   <span className="text-[9px] opacity-70">{t(opt.titleKey as any)}</span>
                 </button>
               ))}
+              {/* Opción Personalizado */}
+              <button type="button" onClick={() => setNewStageRatio('custom')}
+                className={clsx('flex-1 flex flex-col items-center gap-2 py-3 rounded-lg border transition-all',
+                  newStageRatio === 'custom' ? 'border-rojo bg-rojo/8 text-rojo' : 'border-borde-light text-gris hover:border-gris')}>
+                <span className="text-lg leading-none">⊞</span>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <span className="text-[9px] opacity-70">{t('projects.ratio_custom' as any)}</span>
+              </button>
             </div>
+
+            {/* Inputs de dimensiones — solo si Personalizado */}
+            {newStageRatio === 'custom' && (
+              <div className="mt-3 space-y-2">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-[10px] text-gris">{t('projects.stage_custom_hint' as any)}</p>
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <label className="block text-[10px] text-gris uppercase tracking-wider mb-1">{t('projects.stage_width' as any)}</label>
+                    <input
+                      type="number" step="0.1" min="1" max="50"
+                      value={newStageWidth}
+                      onChange={e => setNewStageWidth(e.target.value)}
+                      placeholder="8.0"
+                      className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm text-negro focus:outline-none focus:border-rojo"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <label className="block text-[10px] text-gris uppercase tracking-wider mb-1">{t('projects.stage_height' as any)}</label>
+                    <input
+                      type="number" step="0.1" min="1" max="50"
+                      value={newStageHeight}
+                      onChange={e => setNewStageHeight(e.target.value)}
+                      placeholder="6.0"
+                      className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm text-negro focus:outline-none focus:border-rojo"
+                    />
+                  </div>
+                </div>
+                {newStageWidth && newStageHeight && customValid && (
+                  <p className="text-[10px] text-dorado-oscuro">
+                    Escenario {newStageWidth}m × {newStageHeight}m
+                    {' '}· ratio {(parseFloat(newStageWidth) / parseFloat(newStageHeight)).toFixed(2)}:1
+                  </p>
+                )}
+                {newStageWidth && newStageHeight && !customValid && (
+                  <p className="text-[10px] text-rojo">Valores entre 1m y 50m</p>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex gap-3 justify-end pt-1">
             <button onClick={resetForm} className="px-4 py-2 text-sm text-gris hover:text-negro transition-colors">{t('common.cancel')}</button>
-            <button onClick={handleCreate} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">{t('projects.create_cta')}</button>
+            <button onClick={handleCreate} disabled={!customValid}
+              className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed">{t('projects.create_cta')}</button>
           </div>
         </div>
       </Modal>
