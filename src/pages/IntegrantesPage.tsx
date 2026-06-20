@@ -10,7 +10,7 @@ import type { CrewMember, MemberType, MemberLevel } from '@/types'
 import clsx from 'clsx'
 
 const EMPTY: Omit<CrewMember, 'id'> = {
-  firstName: '', lastName: '', phone: '', email: '',
+  firstName: '', lastName: '', nickname: '', phone: '', email: '',
   type: 'stage', level: undefined, role: '', notes: '',
 }
 
@@ -40,7 +40,7 @@ export function IntegrantesPage() {
   function openNew() { setEditing(null); setForm(EMPTY); setShowForm(true) }
   function openEdit(m: CrewMember) {
     setEditing(m)
-    setForm({ firstName: m.firstName, lastName: m.lastName ?? '', phone: m.phone ?? '', email: m.email ?? '', type: m.type, level: m.level, role: m.role ?? '', notes: m.notes ?? '' })
+    setForm({ firstName: m.firstName, lastName: m.lastName ?? '', nickname: m.nickname ?? '', phone: m.phone ?? '', email: m.email ?? '', type: m.type, level: m.level, role: m.role ?? '', notes: m.notes ?? '' })
     setShowForm(true)
   }
 
@@ -102,6 +102,7 @@ export function IntegrantesPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="font-semibold text-sm truncate">{m.firstName} {m.lastName}</div>
+                      {m.nickname && <div className="text-[11px] text-dorado-oscuro font-medium">"{m.nickname}"</div>}
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                         <span className={clsx('text-[9px] px-2 py-0.5 rounded-full border', m.type === 'stage' ? 'border-rojo/30 text-rojo bg-rojo/5' : 'border-dorado/40 text-dorado-oscuro bg-dorado/5')}>
                           {t(`members.type_${m.type}`)}
@@ -143,6 +144,7 @@ export function IntegrantesPage() {
             <Field label={t('members.first_name')} required value={form.firstName} onChange={v => setForm(f => ({ ...f, firstName: v }))} autoFocus />
             <Field label={t('members.last_name')} value={form.lastName ?? ''} onChange={v => setForm(f => ({ ...f, lastName: v }))} />
           </div>
+          <Field label={t('members.nickname')} value={form.nickname ?? ''} onChange={v => setForm(f => ({ ...f, nickname: v }))} />
           <div className="grid grid-cols-2 gap-3">
             <Field label={t('members.phone')} value={form.phone ?? ''} onChange={v => setForm(f => ({ ...f, phone: v }))} />
             <Field label={t('members.email')} value={form.email ?? ''} onChange={v => setForm(f => ({ ...f, email: v }))} />

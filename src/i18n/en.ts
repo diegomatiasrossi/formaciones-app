@@ -5,7 +5,7 @@ export default {
   members: {
     title: 'Members', new: 'New member', edit: 'Edit member', count: 'members',
     empty: 'You have no members yet.', create_first: 'Add your first member',
-    first_name: 'First name', last_name: 'Last name', phone: 'Phone', email: 'Email',
+    first_name: 'First name', last_name: 'Last name', nickname: 'Nickname', phone: 'Phone', email: 'Email',
     type: 'Type', type_stage: 'On stage', type_team: 'Team',
     level: 'Level', level_beginner: 'Beginner', level_intermediate: 'Intermediate', level_advanced: 'Advanced', level_professional: 'Professional',
     role: 'Role', role_member: 'Member', role_captain: 'Captain', role_choreographer: 'Choreographer', role_logistics: 'Logistics', role_other: 'Other',

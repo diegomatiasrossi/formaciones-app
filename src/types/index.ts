@@ -44,6 +44,7 @@ export interface CrewMember {
   ownerId?: string
   firstName: string
   lastName?: string
+  nickname?: string
   phone?: string
   email?: string
   type: MemberType

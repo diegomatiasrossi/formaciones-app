@@ -5,7 +5,7 @@ export default {
   members: {
     title: 'Integrantes', new: 'Novo integrante', edit: 'Editar integrante', count: 'integrantes',
     empty: 'Você ainda não tem integrantes.', create_first: 'Cadastre seu primeiro integrante',
-    first_name: 'Nome', last_name: 'Sobrenome', phone: 'Telefone', email: 'E-mail',
+    first_name: 'Nome', last_name: 'Sobrenome', nickname: 'Apelido', phone: 'Telefone', email: 'E-mail',
     type: 'Tipo', type_stage: 'Em cena', type_team: 'Equipe',
     level: 'Nível', level_beginner: 'Iniciante', level_intermediate: 'Intermediário', level_advanced: 'Avançado', level_professional: 'Profissional',
     role: 'Função', role_member: 'Integrante', role_captain: 'Capitão/ã', role_choreographer: 'Coreógrafo/a', role_logistics: 'Logística', role_other: 'Outro',

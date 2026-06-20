@@ -13,6 +13,7 @@ function rowToMember(r: Record<string, unknown>): CrewMember {
     ownerId: r.owner_id as string | undefined,
     firstName: r.first_name as string,
     lastName: (r.last_name as string | null) ?? undefined,
+    nickname: (r.nickname as string | null) ?? undefined,
     phone: (r.phone as string | null) ?? undefined,
     email: (r.email as string | null) ?? undefined,
     type: r.type as MemberType,
@@ -146,6 +147,7 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
       owner_id: owner,
       first_name: m.firstName,
       last_name: m.lastName ?? null,
+      nickname: m.nickname ?? null,
       phone: m.phone ?? null,
       email: m.email ?? null,
       type: m.type,
@@ -161,6 +163,7 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
     const row: Record<string, unknown> = {}
     if (patch.firstName !== undefined) row.first_name = patch.firstName
     if (patch.lastName  !== undefined) row.last_name  = patch.lastName ?? null
+    if (patch.nickname  !== undefined) row.nickname   = patch.nickname ?? null
     if (patch.phone     !== undefined) row.phone      = patch.phone ?? null
     if (patch.email     !== undefined) row.email      = patch.email ?? null
     if (patch.type      !== undefined) row.type       = patch.type
