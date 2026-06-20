@@ -408,7 +408,10 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
             const dx = anim?.x ?? dancer.x
             const dy = anim?.y ?? dancer.y
             const outsideStage = dx < sx || dx > sx + sw || dy < sy || dy > sy + sh
-            const d = { ...dancer, x: dx, y: dy }
+            // Nombre dinámico: usa el member por índice de escena (se actualiza al agregar members)
+            const sceneIdx = dancers.indexOf(dancer)
+            const resolvedName = memberNames[sceneIdx] || dancer.name
+            const d = { ...dancer, x: dx, y: dy, name: resolvedName }
             return (
               <CrewMemberShape
                 key={dancer.id}
