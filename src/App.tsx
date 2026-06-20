@@ -9,6 +9,7 @@ import { IntegrantesPage } from '@/pages/IntegrantesPage'
 import { GruposPage } from '@/pages/GruposPage'
 import { EventosPage } from '@/pages/EventosPage'
 import { MobilePreviewPage } from '@/pages/MobilePreviewPage'
+import { ReportesPage } from '@/pages/ReportesPage'
 import { AuthPage } from '@/features/auth/AuthPage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { CookieBanner } from '@/components/ui/CookieBanner'
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/integrantes" element={<ProtectedRoute><IntegrantesPage /></ProtectedRoute>} />
           <Route path="/grupos" element={<ProtectedRoute><GruposPage /></ProtectedRoute>} />
           <Route path="/eventos" element={<ProtectedRoute><EventosPage /></ProtectedRoute>} />
+          <Route path="/reportes" element={<ProtectedRoute><ReportesPage /></ProtectedRoute>} />
           <Route
             path="/editor/:projectId"
             element={

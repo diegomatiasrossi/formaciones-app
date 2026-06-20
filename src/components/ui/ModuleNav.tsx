@@ -2,13 +2,14 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
 
-type ModuleKey = 'space' | 'members' | 'groups' | 'events'
+type ModuleKey = 'space' | 'members' | 'groups' | 'events' | 'reports'
 
 const MODULES: { key: ModuleKey; icon: string; route: string; labelKey: string }[] = [
-  { key: 'space',   icon: '⬡', route: '/projects',    labelKey: 'nav.space' },
+  { key: 'space',   icon: '⬡', route: '/projects',   labelKey: 'nav.space' },
   { key: 'members', icon: '◉', route: '/integrantes', labelKey: 'nav.members' },
   { key: 'groups',  icon: '⬢', route: '/grupos',      labelKey: 'nav.groups' },
   { key: 'events',  icon: '◈', route: '/eventos',     labelKey: 'nav.events' },
+  { key: 'reports', icon: '◎', route: '/reportes',    labelKey: 'nav.reports' },
 ]
 
 export function ModuleNav({ active }: { active: ModuleKey }) {

@@ -1,6 +1,15 @@
 export default {
   nav: {
-    space: 'Espacio', members: 'Integrantes', groups: 'Grupos', events: 'Eventos', projects: 'Proyectos',
+    space: 'Espacio', members: 'Integrantes', groups: 'Grupos', events: 'Eventos', projects: 'Proyectos', reports: 'Reportes',
+  },
+  reports: {
+    title: 'Reportes',
+    select_project: 'Seleccioná un proyecto',
+    no_scenes: 'Este proyecto no tiene escenas.',
+    symmetry_title: '% Simetría',
+    symmetry_explanation: 'Mide qué tan reflejada está tu formación respecto al centro del escenario, lado izquierdo contra derecho. Un % alto significa una coreografía más simétrica; un % bajo significa que usás el espacio de forma más asimétrica o dinámica. Ninguno es mejor — depende de lo que busques transmitir.',
+    by_scene: 'Por escena',
+    scene_empty: 'Sin integrantes',
   },
   members: {
     title: 'Integrantes', new: 'Nuevo integrante', edit: 'Editar integrante', count: 'integrantes',

@@ -1,6 +1,15 @@
 export default {
   nav: {
-    space: 'Space', members: 'Members', groups: 'Groups', events: 'Events', projects: 'Projects',
+    space: 'Space', members: 'Members', groups: 'Groups', events: 'Events', projects: 'Projects', reports: 'Reports',
+  },
+  reports: {
+    title: 'Reports',
+    select_project: 'Select a project',
+    no_scenes: 'This project has no scenes.',
+    symmetry_title: '% Symmetry',
+    symmetry_explanation: 'Measures how mirrored your formation is relative to the center of the stage, left side versus right side. A high % means a more symmetric choreography; a low % means you\'re using the space in a more asymmetric or dynamic way. Neither is better — it depends on what you\'re going for.',
+    by_scene: 'By scene',
+    scene_empty: 'No members',
   },
   members: {
     title: 'Members', new: 'New member', edit: 'Edit member', count: 'members',
