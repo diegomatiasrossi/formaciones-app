@@ -57,7 +57,9 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const totalH = headR + gap + stemH  // altura total de la figura
 
   const strokeW  = 2 / levelScale
-  const selStroke = selected ? GOLD : outsideStage ? '#E53E3E' : undefined
+  // Borde siempre visible — permite ver el integrante de atrás cuando hay superposición
+  const depthStroke = 'rgba(255,255,255,0.35)'   // blanco semitransparente sobre canvas oscuro
+  const selStroke = selected ? GOLD : outsideStage ? '#E53E3E' : depthStroke
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
 
@@ -116,7 +118,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         fill={fillColor}
         cornerRadius={stemW * 0.15}
         stroke={selStroke}
-        strokeWidth={selStroke ? strokeW : 0}
+        strokeWidth={strokeW}
         shadowColor={fillColor}
         shadowBlur={selected ? 8 : 2}
         shadowOpacity={0.3}
@@ -130,7 +132,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         radius={headR}
         fill={fillColor}
         stroke={selStroke}
-        strokeWidth={selStroke ? strokeW : 0}
+        strokeWidth={strokeW}
         shadowColor={fillColor}
         shadowBlur={selected ? 10 : 3}
         shadowOpacity={0.4}

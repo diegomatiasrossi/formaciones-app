@@ -384,8 +384,8 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
           <Text x={sx} y={sy + sh + 8} width={sw} text="▼  PÚBLICO  ▼"
             fontSize={9} fill="#C9A961" align="center" opacity={0.5} listening={false} />
 
-          {/* Integrantes */}
-          {dancers.map(dancer => {
+          {/* Integrantes — ordenados por Y: upstage (Y baja) renderiza primero, downstage (Y alta) encima */}
+          {[...dancers].sort((a, b) => (animationOverride?.dancers.find(x => x.id === a.id)?.y ?? a.y) - (animationOverride?.dancers.find(x => x.id === b.id)?.y ?? b.y)).map(dancer => {
             const anim = animationOverride?.dancers.find(a => a.id === dancer.id)
             const dx = anim?.x ?? dancer.x
             const dy = anim?.y ?? dancer.y
