@@ -374,4 +374,10 @@ export default {
     title: 'Privacy Policy',
     last_updated: 'Last updated: June 2026',
   },
+  plan: {
+    member_names_locked: 'Available on Pro plan',
+    scene_names_locked: 'Custom names is a Pro feature',
+    member_limit_reached: "You've reached your plan limit ({{limit}} members). Upgrade to add more.",
+    upgrade_cta: 'View plans',
+  },
 } as const

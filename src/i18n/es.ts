@@ -374,4 +374,10 @@ export default {
     title: 'Política de Privacidad',
     last_updated: 'Última actualización: junio 2026',
   },
+  plan: {
+    member_names_locked: 'Disponible en plan Pro',
+    scene_names_locked: 'Personalizar nombres es una función Pro',
+    member_limit_reached: 'Llegaste al límite de tu plan ({{limit}} integrantes). Actualizá para agregar más.',
+    upgrade_cta: 'Ver planes',
+  },
 } as const

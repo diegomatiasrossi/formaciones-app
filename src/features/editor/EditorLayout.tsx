@@ -167,7 +167,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
 
         <main className="flex-1 flex flex-col overflow-hidden relative">
           <div className="flex-1 overflow-hidden relative">
-            <StageCanvas animationOverride={animOverride} stageRatio={stageRatio} customStageW={customStageW} customStageH={customStageH} maxDancers={features.maxDancers} memberNames={memberNames} memberNameById={memberNameById} />
+            <StageCanvas animationOverride={animOverride} stageRatio={stageRatio} customStageW={customStageW} customStageH={customStageH} maxDancers={features.maxDancers} memberNames={memberNames} memberNameById={memberNameById} showMemberNames={features.membersEnabled} />
             {showStats && <StatisticsPanel onClose={() => setShowStats(false)} locked={!features.statsEnabled} />}
             {showChecklist && <ChecklistPanel onClose={() => setShowChecklist(false)} />}
             {showMembers && <MembersPanel onClose={() => setShowMembers(false)} />}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCrewStore } from '@/store/crewStore'
 import { useAuth } from '@/features/auth/useAuth'
+import { usePlan } from '@/hooks/usePlan'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
@@ -22,6 +23,8 @@ export function IntegrantesPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { can } = usePlan()
+  const namesVisible = can('membersEnabled')
   const {
     members, groups, loading, fetchAll,
     createMember, updateMember, deleteMember,
@@ -141,8 +144,8 @@ export function IntegrantesPage() {
       <Modal open={showForm} onClose={() => setShowForm(false)} title={editing ? t('members.edit') : t('members.new')}>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <Field label={t('members.first_name')} required value={form.firstName} onChange={v => setForm(f => ({ ...f, firstName: v }))} autoFocus />
-            <Field label={t('members.last_name')} value={form.lastName ?? ''} onChange={v => setForm(f => ({ ...f, lastName: v }))} />
+            <Field label={t('members.first_name')} required value={form.firstName} onChange={v => setForm(f => ({ ...f, firstName: v }))} autoFocus lockedHint={!namesVisible ? t('plan.member_names_locked') : undefined} />
+            <Field label={t('members.last_name')} value={form.lastName ?? ''} onChange={v => setForm(f => ({ ...f, lastName: v }))} lockedHint={!namesVisible ? t('plan.member_names_locked') : undefined} />
           </div>
           <Field label={t('members.nickname')} value={form.nickname ?? ''} onChange={v => setForm(f => ({ ...f, nickname: v }))} />
           <div className="grid grid-cols-2 gap-3">
@@ -228,10 +231,13 @@ export function IntegrantesPage() {
   )
 }
 
-function Field({ label, value, onChange, required, autoFocus }: { label: string; value: string; onChange: (v: string) => void; required?: boolean; autoFocus?: boolean }) {
+function Field({ label, value, onChange, required, autoFocus, lockedHint }: { label: string; value: string; onChange: (v: string) => void; required?: boolean; autoFocus?: boolean; lockedHint?: string }) {
   return (
     <div>
-      <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">{label} {required && <span className="text-rojo">*</span>}</label>
+      <label className="flex items-center gap-1 text-[10px] text-gris uppercase tracking-wider mb-1.5">
+        {label} {required && <span className="text-rojo">*</span>}
+        {lockedHint && <span title={lockedHint} className="text-gris/40 cursor-default select-none">🔒</span>}
+      </label>
       <input autoFocus={autoFocus} type="text" value={value} onChange={e => onChange(e.target.value)}
         className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm text-negro focus:outline-none focus:border-rojo" />
     </div>
