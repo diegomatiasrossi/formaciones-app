@@ -74,7 +74,7 @@ export function ReportesPage() {
   }
 
   const scenes = fullProject?.scenes ?? []
-  const { overall, perScene } = calcProjectSymmetry(scenes, fullProject?.stageWidth)
+  const { overall, perScene } = calcProjectSymmetry(scenes, fullProject?.stageWidth, fullProject?.stageHeight)
 
   return (
     <div className="min-h-screen bg-crema text-negro">
