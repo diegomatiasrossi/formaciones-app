@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
-  apiVersion: '2024-06-20',
+  apiVersion: '2026-05-27.dahlia',
 })
 
 const supabase = createClient(

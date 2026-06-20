@@ -5,7 +5,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 export const config = { api: { bodyParser: false } }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
-  apiVersion: '2024-06-20',
+  apiVersion: '2026-05-27.dahlia',
 })
 
 const supabase = createClient(
@@ -64,23 +64,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const userId = session.metadata?.user_id ?? session.client_reference_id
         if (!userId) break
         const sub = await stripe.subscriptions.retrieve(session.subscription as string)
-        const priceId = sub.items.data[0]?.price?.id ?? ''
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const s = sub as any
+        const priceId = s.items.data[0]?.price?.id ?? ''
         await upsert(userId, {
           plan:                   planFromPriceId(priceId),
           billing_cycle:          cycleFromPriceId(priceId),
           stripe_customer_id:     session.customer,
           stripe_subscription_id: session.subscription,
           stripe_price_id:        priceId,
-          subscription_status:    sub.status,
-          current_period_start:   new Date(sub.current_period_start * 1000).toISOString(),
-          current_period_end:     new Date(sub.current_period_end   * 1000).toISOString(),
-          cancel_at_period_end:   sub.cancel_at_period_end,
+          subscription_status:    s.status,
+          current_period_start:   new Date(s.current_period_start * 1000).toISOString(),
+          current_period_end:     new Date(s.current_period_end   * 1000).toISOString(),
+          cancel_at_period_end:   s.cancel_at_period_end,
         })
         break
       }
 
       case 'customer.subscription.updated': {
-        const sub = event.data.object as Stripe.Subscription
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sub = event.data.object as any
         const { data } = await supabase
           .from('user_plans').select('user_id').eq('stripe_subscription_id', sub.id).maybeSingle()
         if (!data?.user_id) break
@@ -114,7 +117,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { data } = await supabase
           .from('user_plans').select('user_id').eq('stripe_customer_id', inv.customer).maybeSingle()
         if (!data?.user_id) break
-        const sub = await stripe.subscriptions.retrieve(inv.subscription as string)
+        const subId = typeof (inv as any).subscription === 'string'
+          ? (inv as any).subscription
+          : (inv as any).subscription?.id
+        if (!subId) break
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sub = await stripe.subscriptions.retrieve(subId) as any
         await upsert(data.user_id, {
           subscription_status: 'active',
           current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
