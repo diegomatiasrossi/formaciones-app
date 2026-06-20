@@ -14,9 +14,9 @@ const CANON_ORDERS: { id: CanonOrder; label: string; icon: string }[] = [
   { id: 'center-out',     label: 'Centro → Borde', icon: '⊙' },
 ]
 
-interface Props { canonLocked?: boolean }
+interface Props { canonLocked?: boolean; namesLocked?: boolean }
 
-export function ScenePanel({ canonLocked }: Props) {
+export function ScenePanel({ canonLocked, namesLocked }: Props) {
   const { t } = useTranslation()
   const {
     scenes, activeSceneId,
@@ -77,10 +77,10 @@ export function ScenePanel({ canonLocked }: Props) {
             ) : (
               <button
                 onClick={() => setActiveScene(scene.id)}
-                onDoubleClick={() => startEdit(scene.id, 'name', scene.name)}
-                title="Doble click para renombrar"
+                onDoubleClick={namesLocked ? undefined : () => startEdit(scene.id, 'name', scene.name)}
+                title={namesLocked ? t('plan.scene_names_locked') : 'Doble click para renombrar'}
                 className={clsx(
-                  'px-2.5 py-1 rounded text-xs transition-colors border whitespace-nowrap',
+                  'px-2.5 py-1 rounded text-xs transition-colors border whitespace-nowrap flex items-center gap-1',
                   scene.id === activeSceneId
                     ? 'bg-dorado text-negro border-dorado font-semibold'
                     : 'text-blanco-calido/70 border-borde hover:border-dorado/40 hover:text-blanco-calido',
@@ -90,6 +90,7 @@ export function ScenePanel({ canonLocked }: Props) {
                 {scene.transitionMode === 'canon' && (
                   <span className="ml-1 text-dorado/60 text-[9px]">↩︎</span>
                 )}
+                {namesLocked && <UpgradeGate requiredPlan="solo_pro" featureName={t('plan.scene_names_locked')} compact />}
               </button>
             )}
 
@@ -134,6 +135,11 @@ export function ScenePanel({ canonLocked }: Props) {
               placeholder="ej: Círculo inicial"
               className="flex-1 max-w-xs bg-negro border border-dorado rounded px-2 py-0.5 text-xs text-blanco-calido focus:outline-none"
             />
+          ) : namesLocked ? (
+            <span className="flex items-center gap-1 text-xs text-gris/40 italic">
+              {activeScene.formationName || '(sin nombre)'}
+              <UpgradeGate requiredPlan="solo_pro" featureName={t('plan.scene_names_locked')} compact />
+            </span>
           ) : (
             <button
               onClick={() => startEdit(activeScene.id, 'formation', activeScene.formationName ?? '')}

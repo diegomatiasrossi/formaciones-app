@@ -175,7 +175,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
 
           {showAudio && <AudioPanel onSceneChange={handleAudioSceneChange} locked={!features.audioEnabled} />}
 
-          <ScenePanel canonLocked={!features.canonEnabled} />
+          <ScenePanel canonLocked={!features.canonEnabled} namesLocked={!features.membersEnabled} />
         </main>
       </div>
 
