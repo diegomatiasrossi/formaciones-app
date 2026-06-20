@@ -67,8 +67,9 @@ async function projectToRow(project: Project) {
     group_name: project.groupName ?? null,
     choreography_name: project.choreographyName ?? null,
     stage_ratio:  project.stageRatio ?? '16:9',
-    stage_width:  project.stageWidth  ?? null,
-    stage_height: project.stageHeight ?? null,
+    // Solo incluir si tienen valor real — evita error si la columna aún no existe en Supabase
+    ...(project.stageWidth  != null ? { stage_width:  project.stageWidth  } : {}),
+    ...(project.stageHeight != null ? { stage_height: project.stageHeight } : {}),
     owner_id: project.ownerId ?? user?.id ?? null,
     data: {
       scenes: project.scenes,
