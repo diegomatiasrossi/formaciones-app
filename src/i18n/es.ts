@@ -277,7 +277,7 @@ export default {
     ratio_vertical: 'Vertical',
     ratio_custom: 'Personalizado',
     stage_width: 'Ancho (m)',
-    stage_height: 'Alto (m)',
+    stage_height: 'Profundidad (m)',
     stage_custom_hint: 'Definí las dimensiones reales de tu escenario',
     members_abbr: 'integ.',
     delete_confirm: '¿Eliminar',

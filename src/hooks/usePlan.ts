@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/features/auth/supabaseClient'
 import { useAuth } from '@/features/auth/useAuth'
+import { isOwner } from '@/utils/isOwner'
 
 export type PlanName = 'free' | 'solo_pro' | 'studio'
 
@@ -98,7 +99,20 @@ export function usePlan(): PlanState & {
       })
   }, [user])
 
-  const features = PLAN_FEATURES[state.planName]
+  // Owner bypass: acceso ilimitado a todas las features sin tocar planes ni Supabase
+  const ownerFeatures: PlanFeatures = {
+    maxDancers:       Infinity,
+    maxProjects:      Infinity,
+    membersEnabled:   true,
+    checklistEnabled: true,
+    audioEnabled:     true,
+    canonEnabled:     true,
+    statsEnabled:     true,
+    pdfExport:        true,
+    maxCollaborators: Infinity,
+  }
+
+  const features = isOwner(user?.email) ? ownerFeatures : PLAN_FEATURES[state.planName]
 
   async function startCheckout(priceId: string, userEmail: string) {
     if (!user) return
