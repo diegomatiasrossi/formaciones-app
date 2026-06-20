@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useProjectStore } from '@/store/projectStore'
 import { useAuth } from '@/features/auth/useAuth'
+import { usePlan } from '@/hooks/usePlan'
+import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import { Logo } from '@/components/ui/Logo'
 import { toggleLanguage } from '@/i18n'
@@ -55,6 +57,7 @@ export function ReportesPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
+  const { can } = usePlan()
   const { projects, fetchProjects, fetchProjectById } = useProjectStore()
   const [selectedId, setSelectedId] = useState('')
   const [fullProject, setFullProject] = useState<Project | null>(null)
@@ -107,7 +110,15 @@ export function ReportesPage() {
 
       <ModuleNav active="reports" />
 
-      <main className="max-w-2xl mx-auto px-6 py-10 space-y-8">
+      {!can('reportsEnabled') && (
+        <div className="max-w-2xl mx-auto px-6 py-16 flex justify-center">
+          <div className="bg-blanco border border-borde-light rounded-2xl p-10 shadow-soft">
+            <UpgradeGate requiredPlan="solo_pro" featureName={t('reports.title')} />
+          </div>
+        </div>
+      )}
+
+      {can('reportsEnabled') && <main className="max-w-2xl mx-auto px-6 py-10 space-y-8">
         {/* Title + selector */}
         <div className="space-y-4">
           <h1 className="text-xl font-semibold tracking-wide">{t('reports.title')}</h1>
@@ -171,7 +182,7 @@ export function ReportesPage() {
             )}
           </div>
         )}
-      </main>
+      </main>}
     </div>
   )
 }

@@ -13,6 +13,7 @@ export interface PlanFeatures {
   audioEnabled: boolean
   canonEnabled: boolean
   statsEnabled: boolean
+  reportsEnabled: boolean
   pdfExport: boolean
   maxCollaborators: number // 1 = solo el dueño
 }
@@ -26,6 +27,7 @@ export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
     audioEnabled:     false,
     canonEnabled:     false,
     statsEnabled:     false,
+    reportsEnabled:   false,
     pdfExport:        false,
     maxCollaborators: 1,
   },
@@ -37,6 +39,7 @@ export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
     audioEnabled:     true,
     canonEnabled:     true,
     statsEnabled:     false,
+    reportsEnabled:   true,
     pdfExport:        true,
     maxCollaborators: 1,
   },
@@ -48,6 +51,7 @@ export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
     audioEnabled:     true,
     canonEnabled:     true,
     statsEnabled:     true,
+    reportsEnabled:   true,
     pdfExport:        true,
     maxCollaborators: 5,
   },
@@ -108,6 +112,7 @@ export function usePlan(): PlanState & {
     audioEnabled:     true,
     canonEnabled:     true,
     statsEnabled:     true,
+    reportsEnabled:   true,
     pdfExport:        true,
     maxCollaborators: Infinity,
   }
