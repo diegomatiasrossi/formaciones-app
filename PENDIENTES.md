@@ -201,6 +201,66 @@ problema. Si muestra HTML vacío (`<div id="root"></div>`), hay que considerar S
 
 ---
 
+---
+
+## ✅ SESIÓN STUDIO MULTI-USUARIO — Completada 20/06/2026
+
+### Commits de la sesión:
+- `0a0a065` — SQL Fase 1: organizations + organization_members + organization_invites + funciones SECURITY DEFINER
+- `121b787` — SQL Fase 2: organization_id en members/groups/events/activities + nickname en members + RLS actualizado
+- `60fb02e` — TS Fase 3: tipos org + workspaceStore + crewStore org-aware + i18n
+- `4e2a81e` — TS Fases 4-6: WorkspaceSwitcher + OrganizacionPage + InvitePage + detección de duplicados
+
+### ⚠️ ACCIÓN REQUERIDA (en orden):
+1. Correr `supabase-studio-migration.sql` en Supabase SQL Editor
+2. Correr `supabase-studio-rls-migration.sql` en Supabase SQL Editor
+3. Deployar (Vercel lo hace automático desde main)
+
+### Decisiones tomadas por Claude sin preguntar:
+
+1. **SECURITY DEFINER functions para crear org y aceptar invite** — el RLS normal tiene
+   un problema chicken-and-egg: para insertar en organization_members como admin, el 
+   sistema verifica si ya sos admin en esa org. Solución: funciones PG que bypasean RLS.
+
+2. **crewStore lee workspaceStore.getState() internamente** — en vez de que los componentes
+   le pasen el workspace a fetchAll. Esto mantiene la API de los componentes sin cambios.
+
+3. **fetchAll en org mode: filtro `organization_id = orgId`; en personal: `owner_id + is(org_id, null)`**
+   — asegura que los dos espacios (personal y org) estén completamente separados y no se mezclen.
+
+4. **group_members se filtra por los IDs de grupos ya cargados** (no se hace `select *` ciego) — 
+   evita que en modo org aparezcan las membresías de grupos personales y viceversa.
+
+5. **Detección de duplicados solo en contexto org** — en espacio personal no tiene sentido
+   (el mismo usuario no cargaría el mismo integrante dos veces con intención).
+
+6. **La página /organizacion muestra formulario de creación si no hay org activa** —
+   un mismo usuario puede crear su propia org desde esta página aunque no tenga ninguna aún.
+
+7. **WorkspaceSwitcher en ModuleNav (no en el header del editor)** — el editor (Konva) ya
+   tiene su propio header y trabaja sobre projects que son privados por owner. El switcher
+   solo importa para Integrantes/Grupos/Eventos, que están en ModuleNav.
+
+### 🔴 Facturación variable de seats (NO implementada — pendiente técnico separado):
+Stripe metered billing / variable pricing para seats adicionales ($10/seat sobre los 3 incluidos)
+requiere su propia sesión. El campo `extra_seat_price_cents` existe en la tabla `organizations`
+para cuando se implemente. La UI de `/organizacion` ya muestra el aviso de costo extra pero
+NO procesa cobros reales. Pendiente: integrar Stripe Billing con quantity updates.
+
+### 🟡 Revisión visual pendiente:
+- WorkspaceSwitcher en el ModuleNav — verificar que no rompa el scroll horizontal en mobile
+- OrganizacionPage: la query de `auth_users:user_id(email)` puede no funcionar con RLS de Supabase
+  si auth.users no es accesible desde el cliente anon. Si da error, simplificar mostrando user_id
+  en vez de email (o usar una edge function para eso)
+- La ruta /invite/:token es pública — confirmar que la política "invites_self_select" 
+  permite al usuario logueado ver la invitación ANTES de que supabase.rpc valide el email
+
+### 🟡 Stripe seats pendiente:
+- Ver pendiente anterior + agregar webhook para cambiar `included_seats` en `organizations`
+  cuando cambia la suscripción. La lógica de pricing variable requiere Stripe Billing items.
+
+---
+
 ## Build + Lint
 ✅ `npm run build` limpio
 ✅ `npm run lint` limpio (0 warnings)
