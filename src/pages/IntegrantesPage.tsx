@@ -4,11 +4,25 @@ import { useTranslation } from 'react-i18next'
 import { useCrewStore } from '@/store/crewStore'
 import { useAuth } from '@/features/auth/useAuth'
 import { usePlan } from '@/hooks/usePlan'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import type { CrewMember, MemberType, MemberLevel } from '@/types'
 import clsx from 'clsx'
+
+function findPossibleDuplicates(
+  newMember: { firstName: string; lastName?: string; nickname?: string },
+  existingMembers: CrewMember[],
+): CrewMember[] {
+  const norm = (s?: string) => (s ?? '').toLowerCase().trim()
+  return existingMembers.filter(existing => {
+    const sameFirst    = norm(existing.firstName) === norm(newMember.firstName) && norm(newMember.firstName) !== ''
+    const sameLast     = newMember.lastName  && existing.lastName  && norm(existing.lastName)  === norm(newMember.lastName)
+    const sameNickname = newMember.nickname  && existing.nickname  && norm(existing.nickname)  === norm(newMember.nickname)
+    return sameFirst || sameLast || sameNickname
+  })
+}
 
 const EMPTY: Omit<CrewMember, 'id'> = {
   firstName: '', lastName: '', nickname: '', phone: '', email: '',
@@ -25,6 +39,8 @@ export function IntegrantesPage() {
   const { user } = useAuth()
   const { can } = usePlan()
   const namesVisible = can('membersEnabled')
+  const { activeWorkspace } = useWorkspaceStore()
+  const inOrgContext = activeWorkspace.type === 'org'
   const {
     members, groups, loading, fetchAll,
     createMember, updateMember, deleteMember,
@@ -37,6 +53,8 @@ export function IntegrantesPage() {
   const [confirmDelete, setConfirmDelete] = useState<CrewMember | null>(null)
   const [groupModal, setGroupModal] = useState<CrewMember | null>(null)
   const [selGroups, setSelGroups] = useState<string[]>([])
+  const [duplicates, setDuplicates] = useState<CrewMember[]>([])
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false)
 
   useEffect(() => { if (user) fetchAll() }, [user, fetchAll])
 
@@ -49,9 +67,31 @@ export function IntegrantesPage() {
 
   async function save() {
     if (!form.firstName.trim()) return
-    if (editing) await updateMember(editing.id, form)
-    else await createMember(form)
+    if (editing) {
+      await updateMember(editing.id, form)
+      setShowForm(false); setEditing(null)
+      return
+    }
+    // Duplicate detection — only in org context
+    if (inOrgContext) {
+      const dupes = findPossibleDuplicates(form, members)
+      if (dupes.length > 0) {
+        setDuplicates(dupes)
+        setShowDuplicateModal(true)
+        return
+      }
+    }
+    await createMember(form)
     setShowForm(false); setEditing(null)
+  }
+
+  async function confirmCreateNew() {
+    await createMember(form)
+    setShowDuplicateModal(false); setShowForm(false); setEditing(null); setDuplicates([])
+  }
+
+  function cancelDuplicate() {
+    setShowDuplicateModal(false); setDuplicates([])
   }
 
   function openGroups(m: CrewMember) {
@@ -225,6 +265,28 @@ export function IntegrantesPage() {
         <div className="flex gap-3 justify-end">
           <button onClick={() => setConfirmDelete(null)} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
           <button onClick={() => { deleteMember(confirmDelete!.id); setConfirmDelete(null) }} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg">{t('common.delete')}</button>
+        </div>
+      </Modal>
+
+      {/* Duplicate detection modal (org context only) */}
+      <Modal open={showDuplicateModal} onClose={cancelDuplicate} title={t('org.possible_duplicate')}>
+        <p className="text-sm text-gris mb-4">Encontramos integrantes con datos similares en esta organización:</p>
+        <div className="space-y-2 mb-5 max-h-48 overflow-y-auto">
+          {duplicates.map(d => (
+            <div key={d.id} className="flex items-center gap-3 p-2.5 bg-crema rounded-lg border border-borde-light">
+              <span className="text-dorado">◉</span>
+              <div className="text-sm">
+                <span className="font-medium">{d.firstName} {d.lastName}</span>
+                {d.nickname && <span className="text-gris ml-2">"{d.nickname}"</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-3 justify-end">
+          <button onClick={cancelDuplicate} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
+          <button onClick={confirmCreateNew} className="px-4 py-2 border border-borde-light rounded-lg text-sm hover:border-rojo text-gris hover:text-rojo">
+            {t('org.create_new_anyway')}
+          </button>
         </div>
       </Modal>
     </div>

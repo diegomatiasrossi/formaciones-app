@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { WorkspaceSwitcher } from './WorkspaceSwitcher'
 import clsx from 'clsx'
 
 type ModuleKey = 'space' | 'members' | 'groups' | 'events' | 'reports'
@@ -17,7 +18,7 @@ export function ModuleNav({ active }: { active: ModuleKey }) {
   const { t } = useTranslation()
   return (
     <nav className="border-b border-borde-light bg-blanco">
-      <div className="max-w-5xl mx-auto px-6 flex gap-1 overflow-x-auto">
+      <div className="max-w-5xl mx-auto px-6 flex items-center gap-1 overflow-x-auto">
         {MODULES.map(m => (
           <button key={m.key} onClick={() => navigate(m.route)}
             className={clsx('flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap',
@@ -25,6 +26,10 @@ export function ModuleNav({ active }: { active: ModuleKey }) {
             <span>{m.icon}</span>{t(m.labelKey)}
           </button>
         ))}
+        {/* Workspace switcher — only visible if user belongs to at least one org */}
+        <div className="ml-auto shrink-0 py-1.5">
+          <WorkspaceSwitcher />
+        </div>
       </div>
     </nav>
   )
