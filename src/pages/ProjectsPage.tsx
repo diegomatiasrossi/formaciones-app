@@ -117,7 +117,10 @@ export function ProjectsPage() {
   }, [preloadedEventId])
 
   function openProject(project: Project) {
-    loadScenes(project.scenes, project.activeSceneId, project.audioMarkers)
+    // Only pre-load scenes when we have full data; lightweight summaries let EditorPage fetch
+    if (project._sceneCount === undefined && project.scenes.length) {
+      loadScenes(project.scenes, project.activeSceneId, project.audioMarkers)
+    }
     navigate(`/editor/${project.id}`)
   }
 
@@ -166,7 +169,7 @@ export function ProjectsPage() {
   }
 
   const filtered = projects.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
-  const totalDancers = (p: Project) => p.scenes.reduce((sum, s) => sum + s.dancers.length, 0)
+  const totalDancers = (p: Project) => p._dancerCount ?? p.scenes.reduce((sum, s) => sum + s.dancers.length, 0)
 
   const resetForm = () => {
     setShowNew(false); setNewName(''); setNewGroupName(''); setNewChoreographyName('')
@@ -248,7 +251,7 @@ export function ProjectsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(project => {
               const dancers = totalDancers(project)
-              const sceneCount = project.scenes.length
+              const sceneCount = project._sceneCount ?? project.scenes.length
               return (
                 <div key={project.id}
                   className={clsx('bg-blanco border border-borde-light rounded-2xl flex flex-col overflow-hidden shadow-soft',

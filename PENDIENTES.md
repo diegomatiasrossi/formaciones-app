@@ -76,6 +76,63 @@ Actualizado: 20/06/2026 — Sesión grande Integrantes/Eventos/Actividades
 
 ---
 
+---
+
+## ✅ fetchProjects optimizado — 20/06/2026
+
+Se separó la query de listado de la query de detalle:
+
+- `fetchProjects` → queries `project_list_view` (liviana, sin JSONB completo)
+- `fetchProjectById` → queries `projects` completo (solo cuando se abre un proyecto)
+- EditorPage y MobilePreviewPage llaman `fetchProjectById` automáticamente cuando el
+  proyecto en store es un summary liviano
+- ProjectsPage muestra correctamente conteo de escenas y dancers desde el view
+
+### 🔴 ACCIÓN REQUERIDA: Crear la vista en Supabase SQL Editor
+
+Correr el siguiente SQL en Supabase → SQL Editor:
+
+```sql
+-- Vista liviana para el listado de proyectos.
+-- Devuelve solo los campos necesarios para las cards, sin traer el JSONB completo.
+CREATE OR REPLACE VIEW project_list_view
+WITH (security_invoker = true)
+AS
+SELECT
+  id,
+  name,
+  group_name,
+  choreography_name,
+  stage_ratio,
+  stage_width,
+  stage_height,
+  group_id,
+  event_id,
+  owner_id,
+  share_token,
+  share_show_names,
+  created_at,
+  updated_at,
+  -- Conteo real de escenas (sin traer el array completo)
+  COALESCE(jsonb_array_length(data -> 'scenes'), 0) AS scene_count,
+  -- Total de dancers a través de todas las escenas
+  COALESCE(
+    (SELECT SUM(jsonb_array_length(COALESCE(s -> 'dancers', '[]'::jsonb)))
+     FROM jsonb_array_elements(COALESCE(data -> 'scenes', '[]'::jsonb)) AS s),
+    0
+  )::int AS dancer_count,
+  -- Datos de la primera escena para el thumbnail de la card
+  COALESCE(data -> 'scenes' -> 0 -> 'dancers', '[]'::jsonb) AS first_scene_dancers,
+  COALESCE(data -> 'scenes' -> 0 ->> 'formationName', '') AS first_scene_formation_name,
+  COALESCE(data ->> 'activeSceneId', '') AS active_scene_id
+FROM projects;
+```
+
+Sin este SQL, el listado `/proyectos` va a fallar (la vista no existe).
+El editor sigue funcionando porque usa `fetchProjectById` directo a la tabla `projects`.
+
+---
+
 ## Build + Lint
 ✅ `npm run build` limpio
 ✅ `npm run lint` limpio (0 warnings)

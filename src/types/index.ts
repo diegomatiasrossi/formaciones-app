@@ -127,6 +127,8 @@ export interface Project {
   checklist?: ChecklistItem[]
   groupId?: string | null
   eventId?: string | null
+  _sceneCount?: number   // set when loaded from lightweight list view; absent when fully loaded
+  _dancerCount?: number  // set when loaded from lightweight list view; absent when fully loaded
 }
 
 export interface FormationPoint {

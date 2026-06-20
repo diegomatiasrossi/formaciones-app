@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Project, StageRatio, Member, ChecklistItem } from '@/types'
+import type { Project, StageRatio, Member, ChecklistItem, Dancer, Scene } from '@/types'
 import { supabase } from '@/features/auth/supabaseClient'
 import { nanoid } from './nanoid'
 import { DEFAULT_CHECKLIST } from '@/data/checklist'
@@ -25,6 +25,7 @@ type ProjectMeta = Partial<Pick<Project, 'checklist' | 'members' | 'notes' | 'st
 
 interface ProjectActions {
   fetchProjects: () => Promise<void>
+  fetchProjectById: (id: string) => Promise<Project | null>
   saveProject: (project: Project) => Promise<void>
   updateProjectMeta: (id: string, meta: ProjectMeta) => Promise<void>
   deleteProject: (id: string) => Promise<void>
@@ -58,6 +59,38 @@ function parseProject(row: Record<string, unknown>): Project {
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
     ownerId: row.owner_id as string | undefined,
+  }
+}
+
+// Parses a row from project_list_view into a lightweight Project for the list page.
+// The returned object has _sceneCount/_dancerCount set and scenes contains only a
+// synthetic first scene (for the thumbnail); full data is not loaded.
+function parseProjectSummary(row: Record<string, unknown>): Project {
+  const firstSceneDancers = (row.first_scene_dancers as Dancer[] | null) ?? []
+  const firstSceneFormName = (row.first_scene_formation_name as string | null) ?? undefined
+  const syntheticScenes: Scene[] = firstSceneDancers.length > 0 || firstSceneFormName
+    ? [{ id: '_preview', name: 'Escena 1', formationName: firstSceneFormName, dancers: firstSceneDancers }]
+    : []
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    groupName: (row.group_name as string | null) ?? undefined,
+    choreographyName: (row.choreography_name as string | null) ?? undefined,
+    stageRatio: ((row.stage_ratio as StageRatio) ?? '16:9') as StageRatio,
+    stageWidth:  (row.stage_width  as number | null) ?? null,
+    stageHeight: (row.stage_height as number | null) ?? null,
+    groupId:  (row.group_id  as string | null) ?? null,
+    eventId:  (row.event_id  as string | null) ?? null,
+    scenes: syntheticScenes,
+    activeSceneId: (row.active_scene_id as string | null) ?? '',
+    audioMarkers: [],
+    shareToken:     (row.share_token      as string  | null) ?? undefined,
+    shareShowNames: (row.share_show_names as boolean | null) ?? true,
+    createdAt:  row.created_at  as string,
+    updatedAt:  row.updated_at  as string,
+    ownerId:    row.owner_id    as string | undefined,
+    _sceneCount:  (row.scene_count  as number) ?? 0,
+    _dancerCount: (row.dancer_count as number) ?? 0,
   }
 }
 
@@ -100,15 +133,37 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { set({ projects: [], loading: false }); return }
       const { data, error } = await supabase
-        .from('projects')
+        .from('project_list_view')
         .select('*')
         .eq('owner_id', user.id)
         .order('updated_at', { ascending: false })
       if (error) throw error
-      const projects: Project[] = (data ?? []).map(parseProject)
+      const projects: Project[] = (data ?? []).map(row => parseProjectSummary(row as Record<string, unknown>))
       set({ projects, loading: false })
     } catch (err) {
       set({ error: String(err), loading: false })
+    }
+  },
+
+  fetchProjectById: async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', id)
+        .single()
+      if (error) throw error
+      if (!data) return null
+      const project = parseProject(data as Record<string, unknown>)
+      set(s => ({
+        projects: s.projects.some(p => p.id === id)
+          ? s.projects.map(p => p.id === id ? project : p)
+          : [...s.projects, project],
+      }))
+      return project
+    } catch (err) {
+      console.error('Error loading project:', err)
+      return null
     }
   },
 

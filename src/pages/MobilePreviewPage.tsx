@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Stage, Layer, Circle, Rect, RegularPolygon, Group, Text } from 'react-konva'
 import { useProjectStore } from '@/store/projectStore'
@@ -15,22 +15,32 @@ export function MobilePreviewPage() {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { projects, fetchProjects } = useProjectStore()
+  const { projects, fetchProjectById } = useProjectStore()
   const [sceneIndex, setSceneIndex] = useState(0)
   const [showShare, setShowShare] = useState(false)
+  const fetchingRef = useRef(false)
 
   useEffect(() => {
-    if (user) fetchProjects()
-  }, [user, fetchProjects])
+    if (!user || !projectId) return
+    const project = projects.find(p => p.id === projectId)
+    // Fetch full data when not in store or only a lightweight list summary
+    if (!project || project._sceneCount !== undefined) {
+      if (!fetchingRef.current) {
+        fetchingRef.current = true
+        fetchProjectById(projectId).finally(() => { fetchingRef.current = false })
+      }
+    }
+  }, [user, projectId, projects, fetchProjectById])
 
   const project = projects.find(p => p.id === projectId) as Project | undefined
-  const scenes = project?.scenes ?? []
+  const isReady = !!project && project._sceneCount === undefined
+  const scenes = isReady ? project.scenes : []
 
   const { isPlaying, currentFrame, play, stop } = useAnimationPlayer(scenes, 1500, STAGE_W, STAGE_H)
 
   const activeScene = scenes[sceneIndex]
 
-  if (!project) {
+  if (!isReady) {
     return (
       <div className="min-h-screen bg-negro flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-dorado border-t-transparent rounded-full animate-spin" />

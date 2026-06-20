@@ -12,7 +12,7 @@ import type { Project } from '@/types'
 export function EditorPage() {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
-  const { projects, saveProject } = useProjectStore()
+  const { projects, saveProject, fetchProjectById } = useProjectStore()
   const { scenes, activeSceneId, audioMarkers, loadScenes } = useEditorStore()
   const { members, fetchAll } = useCrewStore()
 
@@ -25,6 +25,7 @@ export function EditorPage() {
     return map
   }, [members])
   const loaded = useRef(false)
+  const fetchingById = useRef(false)
   const [isSaving, setIsSaving] = useState(false)
   const [showShare, setShowShare] = useState(false)
   const [showTutorial, setShowTutorial] = useState(() => !isTutorialDone())
@@ -33,16 +34,26 @@ export function EditorPage() {
   useEffect(() => {
     if (loaded.current) return
     const project = projects.find(p => p.id === projectId)
-    if (project?.scenes.length) {
+
+    // Project not in store or is a lightweight list summary — fetch full data
+    if (!project || project._sceneCount !== undefined) {
+      if (!fetchingById.current && projectId) {
+        fetchingById.current = true
+        fetchProjectById(projectId).finally(() => { fetchingById.current = false })
+      }
+      return
+    }
+
+    if (project.scenes.length) {
       loadScenes(project.scenes, project.activeSceneId, project.audioMarkers)
       loaded.current = true
     }
-  }, [projectId, projects, loadScenes])
+  }, [projectId, projects, loadScenes, fetchProjectById])
 
   const project = projects.find(p => p.id === projectId)
 
   async function handleSave() {
-    if (!project) return
+    if (!project || project._sceneCount !== undefined) return
     setIsSaving(true)
     const updated: Project = {
       ...project,
