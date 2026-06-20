@@ -133,6 +133,23 @@ El editor sigue funcionando porque usa `fetchProjectById` directo a la tabla `pr
 
 ---
 
+---
+
+## ⚠️ DECISIÓN DE PRODUCTO PENDIENTE — Límite de integrantes al importar grupo (20/06/2026)
+
+Al crear un proyecto vinculado a un grupo con más integrantes que el límite del plan:
+
+**Comportamiento actual (implementado):** se toman los primeros N integrantes por orden de creación (`.slice(0, limit)`). Free = 10, Pro = 50, Studio = sin límite.
+
+**Decisión pendiente:** ¿Es "los primeros por orden de creación" el criterio correcto? Alternativas:
+1. Los primeros por orden de creación ← implementado ahora
+2. Los marcados como "capitán" primero, luego el resto
+3. El usuario elige manualmente cuáles importar (requiere UI extra)
+
+**También falta:** mostrar un aviso en el modal de creación cuando el grupo tiene más integrantes que el límite del plan, antes de confirmar (actualmente el corte es silencioso).
+
+---
+
 ## Build + Lint
 ✅ `npm run build` limpio
 ✅ `npm run lint` limpio (0 warnings)

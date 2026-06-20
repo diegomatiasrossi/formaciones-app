@@ -85,7 +85,7 @@ export function ProjectsPage() {
   const [searchParams] = useSearchParams()
   const preloadedEventId = searchParams.get('eventId')
 
-  const { canCreateProject: canCreate } = usePlan()
+  const { canCreateProject: canCreate, features } = usePlan()
   const [showNew, setShowNew] = useState(false)
   const [newName, setNewName] = useState('')
   const [newGroupName, setNewGroupName] = useState('')
@@ -148,7 +148,9 @@ export function ProjectsPage() {
 
     // Si se vinculó a un grupo, traer integrantes "en escena" como dancers iniciales
     if (newGroupId && project.scenes[0]) {
-      const stageMembers = membersOfGroup(newGroupId).filter(m => m.type === 'stage')
+      const allStageMembers = membersOfGroup(newGroupId).filter(m => m.type === 'stage')
+      const limit = features.maxDancers === Infinity ? allStageMembers.length : features.maxDancers
+      const stageMembers = allStageMembers.slice(0, limit)
       const cx = 400, cy = 280, sp = 50
       project.scenes[0].dancers = stageMembers.map((m, i) => ({
         id: `d_${m.id}_${i}`,

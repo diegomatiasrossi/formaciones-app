@@ -56,6 +56,7 @@ export function Toolbar({
 
   const activeScene = scenes.find(s => s.id === activeSceneId)
   const dancerCount = activeScene?.dancers.length ?? 0
+  const limitReached = dancerCount >= maxDancers
 
   const btn = (active: boolean, extra?: string) =>
     clsx(
@@ -75,7 +76,13 @@ export function Toolbar({
       <button className={btn(tool === 'select')} onClick={() => setTool('select')} title={t('editor.tool_select_hint')}>
         ↖ {t('editor.tool_select')}
       </button>
-      <button className={btn(tool === 'add')} onClick={() => setTool('add')} title={t('editor.tool_add_hint')}>
+      <button
+        className={clsx(btn(tool === 'add'), limitReached && 'opacity-40 cursor-not-allowed')}
+        onClick={() => !limitReached && setTool('add')}
+        title={limitReached
+          ? t('plan.member_limit_reached', { limit: maxDancers === Infinity ? '∞' : maxDancers })
+          : t('editor.tool_add_hint')}
+      >
         + {t('editor.tool_add')}
       </button>
 

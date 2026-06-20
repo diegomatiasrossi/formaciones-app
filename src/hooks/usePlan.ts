@@ -19,7 +19,7 @@ export interface PlanFeatures {
 
 export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
   free: {
-    maxDancers:       15,
+    maxDancers:       10,
     maxProjects:      2,
     membersEnabled:   false,
     checklistEnabled: false,
