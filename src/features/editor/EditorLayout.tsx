@@ -23,13 +23,14 @@ interface Props {
   customStageW?: number | null
   customStageH?: number | null
   memberNames?: string[]
+  memberNameById?: Record<string, string>
   onBack: () => void
   onSave: () => void
   onShare?: () => void
   isSaving?: boolean
 }
 
-export function EditorLayout({ projectName, groupName, choreographyName, stageRatio, customStageW, customStageH, memberNames, onBack, onSave, onShare, isSaving }: Props) {
+export function EditorLayout({ projectName, groupName, choreographyName, stageRatio, customStageW, customStageH, memberNames, memberNameById, onBack, onSave, onShare, isSaving }: Props) {
   const { scenes, setActiveScene, stageWidth, stageHeight } = useEditorStore()
   const { features } = usePlan()
   const [showAudio, setShowAudio]       = useState(false)
@@ -166,7 +167,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
 
         <main className="flex-1 flex flex-col overflow-hidden relative">
           <div className="flex-1 overflow-hidden relative">
-            <StageCanvas animationOverride={animOverride} stageRatio={stageRatio} customStageW={customStageW} customStageH={customStageH} maxDancers={features.maxDancers} memberNames={memberNames} />
+            <StageCanvas animationOverride={animOverride} stageRatio={stageRatio} customStageW={customStageW} customStageH={customStageH} maxDancers={features.maxDancers} memberNames={memberNames} memberNameById={memberNameById} />
             {showStats && <StatisticsPanel onClose={() => setShowStats(false)} locked={!features.statsEnabled} />}
             {showChecklist && <ChecklistPanel onClose={() => setShowChecklist(false)} />}
             {showMembers && <MembersPanel onClose={() => setShowMembers(false)} />}

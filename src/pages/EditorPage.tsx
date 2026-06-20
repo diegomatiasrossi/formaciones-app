@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEditorStore } from '@/store/editorStore'
 import { useProjectStore } from '@/store/projectStore'
+import { useCrewStore } from '@/store/crewStore'
 import { EditorLayout } from '@/features/editor/EditorLayout'
 import { ShareModal } from '@/components/ui/ShareModal'
 import { TutorialOverlay, isTutorialDone } from '@/features/tutorial/TutorialOverlay'
@@ -13,6 +14,16 @@ export function EditorPage() {
   const navigate = useNavigate()
   const { projects, saveProject } = useProjectStore()
   const { scenes, activeSceneId, audioMarkers, loadScenes } = useEditorStore()
+  const { members, fetchAll } = useCrewStore()
+
+  // Cargar integrantes reales para resolver nombres en el canvas
+  useEffect(() => { fetchAll() }, [fetchAll])
+
+  const memberNameById = useMemo(() => {
+    const map: Record<string, string> = {}
+    members.forEach(m => { map[m.id] = [m.firstName, m.lastName].filter(Boolean).join(' ') })
+    return map
+  }, [members])
   const loaded = useRef(false)
   const [isSaving, setIsSaving] = useState(false)
   const [showShare, setShowShare] = useState(false)
@@ -75,6 +86,7 @@ export function EditorPage() {
         customStageW={project.stageWidth}
         customStageH={project.stageHeight}
         memberNames={(project.members ?? []).map(m => [m.name, m.lastName].filter(Boolean).join(' '))}
+        memberNameById={memberNameById}
         onBack={() => navigate('/projects')}
         onSave={handleSave}
         onShare={() => setShowShare(true)}

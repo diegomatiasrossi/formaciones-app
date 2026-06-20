@@ -33,14 +33,15 @@ interface Props {
   customStageW?: number | null
   customStageH?: number | null
   maxDancers?: number
-  memberNames?: string[]   // nombres reales de los integrantes del proyecto
+  memberNames?: string[]              // fallback por índice (compat)
+  memberNameById?: Record<string, string>  // resolución real por member_id
 }
 
 // Zoom limits
 const MIN_SCALE = 0.3
 const MAX_SCALE = 4
 
-export const StageCanvas = memo(function StageCanvas({ animationOverride, stageRatio = '16:9', customStageW, customStageH, maxDancers = Infinity, memberNames = [] }: Props) {
+export const StageCanvas = memo(function StageCanvas({ animationOverride, stageRatio = '16:9', customStageW, customStageH, maxDancers = Infinity, memberNames = [], memberNameById = {} }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
   const isDraggingDancer = useRef(false)
@@ -408,9 +409,12 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
             const dx = anim?.x ?? dancer.x
             const dy = anim?.y ?? dancer.y
             const outsideStage = dx < sx || dx > sx + sw || dy < sy || dy > sy + sh
-            // Nombre dinámico: usa el member por índice de escena (se actualiza al agregar members)
+            // Prioridad de nombre: member_id real → fallback por índice → dancer.name guardado
             const sceneIdx = dancers.indexOf(dancer)
-            const resolvedName = memberNames[sceneIdx] || dancer.name
+            const resolvedName =
+              (dancer.memberId && memberNameById[dancer.memberId]) ||
+              memberNames[sceneIdx] ||
+              dancer.name
             const d = { ...dancer, x: dx, y: dy, name: resolvedName }
             return (
               <CrewMemberShape

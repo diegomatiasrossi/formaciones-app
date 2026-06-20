@@ -31,6 +31,57 @@ export interface Dancer {
   active?: boolean
   entryEdge?: EdgeSide
   exitEdge?: EdgeSide
+  memberId?: string | null   // vínculo real a la tabla members (null = integrante suelto)
+}
+
+// ── Módulos: Integrantes / Grupos / Eventos / Actividades ──────────────────
+
+export type MemberType  = 'stage' | 'team'
+export type MemberLevel = 'beginner' | 'intermediate' | 'advanced' | 'professional'
+
+export interface CrewMember {
+  id: string
+  ownerId?: string
+  firstName: string
+  lastName?: string
+  phone?: string
+  email?: string
+  type: MemberType
+  level?: MemberLevel
+  role?: string
+  notes?: string
+  groupIds?: string[]   // grupos a los que pertenece (cargado vía group_members)
+  createdAt?: string
+}
+
+export interface CrewGroup {
+  id: string
+  ownerId?: string
+  name: string
+  createdAt?: string
+}
+
+export interface CrewEvent {
+  id: string
+  ownerId?: string
+  name: string
+  eventDate?: string
+  location?: string
+  groupId?: string | null
+  createdAt?: string
+}
+
+export type ActivityContext = 'event' | 'group'
+
+export interface Activity {
+  id: string
+  ownerId?: string
+  title: string
+  done: boolean
+  contextType: ActivityContext
+  contextId: string
+  isPreset?: boolean
+  createdAt?: string
 }
 
 export interface Scene {
