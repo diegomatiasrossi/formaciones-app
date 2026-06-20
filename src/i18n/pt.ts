@@ -1,4 +1,31 @@
 export default {
+  nav: {
+    space: 'Espaço', members: 'Integrantes', groups: 'Grupos', events: 'Eventos', projects: 'Projetos',
+  },
+  members: {
+    title: 'Integrantes', new: 'Novo integrante', edit: 'Editar integrante', count: 'integrantes',
+    empty: 'Você ainda não tem integrantes.', create_first: 'Cadastre seu primeiro integrante',
+    first_name: 'Nome', last_name: 'Sobrenome', phone: 'Telefone', email: 'E-mail',
+    type: 'Tipo', type_stage: 'Em cena', type_team: 'Equipe',
+    level: 'Nível', level_beginner: 'Iniciante', level_intermediate: 'Intermediário', level_advanced: 'Avançado', level_professional: 'Profissional',
+    role: 'Função', role_member: 'Integrante', role_captain: 'Capitão/ã', role_choreographer: 'Coreógrafo/a', role_logistics: 'Logística', role_other: 'Outro',
+    notes: 'Notas', groups_btn: 'Grupos', assign_groups: 'Atribuir a grupos', no_groups_yet: 'Você ainda não criou nenhum grupo.',
+    delete_confirm: 'Excluir',
+  },
+  groups: {
+    title: 'Grupos', new: 'Novo grupo', open: 'Abrir', empty: 'Você ainda não tem grupos.', create_first: 'Crie seu primeiro grupo',
+    name_placeholder: 'Nome do grupo', members: 'Integrantes', manage: 'Gerenciar', no_members: 'Sem integrantes atribuídos.',
+    events: 'Eventos', no_events: 'Sem eventos ainda.', delete_confirm: 'Excluir o grupo',
+  },
+  events: {
+    title: 'Eventos', new: 'Novo evento', open: 'Abrir', empty: 'Você ainda não tem eventos.', create_first: 'Crie seu primeiro evento',
+    name: 'Nome do evento', date: 'Data', location: 'Local', group: 'Grupo associado',
+    formation: 'Coreografia', open_formation: 'Abrir formação', create_formation: 'Criar formação para este evento',
+    has_formation: 'Com formação', no_formation: 'Sem formação', delete_confirm: 'Excluir o evento',
+  },
+  activities: {
+    title: 'Atividades', placeholder: 'Adicionar tarefa...', empty: 'Sem atividades ainda.',
+  },
   common: {
     save: 'Salvar',
     cancel: 'Cancelar',

@@ -43,6 +43,8 @@ function parseProject(row: Record<string, unknown>): Project {
     stageRatio: ((row.stage_ratio as StageRatio) ?? '16:9') as StageRatio,
     stageWidth:  (row.stage_width  as number | null) ?? null,
     stageHeight: (row.stage_height as number | null) ?? null,
+    groupId: (row.group_id as string | null) ?? null,
+    eventId: (row.event_id as string | null) ?? null,
     scenes: (row.data as Record<string, unknown>)?.scenes as Project['scenes'] ?? [],
     activeSceneId: (row.data as Record<string, unknown>)?.activeSceneId as string ?? '',
     audioMarkers: (row.data as Record<string, unknown>)?.audioMarkers as Project['audioMarkers'] ?? [],
@@ -70,6 +72,8 @@ async function projectToRow(project: Project) {
     // Solo incluir si tienen valor real — evita error si la columna aún no existe en Supabase
     ...(project.stageWidth  != null ? { stage_width:  project.stageWidth  } : {}),
     ...(project.stageHeight != null ? { stage_height: project.stageHeight } : {}),
+    ...(project.groupId != null ? { group_id: project.groupId } : {}),
+    ...(project.eventId != null ? { event_id: project.eventId } : {}),
     owner_id: project.ownerId ?? user?.id ?? null,
     data: {
       scenes: project.scenes,

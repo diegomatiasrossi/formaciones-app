@@ -5,6 +5,9 @@ import { EditorPage } from '@/pages/EditorPage'
 import { SharePage } from '@/pages/SharePage'
 import { PricingPage } from '@/pages/PricingPage'
 import { PrivacyPage } from '@/pages/PrivacyPage'
+import { IntegrantesPage } from '@/pages/IntegrantesPage'
+import { GruposPage } from '@/pages/GruposPage'
+import { EventosPage } from '@/pages/EventosPage'
 import { MobilePreviewPage } from '@/pages/MobilePreviewPage'
 import { AuthPage } from '@/features/auth/AuthPage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
@@ -50,6 +53,9 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/integrantes" element={<ProtectedRoute><IntegrantesPage /></ProtectedRoute>} />
+          <Route path="/grupos" element={<ProtectedRoute><GruposPage /></ProtectedRoute>} />
+          <Route path="/eventos" element={<ProtectedRoute><EventosPage /></ProtectedRoute>} />
           <Route
             path="/editor/:projectId"
             element={

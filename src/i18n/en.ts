@@ -1,4 +1,31 @@
 export default {
+  nav: {
+    space: 'Space', members: 'Members', groups: 'Groups', events: 'Events', projects: 'Projects',
+  },
+  members: {
+    title: 'Members', new: 'New member', edit: 'Edit member', count: 'members',
+    empty: 'You have no members yet.', create_first: 'Add your first member',
+    first_name: 'First name', last_name: 'Last name', phone: 'Phone', email: 'Email',
+    type: 'Type', type_stage: 'On stage', type_team: 'Team',
+    level: 'Level', level_beginner: 'Beginner', level_intermediate: 'Intermediate', level_advanced: 'Advanced', level_professional: 'Professional',
+    role: 'Role', role_member: 'Member', role_captain: 'Captain', role_choreographer: 'Choreographer', role_logistics: 'Logistics', role_other: 'Other',
+    notes: 'Notes', groups_btn: 'Groups', assign_groups: 'Assign to groups', no_groups_yet: "You haven't created any groups yet.",
+    delete_confirm: 'Delete',
+  },
+  groups: {
+    title: 'Groups', new: 'New group', open: 'Open', empty: 'You have no groups yet.', create_first: 'Create your first group',
+    name_placeholder: 'Group name', members: 'Members', manage: 'Manage', no_members: 'No members assigned.',
+    events: 'Events', no_events: 'No events yet.', delete_confirm: 'Delete group',
+  },
+  events: {
+    title: 'Events', new: 'New event', open: 'Open', empty: 'You have no events yet.', create_first: 'Create your first event',
+    name: 'Event name', date: 'Date', location: 'Location', group: 'Associated group',
+    formation: 'Choreography', open_formation: 'Open formation', create_formation: 'Create formation for this event',
+    has_formation: 'With formation', no_formation: 'No formation', delete_confirm: 'Delete event',
+  },
+  activities: {
+    title: 'Activities', placeholder: 'Add task...', empty: 'No activities yet.',
+  },
   common: {
     save: 'Save',
     cancel: 'Cancel',

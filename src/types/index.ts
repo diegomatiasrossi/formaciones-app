@@ -124,6 +124,8 @@ export interface Project {
   notes?: string
   members?: Member[]
   checklist?: ChecklistItem[]
+  groupId?: string | null
+  eventId?: string | null
 }
 
 export interface FormationPoint {
