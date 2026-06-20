@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#1a1a1a"/>
+
+  <!-- Subtle grid lines for texture -->
+  <line x1="0" y1="210" x2="1200" y2="210" stroke="#2a2a2a" stroke-width="1"/>
+  <line x1="0" y1="420" x2="1200" y2="420" stroke="#2a2a2a" stroke-width="1"/>
+  <line x1="400" y1="0" x2="400" y2="630" stroke="#2a2a2a" stroke-width="1"/>
+  <line x1="800" y1="0" x2="800" y2="630" stroke="#2a2a2a" stroke-width="1"/>
+
+  <!-- Gold accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#C9A961"/>
+
+  <!-- Logo symbol — scaled to ~90px wide (original viewBox 879.19x1000) -->
+  <g transform="translate(100, 235) scale(0.09)">
+    <g fill="#f5f5f0">
+      <path fill-rule="evenodd" d="M338.9 73.8 L335.6 181.2 L120.8 305.4 L110.7 305.4 L0.0 238.3 L0.0 745.0 L114.1 812.1 L191.3 765.1 L214.8 758.4 L335.6 832.2 L335.6 943.0 L419.5 993.3 L446.3 1000.0 L543.6 943.0 L543.6 832.2 L600.7 795.3 L627.5 785.2 L664.4 758.4 L677.9 758.4 L765.1 812.1 L879.2 745.0 L879.2 614.1 L761.7 681.2 L543.6 550.3 L543.6 459.7 L657.7 389.3 L674.5 382.6 L768.5 436.2 L875.8 372.5 L879.2 238.3 L781.9 298.7 L758.4 305.4 L543.6 181.2 L543.6 73.8 L443.0 130.9 L338.9 73.8Z M342.3 201.3 L436.2 258.4 L533.6 201.3 L543.6 204.7 L661.1 275.2 L657.7 365.8 L436.2 493.3 L221.5 365.8 L221.5 271.8 L342.3 201.3Z M23.5 382.6 L110.7 436.2 L127.5 432.9 L211.4 382.6 L258.4 416.1 L335.6 456.4 L335.6 550.3 L130.9 674.5 L117.4 681.2 L100.7 674.5 L23.5 627.5 L23.5 382.6Z M345.6 570.5 L436.2 624.2 L520.1 573.8 L536.9 570.5 L661.1 647.7 L661.1 738.3 L449.7 862.4 L429.5 862.4 L221.5 738.3 L221.5 644.3 L345.6 570.5Z"/>
+      <circle cx="439.7" cy="46.5"  r="45.7"/>
+      <circle cx="115.6" cy="220.9" r="45.8"/>
+      <circle cx="763.4" cy="220.0" r="45.7"/>
+      <circle cx="439.6" cy="406.9" r="45.8"/>
+      <circle cx="115.7" cy="595.3" r="46.0"/>
+      <circle cx="763.4" cy="595.4" r="45.9"/>
+      <circle cx="439.6" cy="779.9" r="45.8"/>
+    </g>
+  </g>
+
+  <!-- Wordmark: Crewficina -->
+  <text x="210" y="303" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="64" fill="#f5f5f0" letter-spacing="-1.5">Crewfic</text>
+  <text x="530" y="303" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="64" fill="#C9A961" letter-spacing="-1.5">i</text>
+  <text x="550" y="303" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="64" fill="#f5f5f0" letter-spacing="-1.5">na</text>
+
+  <!-- Tagline -->
+  <text x="210" y="360" font-family="Inter, -apple-system, sans-serif" font-weight="400" font-size="26" fill="#8a8a8a" letter-spacing="0.2">Tu oficina de planificación coreográfica.</text>
+
+  <!-- Feature pills -->
+  <rect x="210" y="420" width="170" height="38" rx="19" fill="#2a2a2a" stroke="#3a3a3a" stroke-width="1"/>
+  <text x="295" y="445" font-family="Inter, -apple-system, sans-serif" font-size="15" fill="#f5f5f0" text-anchor="middle">⬡ Formaciones</text>
+
+  <rect x="396" y="420" width="150" height="38" rx="19" fill="#2a2a2a" stroke="#3a3a3a" stroke-width="1"/>
+  <text x="471" y="445" font-family="Inter, -apple-system, sans-serif" font-size="15" fill="#f5f5f0" text-anchor="middle">◉ Crew</text>
+
+  <rect x="562" y="420" width="165" height="38" rx="19" fill="#2a2a2a" stroke="#3a3a3a" stroke-width="1"/>
+  <text x="645" y="445" font-family="Inter, -apple-system, sans-serif" font-size="15" fill="#f5f5f0" text-anchor="middle">◈ Eventos</text>
+
+  <!-- URL -->
+  <text x="210" y="555" font-family="Inter, -apple-system, sans-serif" font-size="18" fill="#C9A961" letter-spacing="0.5">crewficina.com</text>
+</svg>

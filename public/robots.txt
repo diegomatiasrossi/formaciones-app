@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /editor/
+Disallow: /projects
+Disallow: /integrantes
+Disallow: /grupos
+Disallow: /eventos
+Disallow: /reportes
+Disallow: /login
+
+Sitemap: https://crewficina.com/sitemap.xml

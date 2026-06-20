@@ -150,6 +150,57 @@ Al crear un proyecto vinculado a un grupo con más integrantes que el límite de
 
 ---
 
+---
+
+## SEO técnico — pendientes y diagnóstico (20/06/2026)
+
+### 🟡 og-image: SVG placeholder, necesita PNG
+
+`public/og-image.svg` es un SVG diseñado con el branding de Crewficina
+(fondo oscuro, logo, tagline, pills de features, URL).
+
+**Problema:** WhatsApp, Facebook y la mayoría de las redes sociales NO aceptan
+SVG como og:image — requieren JPEG o PNG. Twitter/X sí acepta SVG.
+
+**Acción requerida:** convertir `public/og-image.svg` a `public/og-image.png`
+(1200×630px) y actualizar las rutas en `index.html`. Herramientas sugeridas:
+- Inkscape CLI: `inkscape og-image.svg --export-type=png -w 1200 -h 630 -o og-image.png`
+- Online: svgtopng.com
+- Figma/Canva: pegar el SVG y exportar como PNG
+
+Una vez creado el PNG, actualizar en `index.html`:
+```
+og:image  → https://crewficina.com/og-image.png
+twitter:image → https://crewficina.com/og-image.png
+```
+
+### 🟡 SPA vs crawlers — diagnóstico
+
+**Situación:** la app es una SPA pura (React + Vite, sin SSR). Vercel sirve
+`index.html` para todas las rutas (catch-all en `vercel.json`).
+
+**Impacto en SEO:**
+- Google Googlebot SÍ renderiza JavaScript (desde 2014), pero el proceso es
+  asíncrono: primero indexa el HTML vacío, luego vuelve a renderizar con JS.
+  Esto puede tardar días o semanas para páginas nuevas.
+- La landing (`/`) es la única página que debe indexarse; las demás requieren
+  login y ya están en `robots.txt` como `Disallow`.
+- Para la landing, Google eventualmente verá el contenido React completo.
+
+**Opción de mejora futura (no urgente):**
+Implementar SSG solo para la landing usando `vite-plugin-ssg` o `react-snap`.
+Esto pre-renderiza la landing como HTML estático, lo que Google ve
+inmediatamente. El resto de la app (editor, proyectos) sigue como SPA.
+NO implementar hasta que haya señales de que el crawler no está indexando
+el contenido de la landing correctamente.
+
+**Para diagnosticar si Google ve el contenido:**
+Usar Google Search Console → Inspección de URL → `crewficina.com`
+→ "Ver como Googlebot". Si muestra el HTML renderizado de la landing, no hay
+problema. Si muestra HTML vacío (`<div id="root"></div>`), hay que considerar SSG.
+
+---
+
 ## Build + Lint
 ✅ `npm run build` limpio
 ✅ `npm run lint` limpio (0 warnings)
