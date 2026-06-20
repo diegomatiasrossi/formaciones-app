@@ -22,6 +22,7 @@ create table if not exists organization_members (
   organization_id uuid not null references organizations(id) on delete cascade,
   user_id         uuid not null references auth.users(id) on delete cascade,
   role            text not null check (role in ('admin', 'editor', 'viewer')),
+  email           text,          -- copied at join time; avoids querying auth.users from client
   invited_at      timestamptz default now(),
   joined_at       timestamptz,  -- null hasta que acepta la invitación
   primary key (organization_id, user_id)
@@ -143,8 +144,14 @@ begin
     values (trim(org_name))
     returning id into new_org_id;
 
-  insert into organization_members (organization_id, user_id, role, joined_at)
-    values (new_org_id, auth.uid(), 'admin', now());
+  insert into organization_members (organization_id, user_id, role, email, joined_at)
+    values (
+      new_org_id,
+      auth.uid(),
+      'admin',
+      (select email from auth.users where id = auth.uid()),
+      now()
+    );
 
   return new_org_id;
 end;
@@ -180,11 +187,11 @@ begin
     raise exception 'Esta invitación no corresponde a tu cuenta';
   end if;
 
-  -- Agregar o actualizar membresía
-  insert into organization_members (organization_id, user_id, role, joined_at)
-    values (invite_row.organization_id, auth.uid(), invite_row.role, now())
+  -- Agregar o actualizar membresía (el email viene del invite, no se consulta auth.users)
+  insert into organization_members (organization_id, user_id, role, email, joined_at)
+    values (invite_row.organization_id, auth.uid(), invite_row.role, invite_row.email, now())
     on conflict (organization_id, user_id)
-    do update set role = excluded.role, joined_at = now();
+    do update set role = excluded.role, email = excluded.email, joined_at = now();
 
   -- Marcar invitación como aceptada
   update organization_invites

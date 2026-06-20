@@ -40,7 +40,7 @@ export function OrganizacionPage() {
       const [membRes, invRes] = await Promise.all([
         supabase
           .from('organization_members')
-          .select('user_id, role, invited_at, joined_at, auth_users:user_id(email)')
+          .select('user_id, email, role, invited_at, joined_at')
           .eq('organization_id', orgId),
         supabase
           .from('organization_invites')
@@ -50,16 +50,13 @@ export function OrganizacionPage() {
           .gt('expires_at', new Date().toISOString()),
       ])
 
-      const members: OrgMember[] = (membRes.data ?? []).map((r: Record<string, unknown>) => {
-        const authUser = r.auth_users as { email?: string } | null
-        return {
-          userId:    r.user_id as string,
-          email:     authUser?.email,
-          role:      r.role as OrgRole,
-          invitedAt: r.invited_at as string | undefined,
-          joinedAt:  r.joined_at as string | undefined,
-        }
-      })
+      const members: OrgMember[] = (membRes.data ?? []).map((r: Record<string, unknown>) => ({
+        userId:    r.user_id as string,
+        email:     (r.email as string | null) ?? undefined,
+        role:      r.role as OrgRole,
+        invitedAt: r.invited_at as string | undefined,
+        joinedAt:  r.joined_at as string | undefined,
+      }))
       setOrgMembers(members)
 
       const inv: OrgInvite[] = (invRes.data ?? []).map((r: Record<string, unknown>) => ({
