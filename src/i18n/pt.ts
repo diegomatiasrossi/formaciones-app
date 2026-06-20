@@ -7,7 +7,7 @@ export default {
     select_project: 'Selecione um projeto',
     no_scenes: 'Este projeto não tem cenas.',
     symmetry_title: '% Simetria',
-    symmetry_explanation: 'Mede o quanto sua formação está espelhada em relação ao centro do palco, lado esquerdo versus lado direito. Uma % alta significa uma coreografia mais simétrica; uma % baixa significa que você está usando o espaço de forma mais assimétrica ou dinâmica. Nenhuma é melhor — depende do que você quer transmitir.',
+    symmetry_explanation: 'Mede o quanto sua formação está espelhada em relação ao centro do palco, lado esquerdo versus lado direito. Uma % alta significa uma coreografia mais simétrica; uma % baixa significa que você está usando o espaço de forma mais assimétrica ou dinâmica. Nenhuma é melhor — depende do que você quer transmitir. O cálculo admite uma pequena margem de tolerância (não exige espelho perfeito), então pequenas diferenças de posição não afetam o resultado.',
     by_scene: 'Por cena',
     scene_empty: 'Sem integrantes',
   },

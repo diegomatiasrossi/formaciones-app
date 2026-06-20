@@ -7,7 +7,7 @@ export default {
     select_project: 'Select a project',
     no_scenes: 'This project has no scenes.',
     symmetry_title: '% Symmetry',
-    symmetry_explanation: 'Measures how mirrored your formation is relative to the center of the stage, left side versus right side. A high % means a more symmetric choreography; a low % means you\'re using the space in a more asymmetric or dynamic way. Neither is better — it depends on what you\'re going for.',
+    symmetry_explanation: 'Measures how mirrored your formation is relative to the center of the stage, left side versus right side. A high % means a more symmetric choreography; a low % means you\'re using the space in a more asymmetric or dynamic way. Neither is better — it depends on what you\'re going for. The calculation allows for a small tolerance margin (it doesn\'t require a perfect mirror), so minor position differences won\'t affect the result.',
     by_scene: 'By scene',
     scene_empty: 'No members',
   },
