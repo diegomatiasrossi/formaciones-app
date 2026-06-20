@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useProjectStore } from '@/store/projectStore'
+import { useCrewStore } from '@/store/crewStore'
 import { useAuth } from '@/features/auth/useAuth'
 import { useEditorStore } from '@/store/editorStore'
 import { Modal } from '@/components/ui/Modal'
 import { SkeletonGrid } from '@/components/ui/SkeletonCard'
 import { OnboardingModal } from '@/components/ui/OnboardingModal'
 import { Logo } from '@/components/ui/Logo'
+import { ModuleNav } from '@/components/ui/ModuleNav'
 import { toggleLanguage } from '@/i18n'
 import { usePlan } from '@/hooks/usePlan'
 import type { Project, StageRatio } from '@/types'
@@ -78,7 +80,10 @@ export function ProjectsPage() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
   const { projects, loading, fetchProjects, createLocalProject, saveProject, deleteProject } = useProjectStore()
+  const { groups, fetchAll, membersOfGroup } = useCrewStore()
   const loadScenes = useEditorStore(s => s.loadScenes)
+  const [searchParams] = useSearchParams()
+  const preloadedEventId = searchParams.get('eventId')
 
   const { canCreateProject: canCreate } = usePlan()
   const [showNew, setShowNew] = useState(false)
@@ -88,6 +93,7 @@ export function ProjectsPage() {
   const [newStageRatio, setNewStageRatio] = useState<StageRatio>('16:9')
   const [newStageWidth, setNewStageWidth]   = useState('')
   const [newStageHeight, setNewStageHeight] = useState('')
+  const [newGroupId, setNewGroupId] = useState('')
   const [newStartDate, setNewStartDate] = useState('')
   const [newEndDate, setNewEndDate] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<Project | null>(null)
@@ -102,8 +108,13 @@ export function ProjectsPage() {
   }
 
   useEffect(() => {
-    if (user) fetchProjects()
-  }, [user, fetchProjects])
+    if (user) { fetchProjects(); fetchAll() }
+  }, [user, fetchProjects, fetchAll])
+
+  // Si vino con ?eventId= desde Eventos, abrir el modal de creación directo
+  useEffect(() => {
+    if (preloadedEventId) setShowNew(true)
+  }, [preloadedEventId])
 
   function openProject(project: Project) {
     loadScenes(project.scenes, project.activeSceneId, project.audioMarkers)
@@ -128,14 +139,29 @@ export function ProjectsPage() {
       startDate: newStartDate || undefined,
       endDate: newEndDate || undefined,
     })
+    // Vínculo a grupo/evento
+    project.groupId = newGroupId || null
+    project.eventId = preloadedEventId || null
+
+    // Si se vinculó a un grupo, traer integrantes "en escena" como dancers iniciales
+    if (newGroupId && project.scenes[0]) {
+      const stageMembers = membersOfGroup(newGroupId).filter(m => m.type === 'stage')
+      const cx = 400, cy = 280, sp = 50
+      project.scenes[0].dancers = stageMembers.map((m, i) => ({
+        id: `d_${m.id}_${i}`,
+        name: [m.firstName, m.lastName].filter(Boolean).join(' '),
+        x: cx + (i - (stageMembers.length - 1) / 2) * sp,
+        y: cy,
+        color: '#C9A961',
+        shape: 'circle' as const,
+        size: 14,
+        level: 'standing' as const,
+        memberId: m.id,
+      }))
+    }
+
     await saveProject(project)
-    setShowNew(false)
-    setNewName('')
-    setNewGroupName('')
-    setNewChoreographyName('')
-    setNewStageRatio('16:9')
-    setNewStartDate('')
-    setNewEndDate('')
+    resetForm()
     navigate(`/editor/${project.id}`)
   }
 
@@ -145,7 +171,7 @@ export function ProjectsPage() {
   const resetForm = () => {
     setShowNew(false); setNewName(''); setNewGroupName(''); setNewChoreographyName('')
     setNewStageRatio('16:9'); setNewStageWidth(''); setNewStageHeight('')
-    setNewStartDate(''); setNewEndDate('')
+    setNewGroupId(''); setNewStartDate(''); setNewEndDate('')
   }
 
   return (
@@ -173,6 +199,8 @@ export function ProjectsPage() {
           )}
         </div>
       </header>
+
+      <ModuleNav active="space" />
 
       {/* Contenido */}
       <main className="max-w-5xl mx-auto px-6 py-10">
@@ -294,6 +322,22 @@ export function ProjectsPage() {
             <input type="text" value={newChoreographyName} onChange={e => setNewChoreographyName(e.target.value)} placeholder="Ej: Show fin de año" maxLength={200}
               className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo placeholder:text-gris/50" />
           </div>
+          {/* Vincular a grupo — trae integrantes en escena */}
+          {groups.length > 0 && (
+            <div>
+              <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">{t('projects.link_group')} <span className="text-gris/50">{t('projects.form_optional')}</span></label>
+              <select value={newGroupId} onChange={e => setNewGroupId(e.target.value)}
+                className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo">
+                <option value="">—</option>
+                {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+              </select>
+              {newGroupId && (
+                <p className="text-[10px] text-dorado-oscuro mt-1">
+                  {membersOfGroup(newGroupId).filter(m => m.type === 'stage').length} {t('projects.members_loaded')}
+                </p>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">{t('projects.form_start')} <span className="text-gris/50">{t('projects.form_optional')}</span></label>

@@ -309,6 +309,8 @@ export default {
     members_abbr: 'memb.',
     delete_confirm: 'Delete',
     delete_warning: 'This action cannot be undone.',
+    link_group: 'Link to a group',
+    members_loaded: 'on-stage members will be loaded',
   },
   landing: {
     headline: 'Your choreographic office.',

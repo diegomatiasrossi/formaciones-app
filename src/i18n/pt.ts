@@ -309,6 +309,8 @@ export default {
     members_abbr: 'integ.',
     delete_confirm: 'Excluir',
     delete_warning: 'Esta ação não pode ser desfeita.',
+    link_group: 'Vincular a um grupo',
+    members_loaded: 'integrantes em cena serão carregados',
   },
   landing: {
     headline: 'Seu escritório coreográfico.',
