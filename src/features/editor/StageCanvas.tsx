@@ -33,13 +33,14 @@ interface Props {
   customStageW?: number | null
   customStageH?: number | null
   maxDancers?: number
+  memberNames?: string[]   // nombres reales de los integrantes del proyecto
 }
 
 // Zoom limits
 const MIN_SCALE = 0.3
 const MAX_SCALE = 4
 
-export const StageCanvas = memo(function StageCanvas({ animationOverride, stageRatio = '16:9', customStageW, customStageH, maxDancers = Infinity }: Props) {
+export const StageCanvas = memo(function StageCanvas({ animationOverride, stageRatio = '16:9', customStageW, customStageH, maxDancers = Infinity, memberNames = [] }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Konva.Stage>(null)
   const isDraggingDancer = useRef(false)
@@ -257,9 +258,11 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
       )?.dancers.length ?? 0
       if (currentCount >= maxDancers) return
       const pos = e.target.getStage()!.getPointerPosition()!
-      addDancerAt(pos.x, pos.y)
+      // Usar nombre real del integrante si existe en la lista del proyecto
+      const memberName = memberNames[currentCount] ?? undefined
+      addDancerAt(pos.x, pos.y, memberName)
     }
-  }, [tool, addDancerAt, maxDancers])
+  }, [tool, addDancerAt, maxDancers, memberNames])
 
   // ── Bug 1 fix: drag grupal ─────────────────────────────────────
   const handleDragStart = useCallback((id: string) => {
@@ -382,7 +385,8 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
             )?.dancers.length ?? 0
             if (currentCount >= maxDancers) return
             const pos = e.target.getStage()!.getPointerPosition()!
-            addDancerAt(pos.x, pos.y)
+            const memberName = memberNames[currentCount] ?? undefined
+            addDancerAt(pos.x, pos.y, memberName)
           }
         }}
       >

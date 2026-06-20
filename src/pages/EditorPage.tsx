@@ -74,6 +74,7 @@ export function EditorPage() {
         stageRatio={project.stageRatio}
         customStageW={project.stageWidth}
         customStageH={project.stageHeight}
+        memberNames={(project.members ?? []).map(m => [m.name, m.lastName].filter(Boolean).join(' '))}
         onBack={() => navigate('/projects')}
         onSave={handleSave}
         onShare={() => setShowShare(true)}

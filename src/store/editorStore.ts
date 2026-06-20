@@ -35,7 +35,7 @@ interface EditorActions {
   removeScene: (id: string) => void
   renameScene: (id: string, name: string) => void
   duplicateScene: (id: string) => void
-  addDancerAt: (x: number, y: number) => void
+  addDancerAt: (x: number, y: number, memberName?: string) => void
   moveDancer: (id: string, x: number, y: number) => void
   moveDancers: (deltas: { id: string; x: number; y: number }[]) => void
   deleteSelected: () => void
@@ -49,7 +49,7 @@ interface EditorActions {
   selectAll: () => void
   clearSelection: () => void
   setSelectedIds: (ids: string[]) => void
-  applyFormation: (id: FormationId) => void
+  applyFormation: (id: FormationId, memberNames?: string[]) => void
   rotateAll: (deg: number) => void
   mirrorH: () => void
   mirrorV: () => void
@@ -79,8 +79,10 @@ interface EditorActions {
 function makeDancer(
   x: number, y: number, index: number,
   color: string, shape: DancerShape, size: number,
+  memberName?: string,
 ): Dancer {
-  return { id: nanoid(), name: `B${index}`, x, y, color, shape, size, level: 'standing' }
+  const name = memberName?.trim() || `B${index}`
+  return { id: nanoid(), name, x, y, color, shape, size, level: 'standing' }
 }
 
 function makeScene(name: string): Scene {
@@ -190,13 +192,14 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   // ── Bailarines ───────────────────────────────────────────────────
 
-  addDancerAt: (rawX, rawY) => {
+  addDancerAt: (rawX, rawY, memberName?) => {
     const { newColor, newShape, newSize, snapEnabled, gridSize, scenes, activeSceneId } = get()
     const scene = scenes.find(s => s.id === activeSceneId)
     if (scene && scene.dancers.length >= 50) return
     const x = snapEnabled ? snapToGrid(rawX, gridSize) : Math.round(rawX)
     const y = snapEnabled ? snapToGrid(rawY, gridSize) : Math.round(rawY)
-    const d = makeDancer(x, y, (scene?.dancers.length ?? 0) + 1, newColor, newShape, newSize)
+    const index = (scene?.dancers.length ?? 0) + 1
+    const d = makeDancer(x, y, index, newColor, newShape, newSize, memberName)
     set(s => ({
       ...withHistory(s, () => ({
         scenes: updateActive(s.scenes, s.activeSceneId, sc => ({ ...sc, dancers: [...sc.dancers, d] })),
@@ -329,13 +332,13 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   // ── Formaciones ──────────────────────────────────────────────────
 
-  applyFormation: id => {
+  applyFormation: (id, memberNames?) => {
     const { newDancerCount, newColor, newShape, newSize, stageWidth, stageHeight } = get()
     const cx = stageWidth / 2
     const cy = stageHeight / 2
     const pts = generateFormation(id, newDancerCount, cx, cy, 40)
     const dancers: Dancer[] = pts.map((p, i) =>
-      makeDancer(p.x, p.y, i + 1, newColor, newShape, newSize),
+      makeDancer(p.x, p.y, i + 1, newColor, newShape, newSize, memberNames?.[i]),
     )
     set(s => ({
       ...withHistory(s, () => ({
