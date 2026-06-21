@@ -12,7 +12,7 @@ export function OrganizacionPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { activeWorkspace, memberships, loadMemberships } = useWorkspaceStore()
+  const { activeWorkspace, memberships, loadMemberships, switchToOrg } = useWorkspaceStore()
 
   const [orgMembers, setOrgMembers] = useState<OrgMember[]>([])
   const [invites, setInvites]       = useState<OrgInvite[]>([])
@@ -23,6 +23,7 @@ export function OrganizacionPage() {
   const [orgName, setOrgName]         = useState('')
   const [editingName, setEditingName] = useState(false)
   const [saving, setSaving]           = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
 
   const isOrgAdmin = activeWorkspace.type === 'org' && activeWorkspace.role === 'admin'
   const orgId      = activeWorkspace.type === 'org' ? activeWorkspace.orgId : null
@@ -121,11 +122,18 @@ export function OrganizacionPage() {
   async function handleCreateOrg() {
     if (!orgName.trim()) return
     setSaving(true)
+    setCreateError(null)
     const { data, error } = await supabase.rpc('create_organization', { org_name: orgName.trim() })
     setSaving(false)
-    if (!error && data) {
+    if (error) {
+      setCreateError(error.message)
+      return
+    }
+    if (data) {
       await loadMemberships()
-      navigate('/organizacion')
+      switchToOrg(data as string)
+      // No navigate needed: switchToOrg updates activeWorkspace in the store,
+      // which re-renders this component with orgId set, showing the management UI.
     }
   }
 
@@ -142,7 +150,8 @@ export function OrganizacionPage() {
           <h1 className="text-xl font-semibold mb-2">{t('org.create_org')}</h1>
           <p className="text-sm text-gris mb-8">{t('org.no_org_yet')}</p>
           <div className="flex gap-3">
-            <input value={orgName} onChange={e => setOrgName(e.target.value)}
+            <input value={orgName} onChange={e => { setOrgName(e.target.value); setCreateError(null) }}
+              onKeyDown={e => e.key === 'Enter' && handleCreateOrg()}
               placeholder={t('org.org_name_placeholder')}
               className="flex-1 bg-blanco border border-borde-light rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-rojo" />
             <button onClick={handleCreateOrg} disabled={!orgName.trim() || saving}
@@ -150,6 +159,11 @@ export function OrganizacionPage() {
               {saving ? '...' : t('org.create_org')}
             </button>
           </div>
+          {createError && (
+            <div className="mt-3 px-4 py-3 bg-rojo/8 border border-rojo/30 rounded-lg text-sm text-rojo text-left">
+              {createError}
+            </div>
+          )}
 
           {memberships.length > 0 && (
             <div className="mt-10 text-left">
