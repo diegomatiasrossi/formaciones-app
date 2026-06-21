@@ -123,17 +123,36 @@ export function OrganizacionPage() {
     if (!orgName.trim()) return
     setSaving(true)
     setCreateError(null)
+    console.log('[org] calling create_organization RPC with name:', orgName.trim())
     const { data, error } = await supabase.rpc('create_organization', { org_name: orgName.trim() })
     setSaving(false)
+    console.log('[org] RPC result — data:', data, '| error:', error)
     if (error) {
       setCreateError(error.message)
       return
     }
-    if (data) {
-      await loadMemberships()
-      switchToOrg(data as string)
-      // No navigate needed: switchToOrg updates activeWorkspace in the store,
-      // which re-renders this component with orgId set, showing the management UI.
+    if (!data) {
+      setCreateError('La función no devolvió un ID. Revisá la consola.')
+      return
+    }
+    const newOrgId = String(data)
+    await loadMemberships()
+    console.log('[org] after loadMemberships, memberships in store:', useWorkspaceStore.getState().memberships)
+    // Primary path: switchToOrg reads from the updated memberships store
+    switchToOrg(newOrgId)
+    console.log('[org] after switchToOrg, activeWorkspace:', useWorkspaceStore.getState().activeWorkspace)
+    // Defensive fallback: if switchToOrg didn't find the membership (e.g. loadMemberships
+    // returned empty due to a transient RLS or query issue), set the workspace directly
+    // using the data we already have from the RPC call.
+    if (useWorkspaceStore.getState().activeWorkspace.type !== 'org') {
+      console.warn('[org] switchToOrg did not update activeWorkspace — applying direct fallback')
+      useWorkspaceStore.setState({
+        activeWorkspace: { type: 'org', orgId: newOrgId, orgName: orgName.trim(), role: 'admin' },
+        memberships: [
+          ...useWorkspaceStore.getState().memberships,
+          { organizationId: newOrgId, organizationName: orgName.trim(), role: 'admin' as const },
+        ],
+      })
     }
   }
 

@@ -34,11 +34,16 @@ export const useWorkspaceStore = create<WorkspaceState & WorkspaceActions>()((se
     if (!user) return
 
     // Load orgs the user belongs to (joined only — not pending invites)
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('organization_members')
       .select('organization_id, role, joined_at, organizations(id, name)')
       .eq('user_id', user.id)
       .not('joined_at', 'is', null)
+
+    if (error) {
+      console.error('[workspace] loadMemberships query error:', error)
+    }
+    console.log('[workspace] loadMemberships raw data:', JSON.stringify(data))
 
     const memberships: OrgMembership[] = (data ?? []).map((row: Record<string, unknown>) => {
       const org = row.organizations as { id: string; name: string } | null
@@ -50,6 +55,7 @@ export const useWorkspaceStore = create<WorkspaceState & WorkspaceActions>()((se
       }
     })
 
+    console.log('[workspace] computed memberships:', memberships)
     set({ memberships, membershipsLoaded: true })
   },
 
@@ -58,8 +64,15 @@ export const useWorkspaceStore = create<WorkspaceState & WorkspaceActions>()((se
   },
 
   switchToOrg: (orgId: string) => {
-    const membership = get().memberships.find(m => m.organizationId === orgId)
-    if (!membership) return
+    const { memberships } = get()
+    console.log('[workspace] switchToOrg called with orgId:', orgId)
+    console.log('[workspace] current memberships:', memberships)
+    const membership = memberships.find(m => m.organizationId === orgId)
+    console.log('[workspace] found membership:', membership)
+    if (!membership) {
+      console.warn('[workspace] switchToOrg: membership not found in store for orgId:', orgId)
+      return
+    }
     set({
       activeWorkspace: {
         type: 'org',
@@ -68,5 +81,6 @@ export const useWorkspaceStore = create<WorkspaceState & WorkspaceActions>()((se
         role: membership.role,
       },
     })
+    console.log('[workspace] activeWorkspace updated to org:', membership.organizationId)
   },
 }))
