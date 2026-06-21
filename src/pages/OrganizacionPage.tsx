@@ -24,6 +24,9 @@ export function OrganizacionPage() {
   const [editingName, setEditingName] = useState(false)
   const [saving, setSaving]           = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
+  const [inviteError, setInviteError] = useState<string | null>(null)
+  const [inviteSuccess, setInviteSuccess] = useState<{ email: string; token: string } | null>(null)
+  const [copied, setCopied]           = useState(false)
 
   const isOrgAdmin = activeWorkspace.type === 'org' && activeWorkspace.role === 'admin'
   const orgId      = activeWorkspace.type === 'org' ? activeWorkspace.orgId : null
@@ -80,17 +83,38 @@ export function OrganizacionPage() {
   async function handleInvite() {
     if (!orgId || !inviteEmail.trim() || !user) return
     setSaving(true)
-    const { error } = await supabase.from('organization_invites').insert({
-      organization_id: orgId,
-      email: inviteEmail.trim().toLowerCase(),
-      role: inviteRole,
-      invited_by: user.id,
-    })
+    setInviteError(null)
+    const { data, error } = await supabase
+      .from('organization_invites')
+      .insert({
+        organization_id: orgId,
+        email: inviteEmail.trim().toLowerCase(),
+        role: inviteRole,
+        invited_by: user.id,
+      })
+      .select('token')
+      .single()
     setSaving(false)
-    if (!error) {
-      setInviteEmail(''); setShowInvite(false)
-      fetchOrgData()
+    if (error) {
+      setInviteError(error.message)
+      return
     }
+    setInviteSuccess({ email: inviteEmail.trim().toLowerCase(), token: (data as { token: string }).token })
+    fetchOrgData()
+  }
+
+  function closeInviteModal() {
+    setShowInvite(false)
+    setInviteEmail('')
+    setInviteError(null)
+    setInviteSuccess(null)
+    setCopied(false)
+  }
+
+  async function copyInviteLink(link: string) {
+    await navigator.clipboard.writeText(link)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   async function handleRoleChange(userId: string, newRole: OrgRole) {
@@ -311,32 +335,67 @@ export function OrganizacionPage() {
       </main>
 
       {/* Invite modal */}
-      <Modal open={showInvite} onClose={() => setShowInvite(false)} title={t('org.invite_member')}>
-        <div className="space-y-3">
-          <div>
-            <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">Email</label>
-            <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}
-              placeholder={t('org.invite_email_placeholder')}
-              type="email"
-              className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo" />
+      <Modal open={showInvite} onClose={closeInviteModal} title={inviteSuccess ? '✓ Invitación creada' : t('org.invite_member')}>
+        {inviteSuccess ? (
+          <div className="space-y-4">
+            <p className="text-sm text-negro/80">
+              Invitación lista para <strong>{inviteSuccess.email}</strong>.
+              Esta app no envía emails automáticos — compartí el link manualmente con el profe.
+            </p>
+            <div>
+              <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">Link de invitación</label>
+              <div className="flex gap-2">
+                <input
+                  readOnly
+                  value={`${window.location.origin}/invite/${inviteSuccess.token}`}
+                  className="flex-1 bg-crema border border-borde-light rounded-lg px-3 py-2 text-xs text-negro focus:outline-none select-all"
+                  onClick={e => (e.target as HTMLInputElement).select()}
+                />
+                <button
+                  onClick={() => copyInviteLink(`${window.location.origin}/invite/${inviteSuccess.token}`)}
+                  className="px-3 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-xs font-semibold rounded-lg shrink-0 transition-colors"
+                >
+                  {copied ? '✓ Copiado' : 'Copiar'}
+                </button>
+              </div>
+            </div>
+            <p className="text-[11px] text-gris/60">El link expira en 7 días. El profe debe tener una cuenta en Crewficina para aceptarlo.</p>
+            <div className="flex justify-end pt-1">
+              <button onClick={closeInviteModal} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg">
+                Cerrar
+              </button>
+            </div>
           </div>
-          <div>
-            <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">Rol</label>
-            <select value={inviteRole} onChange={e => setInviteRole(e.target.value as OrgRole)}
-              className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo">
-              <option value="editor">{t('org.role_editor')}</option>
-              <option value="viewer">{t('org.role_viewer')}</option>
-              <option value="admin">{t('org.role_admin')}</option>
-            </select>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">Email</label>
+              <input value={inviteEmail} onChange={e => { setInviteEmail(e.target.value); setInviteError(null) }}
+                placeholder={t('org.invite_email_placeholder')}
+                type="email"
+                className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo" />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">Rol</label>
+              <select value={inviteRole} onChange={e => setInviteRole(e.target.value as OrgRole)}
+                className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo">
+                <option value="editor">{t('org.role_editor')}</option>
+                <option value="viewer">{t('org.role_viewer')}</option>
+                <option value="admin">{t('org.role_admin')}</option>
+              </select>
+            </div>
+            {inviteError && (
+              <p className="text-xs text-rojo bg-rojo/8 border border-rojo/20 rounded-lg px-3 py-2">{inviteError}</p>
+            )}
+            <div className="flex gap-3 justify-end pt-1">
+              <button onClick={closeInviteModal} className="px-4 py-2 text-sm text-gris hover:text-negro">Cancelar</button>
+              <button onClick={handleInvite} disabled={!inviteEmail.trim() || saving}
+                className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">
+                {saving ? '...' : t('org.invite_member')}
+              </button>
+            </div>
           </div>
-          <div className="flex gap-3 justify-end pt-1">
-            <button onClick={() => setShowInvite(false)} className="px-4 py-2 text-sm text-gris hover:text-negro">Cancelar</button>
-            <button onClick={handleInvite} disabled={!inviteEmail.trim() || saving}
-              className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">
-              {saving ? '...' : t('org.invite_member')}
-            </button>
-          </div>
-        </div>
+        )}
       </Modal>
     </div>
   )
