@@ -401,6 +401,12 @@ export default {
     create_org: 'Create organization',
     org_name_placeholder: 'Academy name',
     no_org_yet: "You don't belong to any organization yet.",
+    danger_zone: 'Danger zone',
+    delete_org: 'Delete organization',
+    delete_org_warning: 'This will permanently delete the organization and all its shared members, groups, events, and activities. This action cannot be undone and affects all {{count}} members.',
+    delete_org_confirm_label: 'Type the organization name to confirm:',
+    delete_org_confirm_placeholder: 'Organization name',
+    delete_org_button: 'Permanently delete organization',
   },
   plan: {
     member_names_locked: 'Available on Pro plan',

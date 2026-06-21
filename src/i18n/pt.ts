@@ -401,6 +401,12 @@ export default {
     create_org: 'Criar organização',
     org_name_placeholder: 'Nome da academia',
     no_org_yet: 'Você ainda não pertence a nenhuma organização.',
+    danger_zone: 'Zona de perigo',
+    delete_org: 'Excluir organização',
+    delete_org_warning: 'Isso excluirá permanentemente a organização e todos os seus integrantes, grupos, eventos e atividades compartilhados. Esta ação não pode ser desfeita e afeta todos os {{count}} membros.',
+    delete_org_confirm_label: 'Digite o nome da organização para confirmar:',
+    delete_org_confirm_placeholder: 'Nome da organização',
+    delete_org_button: 'Excluir organização permanentemente',
   },
   plan: {
     member_names_locked: 'Disponível no plano Pro',

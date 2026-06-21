@@ -6,6 +6,7 @@ import { useWorkspaceStore } from '@/store/workspaceStore'
 import { supabase } from '@/features/auth/supabaseClient'
 import { Logo } from '@/components/ui/Logo'
 import { Modal } from '@/components/ui/Modal'
+import { DangerZoneDeleteOrg } from '@/components/ui/DangerZoneDeleteOrg'
 import type { OrgMember, OrgInvite, OrgRole } from '@/types'
 
 export function OrganizacionPage() {
@@ -331,6 +332,11 @@ export function OrganizacionPage() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* Danger zone — solo admins */}
+        {isOrgAdmin && (
+          <DangerZoneDeleteOrg orgId={orgId} orgName={displayName} memberCount={orgMembers.length} />
         )}
       </main>
 
