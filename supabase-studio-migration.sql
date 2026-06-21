@@ -133,6 +133,8 @@ create policy "invites_self_select"
 -- ─── FUNCIÓN: Crear organización (resuelve el chicken-and-egg de RLS) ─────────
 -- SECURITY DEFINER: se ejecuta con permisos del CREADOR de la función (postgres)
 -- bypassea RLS para poder insertar en organizations + organization_members
+-- Requiere plan Studio (ver supabase-org-requires-studio.sql). get_user_plan
+-- devuelve 'studio' para el owner (bypass por email).
 create or replace function create_organization(org_name text)
 returns uuid
 language plpgsql
@@ -141,7 +143,13 @@ set search_path = public
 as $$
 declare
   new_org_id uuid;
+  user_plan  text;
 begin
+  user_plan := get_user_plan(auth.uid());
+  if user_plan <> 'studio' then
+    raise exception 'Creating an organization requires the Studio plan';
+  end if;
+
   if trim(org_name) = '' then
     raise exception 'El nombre de la organización no puede estar vacío';
   end if;

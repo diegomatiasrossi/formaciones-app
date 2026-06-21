@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/features/auth/useAuth'
+import { usePlan } from '@/hooks/usePlan'
+import { isOwner } from '@/utils/isOwner'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import { supabase } from '@/features/auth/supabaseClient'
 import { Logo } from '@/components/ui/Logo'
 import { Modal } from '@/components/ui/Modal'
+import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import { DangerZoneDeleteOrg } from '@/components/ui/DangerZoneDeleteOrg'
 import type { OrgMember, OrgInvite, OrgRole } from '@/types'
 
@@ -13,6 +16,10 @@ export function OrganizacionPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { planName, loading: planLoading } = usePlan()
+  // Crear org requiere Studio. Espeja el backend (get_user_plan devuelve
+  // 'studio' para el owner), así que el owner pasa por el bypass de email.
+  const canCreateOrg = planName === 'studio' || isOwner(user?.email)
   const { activeWorkspace, memberships, loadMemberships, switchToOrg } = useWorkspaceStore()
 
   const [orgMembers, setOrgMembers] = useState<OrgMember[]>([])
@@ -153,7 +160,12 @@ export function OrganizacionPage() {
     setSaving(false)
     console.log('[org] RPC result — data:', data, '| error:', error)
     if (error) {
-      setCreateError(error.message)
+      // Mapear el rechazo de plan del backend a un mensaje amigable
+      setCreateError(
+        /requires the studio plan/i.test(error.message)
+          ? t('org.requires_studio')
+          : error.message,
+      )
       return
     }
     if (!data) {
@@ -192,20 +204,36 @@ export function OrganizacionPage() {
         <main className="max-w-lg mx-auto px-6 py-16 text-center">
           <div className="w-16 h-16 rounded-2xl border border-borde-light bg-blanco flex items-center justify-center mb-6 text-2xl text-dorado mx-auto">⬡</div>
           <h1 className="text-xl font-semibold mb-2">{t('org.create_org')}</h1>
-          <p className="text-sm text-gris mb-8">{t('org.no_org_yet')}</p>
-          <div className="flex gap-3">
-            <input value={orgName} onChange={e => { setOrgName(e.target.value); setCreateError(null) }}
-              onKeyDown={e => e.key === 'Enter' && handleCreateOrg()}
-              placeholder={t('org.org_name_placeholder')}
-              className="flex-1 bg-blanco border border-borde-light rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-rojo" />
-            <button onClick={handleCreateOrg} disabled={!orgName.trim() || saving}
-              className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">
-              {saving ? '...' : t('org.create_org')}
-            </button>
-          </div>
-          {createError && (
-            <div className="mt-3 px-4 py-3 bg-rojo/8 border border-rojo/30 rounded-lg text-sm text-rojo text-left">
-              {createError}
+
+          {planLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="w-7 h-7 border-2 border-rojo border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : canCreateOrg ? (
+            <>
+              <p className="text-sm text-gris mb-8">{t('org.no_org_yet')}</p>
+              <div className="flex gap-3">
+                <input value={orgName} onChange={e => { setOrgName(e.target.value); setCreateError(null) }}
+                  onKeyDown={e => e.key === 'Enter' && handleCreateOrg()}
+                  placeholder={t('org.org_name_placeholder')}
+                  className="flex-1 bg-blanco border border-borde-light rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-rojo" />
+                <button onClick={handleCreateOrg} disabled={!orgName.trim() || saving}
+                  className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">
+                  {saving ? '...' : t('org.create_org')}
+                </button>
+              </div>
+              {createError && (
+                <div className="mt-3 px-4 py-3 bg-rojo/8 border border-rojo/30 rounded-lg text-sm text-rojo text-left">
+                  {createError}
+                </div>
+              )}
+            </>
+          ) : (
+            // Crear org es una feature Studio — gate igual que Reportes/Actividades.
+            // Nota: esto solo bloquea CREAR. Quien ya es miembro de una org la ve y
+            // la usa normalmente al cambiar a ese espacio desde el WorkspaceSwitcher.
+            <div className="bg-blanco border border-borde-light rounded-2xl p-8 shadow-soft">
+              <UpgradeGate requiredPlan="studio" featureName={t('org.requires_studio')} />
             </div>
           )}
 

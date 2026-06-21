@@ -407,6 +407,8 @@ export default {
     delete_org_confirm_label: 'Digite o nome da organização para confirmar:',
     delete_org_confirm_placeholder: 'Nome da organização',
     delete_org_button: 'Excluir organização permanentemente',
+    requires_studio: 'Criar uma organização requer o plano Studio',
+    requires_studio_cta: 'Conhecer o plano Studio',
   },
   plan: {
     member_names_locked: 'Disponível no plano Pro',
