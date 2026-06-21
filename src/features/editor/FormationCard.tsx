@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { FormationCard as FC } from '@/types'
 import { useEditorStore } from '@/store/editorStore'
+import { usePlan } from '@/hooks/usePlan'
 import type { FormationId } from '@/types'
 import { getArticlesByTopics } from '@/data/articles'
 import clsx from 'clsx'
@@ -13,6 +14,7 @@ export function FormationCardButton({ card, id }: Props) {
   const [showInfo, setShowInfo] = useState(false)
   const [hovered, setHovered] = useState(false)
   const applyFormation = useEditorStore(s => s.applyFormation)
+  const { features } = usePlan()
 
   return (
     <div id={id} className="relative mb-0.5 group">
@@ -23,7 +25,7 @@ export function FormationCardButton({ card, id }: Props) {
             'hover:border-dorado/60 hover:text-dorado hover:bg-dorado/5',
             showInfo ? 'border-dorado/40 bg-dorado/5' : 'border-borde',
           )}
-          onClick={() => applyFormation(card.id as FormationId)}
+          onClick={() => applyFormation(card.id as FormationId, undefined, features.maxDancers)}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >

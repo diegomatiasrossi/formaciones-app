@@ -49,7 +49,7 @@ interface EditorActions {
   selectAll: () => void
   clearSelection: () => void
   setSelectedIds: (ids: string[]) => void
-  applyFormation: (id: FormationId, memberNames?: string[]) => void
+  applyFormation: (id: FormationId, memberNames?: string[], maxCount?: number) => void
   rotateAll: (deg: number) => void
   mirrorH: () => void
   mirrorV: () => void
@@ -332,11 +332,14 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   // ── Formaciones ──────────────────────────────────────────────────
 
-  applyFormation: (id, memberNames?) => {
+  applyFormation: (id, memberNames?, maxCount?) => {
     const { newDancerCount, newColor, newShape, newSize, stageWidth, stageHeight } = get()
     const cx = stageWidth / 2
     const cy = stageHeight / 2
-    const pts = generateFormation(id, newDancerCount, cx, cy, 40)
+    // Clamp the preset's dancer count to the plan limit so a Free user never
+    // gets a formation that exceeds 10 (the backend trigger would reject the save).
+    const count = Math.max(1, Math.min(newDancerCount, maxCount ?? Infinity))
+    const pts = generateFormation(id, count, cx, cy, 40)
     const dancers: Dancer[] = pts.map((p, i) =>
       makeDancer(p.x, p.y, i + 1, newColor, newShape, newSize, memberNames?.[i]),
     )
