@@ -28,6 +28,29 @@ export function InvitePage() {
 
     setState('loading');
     (async () => {
+      // Primary: SECURITY DEFINER RPC — works even when logged OUT (the typical
+      // case for a freshly-invited teacher). The token is a secret bearer credential.
+      const { data: rpcData, error: rpcError } = await supabase
+        .rpc('get_invite_preview', { invite_token: token })
+
+      if (!rpcError && Array.isArray(rpcData)) {
+        if (rpcData.length === 0) { setState('invalid'); return }
+        const row = rpcData[0] as Record<string, unknown>
+        setOrgName((row.organization_name as string) ?? '')
+        setInvite({
+          id:             '',
+          organizationId: row.organization_id as string,
+          email:          row.email as string,
+          role:           row.role as OrgInvite['role'],
+          token,
+          expiresAt:      row.expires_at as string | undefined,
+        })
+        setState(user ? 'confirm' : 'needs_login')
+        return
+      }
+
+      // Fallback: direct table query (only succeeds for logged-in admin/invitee
+      // via RLS). Used if get_invite_preview RPC is not deployed yet.
       const { data, error } = await supabase
         .from('organization_invites')
         .select('*, organizations(name)')
