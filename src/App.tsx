@@ -47,9 +47,11 @@ function AppWithAuth() {
   const { user } = useAuth()
   const { loadMemberships } = useWorkspaceStore()
 
-  // Load org memberships once the user is authenticated
+  // Load org memberships once the user is authenticated.
+  // Pass user.id directly to avoid a redundant supabase.auth.getUser() network
+  // call that can race with the Google OAuth token exchange on fresh logins.
   useEffect(() => {
-    if (user) loadMemberships()
+    if (user) loadMemberships(user.id)
   }, [user, loadMemberships])
 
   return (
