@@ -25,27 +25,32 @@ export function ModuleNav({ active }: { active: ModuleKey }) {
 
   return (
     <nav className="border-b border-borde-light bg-blanco">
-      <div className="max-w-5xl mx-auto px-6 flex items-center gap-1 overflow-x-auto">
-        {MODULES.map(m => (
-          <button key={m.key} onClick={() => navigate(m.route)}
-            className={clsx('flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap',
-              active === m.key ? 'border-rojo text-rojo' : 'border-transparent text-gris hover:text-negro')}>
-            <span>{m.icon}</span>{t(m.labelKey)}
-          </button>
-        ))}
-        {showOrgTab && (
-          <button
-            onClick={() => navigate('/organizacion')}
-            className={clsx(
-              'flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap',
-              isOrgActive ? 'border-rojo text-rojo' : 'border-transparent text-gris hover:text-negro',
-            )}
-          >
-            <span>⚙</span>{t('org.org_management')}
-          </button>
-        )}
-        {/* Workspace switcher — only visible if user belongs to at least one org */}
-        <div className="ml-auto shrink-0 py-1.5">
+      <div className="max-w-5xl mx-auto px-6 flex items-center">
+        {/* Tabs — overflow-x-auto for narrow screens, but WorkspaceSwitcher must stay
+            OUTSIDE this container: overflow-x:auto implicitly sets overflow-y:auto,
+            which clips the dropdown that extends below the nav. */}
+        <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0">
+          {MODULES.map(m => (
+            <button key={m.key} onClick={() => navigate(m.route)}
+              className={clsx('flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap',
+                active === m.key ? 'border-rojo text-rojo' : 'border-transparent text-gris hover:text-negro')}>
+              <span>{m.icon}</span>{t(m.labelKey)}
+            </button>
+          ))}
+          {showOrgTab && (
+            <button
+              onClick={() => navigate('/organizacion')}
+              className={clsx(
+                'flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap',
+                isOrgActive ? 'border-rojo text-rojo' : 'border-transparent text-gris hover:text-negro',
+              )}
+            >
+              <span>⚙</span>{t('org.org_management')}
+            </button>
+          )}
+        </div>
+        {/* WorkspaceSwitcher is a sibling div — NOT inside the overflow-x-auto container */}
+        <div className="shrink-0 py-1.5 pl-2">
           <WorkspaceSwitcher />
         </div>
       </div>
