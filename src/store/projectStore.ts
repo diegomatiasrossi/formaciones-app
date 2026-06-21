@@ -171,7 +171,14 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
     set({ loading: true, error: null })
     try {
       const { error } = await supabase.from('projects').upsert(await projectToRow(project))
-      if (error) throw error
+      // Supabase devuelve un PostgrestError (objeto plano, NO instancia de Error).
+      // Hacer `throw error` + String(err) daría "[object Object]" — extraer el
+      // string del mensaje explícitamente (message es donde llega el RAISE del trigger).
+      if (error) {
+        const message = error.message || error.details || error.hint || error.code || 'Error al guardar'
+        set({ error: message, loading: false })
+        return { error: message }
+      }
       set(s => ({
         projects: s.projects.some(p => p.id === project.id)
           ? s.projects.map(p => p.id === project.id ? project : p)
@@ -180,7 +187,8 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
       }))
       return { error: null }
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err)
+      // Errores de red u otros no-PostgrestError
+      const message = err instanceof Error ? err.message : 'Error al guardar, intentá de nuevo'
       set({ error: message, loading: false })
       return { error: message }
     }
