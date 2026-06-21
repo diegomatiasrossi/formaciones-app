@@ -35,38 +35,44 @@ create policy "org_members_self_select"
   on organization_members for select
   using (user_id = auth.uid());
 
--- Admins pueden ver TODOS los miembros de sus organizaciones (para la página de gestión)
+-- ─── Función helper: chequeo de rol admin SIN recursión ──────────────────────
+-- IMPORTANTE: las políticas de organization_members NO deben tener subqueries
+-- que lean de organization_members — generan recursión infinita → 500.
+-- Solución: función SECURITY DEFINER que bypasea RLS al leer la tabla.
+create or replace function is_org_admin(org_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from organization_members
+    where organization_id = org_id
+      and user_id = auth.uid()
+      and role = 'admin'
+  )
+$$;
+revoke execute on function is_org_admin(uuid) from public;
+grant  execute on function is_org_admin(uuid) to authenticated;
+
+-- Admins pueden ver TODOS los miembros de sus organizaciones
 drop policy if exists "org_members_admin_select" on organization_members;
 create policy "org_members_admin_select"
   on organization_members for select
-  using (
-    organization_id in (
-      select organization_id from organization_members
-      where user_id = auth.uid() and role = 'admin'
-    )
-  );
+  using (user_id = auth.uid() or is_org_admin(organization_id));
 
 -- Admins pueden actualizar roles
 drop policy if exists "org_members_admin_update" on organization_members;
 create policy "org_members_admin_update"
   on organization_members for update
-  using (
-    organization_id in (
-      select organization_id from organization_members
-      where user_id = auth.uid() and role = 'admin'
-    )
-  );
+  using (is_org_admin(organization_id));
 
 -- Admins pueden eliminar miembros
 drop policy if exists "org_members_admin_delete" on organization_members;
 create policy "org_members_admin_delete"
   on organization_members for delete
-  using (
-    organization_id in (
-      select organization_id from organization_members
-      where user_id = auth.uid() and role = 'admin'
-    )
-  );
+  using (is_org_admin(organization_id));
 
 -- INSERT solo vía funciones SECURITY DEFINER (create_organization / accept_org_invite)
 -- No se necesita política de insert aquí porque las funciones usan SECURITY DEFINER
