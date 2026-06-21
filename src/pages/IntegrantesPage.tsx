@@ -40,7 +40,10 @@ export function IntegrantesPage() {
   const { can } = usePlan()
   const namesVisible = can('membersEnabled')
   const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
+  const wsRole = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.role : null)
   const inOrgContext = activeOrgId !== null
+  // Personal space (wsRole null) or admin/editor can mutate; viewers are read-only.
+  const canEdit = wsRole === null || wsRole === 'admin' || wsRole === 'editor'
   const {
     members, groups, loading, fetchAll,
     createMember, updateMember, deleteMember,
@@ -67,6 +70,7 @@ export function IntegrantesPage() {
 
   async function save() {
     if (!form.firstName.trim()) return
+    if (!canEdit) { setShowForm(false); return }
     if (editing) {
       await updateMember(editing.id, form)
       setShowForm(false); setEditing(null)
@@ -121,9 +125,11 @@ export function IntegrantesPage() {
             <h1 className="text-xl font-semibold tracking-wide">{t('members.title')}</h1>
             {members.length > 0 && <p className="text-xs text-gris mt-0.5">{members.length} {t('members.count')}</p>}
           </div>
-          <button onClick={openNew} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-all hover:-translate-y-0.5 shadow-soft">
-            + {t('members.new')}
-          </button>
+          {canEdit && (
+            <button onClick={openNew} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-all hover:-translate-y-0.5 shadow-soft">
+              + {t('members.new')}
+            </button>
+          )}
         </div>
 
         {loading && <p className="text-gris text-sm">{t('common.loading')}</p>}
@@ -132,7 +138,7 @@ export function IntegrantesPage() {
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-16 h-16 rounded-2xl border border-borde-light bg-blanco flex items-center justify-center mb-6 text-2xl text-dorado">◉</div>
             <h2 className="text-base font-semibold mb-2">{t('members.empty')}</h2>
-            <button onClick={openNew} className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg mt-4">{t('members.create_first')}</button>
+            {canEdit && <button onClick={openNew} className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg mt-4">{t('members.create_first')}</button>}
           </div>
         )}
 
@@ -168,11 +174,13 @@ export function IntegrantesPage() {
                     </div>
                   )}
 
-                  <div className="flex gap-2 mt-3 pt-3 border-t border-borde-light">
-                    <button onClick={() => openGroups(m)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-dorado text-gris hover:text-dorado-oscuro transition-colors">{t('members.groups_btn')}</button>
-                    <button onClick={() => openEdit(m)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-rojo/50 text-gris hover:text-rojo transition-colors">{t('common.rename')}</button>
-                    <button onClick={() => setConfirmDelete(m)} className="w-8 text-[11px] py-1.5 border border-borde-light rounded-lg text-gris hover:border-rojo/50 hover:text-rojo flex items-center justify-center">×</button>
-                  </div>
+                  {canEdit && (
+                    <div className="flex gap-2 mt-3 pt-3 border-t border-borde-light">
+                      <button onClick={() => openGroups(m)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-dorado text-gris hover:text-dorado-oscuro transition-colors">{t('members.groups_btn')}</button>
+                      <button onClick={() => openEdit(m)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-rojo/50 text-gris hover:text-rojo transition-colors">{t('common.rename')}</button>
+                      <button onClick={() => setConfirmDelete(m)} className="w-8 text-[11px] py-1.5 border border-borde-light rounded-lg text-gris hover:border-rojo/50 hover:text-rojo flex items-center justify-center">×</button>
+                    </div>
+                  )}
                 </div>
               )
             })}

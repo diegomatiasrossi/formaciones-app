@@ -21,6 +21,8 @@ export function EventosPage() {
   const { projects, fetchProjects } = useProjectStore()
   const { can } = usePlan()
   const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
+  const wsRole = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.role : null)
+  const canEdit = wsRole === null || wsRole === 'admin' || wsRole === 'editor'
 
   const [showNew, setShowNew] = useState(false)
   const [form, setForm] = useState({ name: '', eventDate: '', location: '', groupId: '' })
@@ -31,7 +33,7 @@ export function EventosPage() {
   useEffect(() => { if (user) { fetchAll(); fetchProjects() } }, [user, fetchAll, fetchProjects, activeOrgId])
 
   async function create() {
-    if (!form.name.trim()) return
+    if (!form.name.trim() || !canEdit) return
     const newEvent = await createEvent({
       name: form.name.trim(),
       eventDate: form.eventDate || undefined,
@@ -106,7 +108,7 @@ export function EventosPage() {
       <main className="max-w-5xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-semibold tracking-wide">{t('events.title')}</h1>
-          <button onClick={() => setShowNew(true)} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg shadow-soft hover:-translate-y-0.5 transition-all">+ {t('events.new')}</button>
+          {canEdit && <button onClick={() => setShowNew(true)} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg shadow-soft hover:-translate-y-0.5 transition-all">+ {t('events.new')}</button>}
         </div>
 
         {loading && <p className="text-gris text-sm">{t('common.loading')}</p>}
@@ -115,7 +117,7 @@ export function EventosPage() {
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-16 h-16 rounded-2xl border border-borde-light bg-blanco flex items-center justify-center mb-6 text-2xl text-rojo">◈</div>
             <h2 className="text-base font-semibold mb-2">{t('events.empty')}</h2>
-            <button onClick={() => setShowNew(true)} className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg mt-4">{t('events.create_first')}</button>
+            {canEdit && <button onClick={() => setShowNew(true)} className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg mt-4">{t('events.create_first')}</button>}
           </div>
         )}
 
@@ -140,7 +142,7 @@ export function EventosPage() {
                   </button>
                   <div className="flex gap-2 mt-3 pt-3 border-t border-borde-light">
                     <button onClick={() => setActive(e)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-rojo text-gris hover:text-rojo">{t('events.open')}</button>
-                    <button onClick={() => setConfirmDelete(e)} className="w-8 text-[11px] py-1.5 border border-borde-light rounded-lg text-gris hover:border-rojo/50 hover:text-rojo flex items-center justify-center">×</button>
+                    {canEdit && <button onClick={() => setConfirmDelete(e)} className="w-8 text-[11px] py-1.5 border border-borde-light rounded-lg text-gris hover:border-rojo/50 hover:text-rojo flex items-center justify-center">×</button>}
                   </div>
                 </div>
               )
