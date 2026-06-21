@@ -26,7 +26,7 @@ type ProjectMeta = Partial<Pick<Project, 'checklist' | 'members' | 'notes' | 'st
 interface ProjectActions {
   fetchProjects: () => Promise<void>
   fetchProjectById: (id: string) => Promise<Project | null>
-  saveProject: (project: Project) => Promise<void>
+  saveProject: (project: Project) => Promise<{ error: string | null }>
   updateProjectMeta: (id: string, meta: ProjectMeta) => Promise<void>
   deleteProject: (id: string) => Promise<void>
   createLocalProject: (opts: CreateProjectOpts | string) => Project
@@ -178,8 +178,11 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
           : [...s.projects, project],
         loading: false,
       }))
+      return { error: null }
     } catch (err) {
-      set({ error: String(err), loading: false })
+      const message = err instanceof Error ? err.message : String(err)
+      set({ error: message, loading: false })
+      return { error: message }
     }
   },
 

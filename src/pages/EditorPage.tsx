@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
 import { useProjectStore } from '@/store/projectStore'
 import { useCrewStore } from '@/store/crewStore'
+import { usePlan } from '@/hooks/usePlan'
 import { EditorLayout } from '@/features/editor/EditorLayout'
 import { ShareModal } from '@/components/ui/ShareModal'
 import { MobileWarningBanner } from '@/components/ui/MobileWarningBanner'
@@ -13,9 +15,11 @@ import type { Project } from '@/types'
 export function EditorPage() {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { projects, saveProject, fetchProjectById } = useProjectStore()
   const { scenes, activeSceneId, audioMarkers, loadScenes } = useEditorStore()
   const { members, fetchAll } = useCrewStore()
+  const { features } = usePlan()
 
   // Cargar integrantes reales para resolver nombres en el canvas
   useEffect(() => { fetchAll() }, [fetchAll])
@@ -31,6 +35,7 @@ export function EditorPage() {
   const [showShare, setShowShare] = useState(false)
   const [showTutorial, setShowTutorial] = useState(() => !isTutorialDone())
   const [showSplash, setShowSplash] = useState(true)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   useEffect(() => {
     if (loaded.current) return
@@ -63,8 +68,21 @@ export function EditorPage() {
       audioMarkers,
       updatedAt: new Date().toISOString(),
     }
-    await saveProject(updated)
+    const { error } = await saveProject(updated)
     setIsSaving(false)
+    if (error) {
+      // The backend trigger (enforce_max_dancers) raises this when a scene
+      // exceeds the plan's member limit. Show the same friendly message the
+      // Toolbar uses, instead of a raw Postgres error.
+      const limit = features.maxDancers === Infinity ? '∞' : features.maxDancers
+      setSaveError(
+        /plan limit exceeded/i.test(error)
+          ? t('plan.member_limit_reached', { limit })
+          : error,
+      )
+    } else {
+      setSaveError(null)
+    }
   }
 
   // Autoguardado cada 2 minutos
@@ -105,6 +123,14 @@ export function EditorPage() {
         onShare={() => setShowShare(true)}
         isSaving={isSaving}
       />
+      {saveError && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-[calc(100%-2rem)]
+                        bg-negro border border-red-700/60 rounded-lg shadow-card px-4 py-3 flex items-start gap-3">
+          <span className="text-red-400 text-sm shrink-0">⚠</span>
+          <p className="text-xs text-blanco-calido/90 flex-1">{saveError}</p>
+          <button onClick={() => setSaveError(null)} className="text-gris hover:text-blanco-calido text-sm shrink-0">×</button>
+        </div>
+      )}
       {showShare && (
         <ShareModal project={project} onClose={() => setShowShare(false)} />
       )}
