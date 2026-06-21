@@ -74,6 +74,9 @@ export function WorkspaceSwitcher() {
             </button>
 
             {/* Org workspaces */}
+            <div className="border-t border-borde-light px-3 pt-2 pb-1">
+              <p className="text-[9px] font-semibold uppercase tracking-wider text-gris/50">Organizaciones</p>
+            </div>
             {memberships.map(m => {
               const isActive = activeWorkspace.type === 'org' && activeWorkspace.orgId === m.organizationId
               return (

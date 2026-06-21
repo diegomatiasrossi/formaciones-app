@@ -215,6 +215,7 @@ export function ProjectsPage() {
             {projects.length > 0 && (
               <p className="text-xs text-gris mt-0.5">{projects.length} proyecto{projects.length !== 1 ? 's' : ''}</p>
             )}
+            <p className="text-[10px] text-gris/50 mt-0.5">Tus formaciones son personales — no cambian al cambiar de organización.</p>
           </div>
           <div className="flex items-center gap-3">
             {projects.length > 3 && (

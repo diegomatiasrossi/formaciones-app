@@ -39,8 +39,8 @@ export function IntegrantesPage() {
   const { user } = useAuth()
   const { can } = usePlan()
   const namesVisible = can('membersEnabled')
-  const { activeWorkspace } = useWorkspaceStore()
-  const inOrgContext = activeWorkspace.type === 'org'
+  const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
+  const inOrgContext = activeOrgId !== null
   const {
     members, groups, loading, fetchAll,
     createMember, updateMember, deleteMember,
@@ -56,7 +56,7 @@ export function IntegrantesPage() {
   const [duplicates, setDuplicates] = useState<CrewMember[]>([])
   const [showDuplicateModal, setShowDuplicateModal] = useState(false)
 
-  useEffect(() => { if (user) fetchAll() }, [user, fetchAll])
+  useEffect(() => { if (user) fetchAll() }, [user, fetchAll, activeOrgId])
 
   function openNew() { setEditing(null); setForm(EMPTY); setShowForm(true) }
   function openEdit(m: CrewMember) {

@@ -119,6 +119,7 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
     set({ loading: true, error: null })
 
     const orgId = useWorkspaceStore.getState().activeOrgId()
+    console.log('[crew] fetchAll: workspace =', orgId ? `org:${orgId}` : 'personal')
 
     try {
       // Build base queries scoped to the active workspace

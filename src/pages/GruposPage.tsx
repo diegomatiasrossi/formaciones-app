@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useCrewStore } from '@/store/crewStore'
 import { useAuth } from '@/features/auth/useAuth'
 import { usePlan } from '@/hooks/usePlan'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
@@ -21,6 +22,7 @@ export function GruposPage() {
     membersOfGroup, createActivity,
   } = useCrewStore()
   const { can } = usePlan()
+  const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
 
   const [showNew, setShowNew] = useState(false)
   const [newName, setNewName] = useState('')
@@ -30,7 +32,7 @@ export function GruposPage() {
   const [renameVal, setRenameVal] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<CrewGroup | null>(null)
 
-  useEffect(() => { if (user) fetchAll() }, [user, fetchAll])
+  useEffect(() => { if (user) fetchAll() }, [user, fetchAll, activeOrgId])
 
   async function create() {
     if (!newName.trim()) return

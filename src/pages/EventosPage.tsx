@@ -5,6 +5,7 @@ import { useCrewStore } from '@/store/crewStore'
 import { useProjectStore } from '@/store/projectStore'
 import { useAuth } from '@/features/auth/useAuth'
 import { usePlan } from '@/hooks/usePlan'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
@@ -19,6 +20,7 @@ export function EventosPage() {
   const { events, groups, loading, fetchAll, createEvent, deleteEvent, createActivity } = useCrewStore()
   const { projects, fetchProjects } = useProjectStore()
   const { can } = usePlan()
+  const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
 
   const [showNew, setShowNew] = useState(false)
   const [form, setForm] = useState({ name: '', eventDate: '', location: '', groupId: '' })
@@ -26,7 +28,7 @@ export function EventosPage() {
   const [active, setActive] = useState<CrewEvent | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<CrewEvent | null>(null)
 
-  useEffect(() => { if (user) { fetchAll(); fetchProjects() } }, [user, fetchAll, fetchProjects])
+  useEffect(() => { if (user) { fetchAll(); fetchProjects() } }, [user, fetchAll, fetchProjects, activeOrgId])
 
   async function create() {
     if (!form.name.trim()) return
