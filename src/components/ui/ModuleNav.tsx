@@ -1,6 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useWorkspaceStore } from '@/store/workspaceStore'
+import { usePlan } from '@/hooks/usePlan'
+import { useAuth } from '@/features/auth/useAuth'
+import { isOwner } from '@/utils/isOwner'
 import { WorkspaceSwitcher } from './WorkspaceSwitcher'
 import clsx from 'clsx'
 
@@ -19,8 +22,13 @@ export function ModuleNav({ active }: { active: ModuleKey }) {
   const location = useLocation()
   const { t } = useTranslation()
   const { activeWorkspace } = useWorkspaceStore()
+  const { planName } = usePlan()
+  const { user } = useAuth()
 
-  const showOrgTab = activeWorkspace.type === 'org' && activeWorkspace.role === 'admin'
+  // Show the Org tab if: already admin in an org workspace, OR can create orgs
+  // (Studio plan or owner bypass — same pattern as OrganizacionPage.canCreateOrg).
+  const canCreateOrg = planName === 'studio' || isOwner(user?.email)
+  const showOrgTab = (activeWorkspace.type === 'org' && activeWorkspace.role === 'admin') || canCreateOrg
   const isOrgActive = location.pathname === '/organizacion'
 
   return (
