@@ -26,7 +26,7 @@ export function Sidebar() {
   const selectedDancers = (activeScene?.dancers ?? []).filter(d => selectedIds.includes(d.id))
 
   const heading = (label: string) => (
-    <div className="text-[10px] font-semibold text-dorado uppercase tracking-widest mt-4 mb-2 first:mt-0">
+    <div className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em] mt-4 mb-2 first:mt-0">
       {label}
     </div>
   )

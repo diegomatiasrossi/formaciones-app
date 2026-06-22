@@ -114,7 +114,7 @@ export function AudioPanel({ onSceneChange, locked }: Props) {
   // ── Ahora sí el early return para locked (hooks ya llamados) ──────────
   if (locked) {
     return (
-      <div className="border-t border-borde bg-[#0f0f0f] shrink-0 h-28 flex items-center justify-center">
+      <div className="border-t border-borde bg-surface-1 shrink-0 h-28 flex items-center justify-center">
         <UpgradeGate requiredPlan="solo_pro" featureName="Sincronización de audio" />
       </div>
     )
@@ -156,7 +156,7 @@ export function AudioPanel({ onSceneChange, locked }: Props) {
     audioMarkers.find(m => m.sceneId === sceneId)?.timestampMs ?? null
 
   return (
-    <div className="border-t border-borde bg-[#0f0f0f] text-blanco-calido p-3 shrink-0">
+    <div className="border-t border-borde bg-surface-1 text-blanco-calido p-3 shrink-0">
       <audio
         ref={audioRef}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
@@ -198,11 +198,11 @@ export function AudioPanel({ onSceneChange, locked }: Props) {
         </div>
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <canvas ref={canvasRef} width={600} height={64} onClick={handleCanvasClick}
-            className="w-full h-16 rounded-lg bg-[#111] border border-borde/40 cursor-pointer"
+            className="w-full h-16 rounded-lg bg-surface-1 border border-borde/40 cursor-pointer"
             title="Click para buscar posición" />
           {!fileName && <p className="text-[10px] text-gris/30 text-center -mt-1">Cargá un archivo de audio para ver la forma de onda</p>}
           {duration > 0 && (
-            <div ref={timelineRef} className="relative h-9 bg-[#111] rounded-lg border border-borde/40 overflow-hidden select-none">
+            <div ref={timelineRef} className="relative h-9 bg-surface-1 rounded-lg border border-borde/40 overflow-hidden select-none">
               <div className="absolute top-0 left-0 bottom-0 bg-dorado/10 pointer-events-none" style={{ width: `${(currentTime / duration) * 100}%` }} />
               <div className="absolute top-0 bottom-0 w-px bg-dorado/50 pointer-events-none" style={{ left: `${(currentTime / duration) * 100}%` }} />
               {scenes.map((scene, i) => {

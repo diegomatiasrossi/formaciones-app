@@ -45,7 +45,7 @@ export function FormationCardButton({ card, id }: Props) {
 
       {/* Tooltip rápido en hover — 4.3 */}
       {hovered && !showInfo && (
-        <div className="absolute left-full ml-2 top-0 z-50 w-52 bg-[#1a1a1a] border border-borde/60 rounded-lg p-2.5 pointer-events-none shadow-xl">
+        <div className="absolute left-full ml-2 top-0 z-50 w-52 bg-negro border border-borde/60 rounded-lg p-2.5 pointer-events-none shadow-xl">
           <div className="text-[10px] font-semibold text-dorado mb-1">{t(card.nameKey)}</div>
           <div className="text-[10px] text-blanco-calido/70 leading-relaxed">{t(card.advantages[0])}</div>
           <div className="text-[9px] text-gris/50 mt-1 italic">{t(card.feeling)}</div>
@@ -54,7 +54,7 @@ export function FormationCardButton({ card, id }: Props) {
 
       {/* Ficha pedagógica expandida */}
       {showInfo && (
-        <div className="bg-[#1a1a1a] border border-borde/60 rounded-lg p-3 mb-1 text-xs space-y-2.5">
+        <div className="bg-negro border border-borde/60 rounded-lg p-3 mb-1 text-xs space-y-2.5">
           <div>
             <div className="text-dorado/60 text-[9px] uppercase tracking-wider mb-0.5">Sensación</div>
             <div className="text-blanco-calido/80 leading-relaxed">{t(card.feeling)}</div>

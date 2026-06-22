@@ -39,7 +39,7 @@ export function KeyboardShortcutsModal({ onClose }: Props) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-negro/80 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="bg-[#1c1c1c] border border-borde rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[80vh] overflow-y-auto">
+      <div className="bg-negro border border-borde rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-sm font-medium text-blanco-calido tracking-wide">Atajos de teclado</h2>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-xl leading-none">×</button>

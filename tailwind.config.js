@@ -17,10 +17,12 @@ export default {
         'blanco-calido':'#faf8f5',
         borde:          '#333333',
         'borde-light':  '#e8e6e0',
+        'borde-hover':  '#444444',
         gris:           '#888888',
         'gris-light':   '#aaaaaa',
         // ── Superficies oscuras (editor) ──────────────
-        'surface-1':    '#222222',
+        // surface-1 es más oscuro que negro (#1a1a1a) — fondos canvas/audio
+        'surface-1':    '#111111',
         'surface-2':    '#2a2a2a',
         'surface-3':    '#333333',
       },

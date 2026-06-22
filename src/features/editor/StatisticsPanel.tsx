@@ -69,7 +69,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
   // ── Early returns DESPUÉS de todos los hooks ─────────────────────────
   if (locked) {
     return (
-      <div className="absolute top-3 left-3 z-20 w-64 bg-[#1c1c1c] border border-borde rounded-xl shadow-2xl">
+      <div className="absolute top-3 left-3 z-20 w-64 bg-negro border border-borde rounded-xl shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <span className="text-[10px] text-dorado uppercase tracking-widest">Estadísticas</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
@@ -81,7 +81,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
 
   if (dancers.length === 0) {
     return (
-      <div className="absolute top-3 left-3 z-20 w-64 bg-[#1c1c1c] border border-borde rounded-xl shadow-2xl p-5">
+      <div className="absolute top-3 left-3 z-20 w-64 bg-negro border border-borde rounded-xl shadow-2xl p-5">
         <PanelHeader onClose={onClose} />
         <p className="text-gris text-xs text-center mt-4">No hay integrantes en esta escena.</p>
       </div>
@@ -89,7 +89,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
   }
 
   return (
-    <div className="absolute top-3 left-3 z-20 w-72 bg-[#1c1c1c] border border-borde rounded-xl shadow-2xl p-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+    <div className="absolute top-3 left-3 z-20 w-72 bg-negro border border-borde rounded-xl shadow-2xl p-4 max-h-[calc(100vh-120px)] overflow-y-auto">
       <PanelHeader onClose={onClose} />
 
       <div className="flex gap-2 mb-4">
@@ -175,7 +175,7 @@ function Stat({ value, label, color }: { value: string | number; label: string; 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-4 last:mb-0">
-      <div className="text-[9px] text-gris/50 uppercase tracking-widest mb-2">{title}</div>
+      <div className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em] mb-2">{title}</div>
       {children}
     </div>
   )

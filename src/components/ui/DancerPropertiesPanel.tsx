@@ -66,7 +66,7 @@ export function DancerPropertiesPanel({ dancer, onClose }: Props) {
   )
 
   return (
-    <div className="absolute top-3 right-3 z-20 w-72 bg-[#1c1c1c] border border-borde rounded-xl shadow-2xl p-4">
+    <div className="absolute top-3 right-3 z-20 w-72 bg-negro border border-borde rounded-xl shadow-2xl p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">

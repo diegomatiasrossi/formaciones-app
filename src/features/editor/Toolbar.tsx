@@ -60,10 +60,10 @@ export function Toolbar({
 
   const btn = (active: boolean, extra?: string) =>
     clsx(
-      'px-2.5 py-1.5 rounded border text-xs transition-colors cursor-pointer select-none',
+      'border rounded-[5px] px-[10px] py-[5px] text-[11px] transition-colors cursor-pointer select-none',
       active
-        ? 'bg-dorado border-dorado text-negro font-semibold'
-        : 'bg-transparent border-borde text-blanco-calido hover:border-dorado/60 hover:text-dorado',
+        ? 'bg-surface-2 border-borde-hover text-blanco-calido font-semibold'
+        : 'bg-transparent border-borde text-blanco-calido/70 hover:border-borde-hover hover:text-blanco-calido',
       extra,
     )
 
@@ -89,7 +89,7 @@ export function Toolbar({
       {sep}
 
       {/* Forma */}
-      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.shape')}</span>
+      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.shape')}</span>
       {SHAPES.map(s => (
         <button key={s.value} className={btn(newShape === s.value)} onClick={() => setNewShape(s.value)} title={s.title}>
           {s.icon}
@@ -99,17 +99,17 @@ export function Toolbar({
       {sep}
 
       {/* Tamaño visual — 4.1 */}
-      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.size')}</span>
+      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.size')}</span>
       {SIZE_OPTIONS.map(s => (
         <button
           key={s.value}
           onClick={() => setNewSize(s.value)}
           title={`${s.label} (radio ${s.value}px)`}
           className={clsx(
-            'flex items-center gap-1.5 px-2 py-1.5 rounded border text-xs transition-colors',
+            'flex items-center gap-1.5 rounded-[5px] px-[10px] py-[5px] border text-[11px] transition-colors',
             newSize === s.value
-              ? 'bg-dorado border-dorado text-negro font-semibold'
-              : 'border-borde text-blanco-calido hover:border-dorado/60 hover:text-dorado',
+              ? 'bg-surface-2 border-borde-hover text-blanco-calido font-semibold'
+              : 'border-borde text-blanco-calido/70 hover:border-borde-hover hover:text-blanco-calido',
           )}
         >
           <span
@@ -123,7 +123,7 @@ export function Toolbar({
       {sep}
 
       {/* Color */}
-      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.color')}</span>
+      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.color')}</span>
       <input
         id="color-picker"
         type="color"
@@ -136,7 +136,7 @@ export function Toolbar({
       {sep}
 
       {/* Cantidad */}
-      <span className="text-[10px] text-gris uppercase tracking-wider">{t('editor.toolbar.dancers')}</span>
+      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.dancers')}</span>
       <input
         type="number"
         value={newDancerCount}

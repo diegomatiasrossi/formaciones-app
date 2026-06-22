@@ -155,7 +155,7 @@ export function MembersPanel({ onClose }: Props) {
 
   if (!features.membersEnabled) {
     return (
-      <div className="absolute top-3 right-3 z-20 w-80 bg-[#1c1c1c] border border-borde rounded-xl shadow-2xl">
+      <div className="absolute top-3 right-3 z-20 w-80 bg-negro border border-borde rounded-xl shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <span className="text-[10px] text-dorado uppercase tracking-widest">Integrantes</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
@@ -172,7 +172,7 @@ export function MembersPanel({ onClose }: Props) {
   })
 
   return (
-    <div className="absolute top-3 right-3 z-20 w-80 bg-[#1c1c1c] border border-borde rounded-xl shadow-2xl flex flex-col max-h-[85vh]">
+    <div className="absolute top-3 right-3 z-20 w-80 bg-negro border border-borde rounded-xl shadow-2xl flex flex-col max-h-[85vh]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-borde/40 shrink-0">
         <div>

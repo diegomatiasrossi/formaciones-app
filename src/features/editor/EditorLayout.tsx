@@ -119,7 +119,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
           <button
             onClick={onSave}
             disabled={isSaving}
-            className="px-3 py-1.5 bg-dorado hover:bg-dorado-oscuro text-negro text-xs font-semibold
+            className="px-3 py-1.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-xs font-semibold
                        rounded-md transition-colors disabled:opacity-60 flex items-center gap-1"
           >
             {isSaving ? '...' : '↑ Guardar'}
