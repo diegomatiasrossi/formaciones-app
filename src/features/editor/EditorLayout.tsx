@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import clsx from 'clsx'
 import { Toolbar } from './Toolbar'
 import { Sidebar } from './Sidebar'
 import { StageCanvas } from './StageCanvas'
@@ -120,12 +121,10 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
           <button
             onClick={onSave}
             disabled={isSaving}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors
-                       disabled:opacity-60 flex items-center gap-1 ${
-                         justSaved
-                           ? 'bg-green-600 text-blanco'
-                           : 'bg-rojo hover:bg-rojo-oscuro text-blanco'
-                       }`}
+            className={clsx(
+              'px-3 py-1.5 text-xs font-semibold rounded-md transition-colors disabled:opacity-60 flex items-center gap-1',
+              justSaved ? 'bg-green-600 text-blanco' : 'bg-rojo hover:bg-rojo-oscuro text-blanco',
+            )}
           >
             {isSaving ? '...' : justSaved ? 'Guardado ✓' : '↑ Guardar'}
           </button>

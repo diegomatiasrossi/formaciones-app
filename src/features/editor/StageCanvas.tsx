@@ -248,7 +248,17 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
   }, [lasso, dancers, setSelectedIds, clearSelection, tool])
 
   function stage2canvas(e: Konva.KonvaEventObject<MouseEvent>) {
-    return e.target.getStage()?.getPointerPosition() ?? null
+    const stage = e.target.getStage()
+    if (!stage) return null
+    const pos = stage.getPointerPosition()
+    if (!pos) return null
+    // Convert from screen coordinates to content coordinates, accounting for
+    // the stage's current pan (x/y) and zoom (scaleX/Y). Without this correction
+    // the lasso rect appears offset when the stage is zoomed or panned.
+    return {
+      x: (pos.x - stage.x()) / stage.scaleX(),
+      y: (pos.y - stage.y()) / stage.scaleY(),
+    }
   }
 
   const handleStageClick = useCallback((e: Konva.KonvaEventObject<MouseEvent>) => {

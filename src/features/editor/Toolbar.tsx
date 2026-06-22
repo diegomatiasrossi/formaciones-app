@@ -169,7 +169,7 @@ export function Toolbar({
         className="px-2.5 py-1.5 rounded border border-borde text-gris hover:border-red-800 hover:text-red-400 text-xs transition-colors"
         title={t('editor.toolbar.clear_all')}
       >
-        Limpiar
+        {t('editor.toolbar.clear_all')}
       </button>
 
       {sep}

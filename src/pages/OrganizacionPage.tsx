@@ -366,6 +366,26 @@ export function OrganizacionPage() {
         {isOrgAdmin && (
           <DangerZoneDeleteOrg orgId={orgId} orgName={displayName} memberCount={orgMembers.length} />
         )}
+
+        {/* Crear otra organización — visible para Studio/owner aunque ya estén en una org activa */}
+        {canCreateOrg && (
+          <div className="border border-borde-light rounded-2xl p-6 shadow-soft bg-blanco">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gris mb-4">{t('org.create_org')}</h3>
+            <div className="flex gap-3">
+              <input value={orgName} onChange={e => { setOrgName(e.target.value); setCreateError(null) }}
+                onKeyDown={e => e.key === 'Enter' && handleCreateOrg()}
+                placeholder={t('org.org_name_placeholder')}
+                className="flex-1 bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo" />
+              <button onClick={handleCreateOrg} disabled={!orgName.trim() || saving}
+                className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">
+                {saving ? '...' : t('org.create_org')}
+              </button>
+            </div>
+            {createError && (
+              <p className="mt-2 text-xs text-rojo bg-rojo/8 border border-rojo/20 rounded-lg px-3 py-2">{createError}</p>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Invite modal */}
