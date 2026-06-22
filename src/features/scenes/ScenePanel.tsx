@@ -182,7 +182,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
 
       {/* Panel de transición de canon */}
       {showTransition && activeScene && !isFirst && (
-        <div className="px-3 pb-2 border-t border-borde/30 pt-2 bg-[#0d0d0d]">
+        <div className="px-3 pb-2 border-t border-borde/30 pt-2 bg-surface-1">
           <div className="flex items-center gap-3 flex-wrap">
             {/* Selector Unísono / Canon */}
             <div className="flex gap-1">
