@@ -229,11 +229,21 @@ export const useCrewStore = create<CrewState & CrewActions>()((set, get) => ({
   },
 
   deleteGroup: async id => {
+    // Nullify events.group_id before deleting the group — the FK
+    // events_group_id_fkey is NO ACTION so the delete would be blocked otherwise.
+    const { error: unlinkError } = await supabase
+      .from('events').update({ group_id: null }).eq('group_id', id)
+    if (unlinkError) { set({ error: unlinkError.message }); return }
     const { error } = await supabase.from('groups').delete().eq('id', id)
     if (error) { set({ error: error.message }); return }
     set(s => {
       const gm = { ...s.groupMemberships }; delete gm[id]
-      return { groups: s.groups.filter(g => g.id !== id), groupMemberships: gm }
+      // Reflect the unlink in local state too so events don't show stale group
+      return {
+        groups: s.groups.filter(g => g.id !== id),
+        groupMemberships: gm,
+        events: s.events.map(e => e.groupId === id ? { ...e, groupId: null } : e),
+      }
     })
   },
 
