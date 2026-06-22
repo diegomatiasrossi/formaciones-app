@@ -36,7 +36,7 @@ export function LevelSelector({ dancer }: Props) {
         </button>
       ))}
       <p className="text-[10px] text-gris/60 mt-1 leading-relaxed">
-        El nivel afecta opacidad y escala visual del bailarín.
+        El nivel afecta opacidad y escala visual del integrante.
       </p>
     </div>
   )

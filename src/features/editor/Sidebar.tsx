@@ -175,7 +175,7 @@ export function Sidebar() {
           </div>
         ))}
       </div>
-      <p className="text-[10px] text-gris/40 mb-2">Doble click en bailarín para editar nivel</p>
+      <p className="text-[10px] text-gris/40 mb-2">Doble click en integrante para editar nivel</p>
 
       {/* ── Aprender más ─────────────────────────────────────────── */}
       <button

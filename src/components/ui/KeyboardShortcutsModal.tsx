@@ -14,11 +14,11 @@ const SECTIONS = [
   {
     title: 'Canvas',
     shortcuts: [
-      { keys: ['Click'],              desc: 'Seleccionar bailarín' },
+      { keys: ['Click'],              desc: 'Seleccionar integrante' },
       { keys: ['Ctrl', 'Click'],      desc: 'Selección múltiple' },
       { keys: ['Drag vacío'],         desc: 'Lasso de selección' },
-      { keys: ['Doble click'],        desc: 'Propiedades del bailarín' },
-      { keys: ['Drag bailarín'],      desc: 'Mover (grupal si hay selección)' },
+      { keys: ['Doble click'],        desc: 'Propiedades del integrante' },
+      { keys: ['Drag integrante'],    desc: 'Mover (grupal si hay selección)' },
     ],
   },
   {

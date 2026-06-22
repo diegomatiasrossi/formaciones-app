@@ -71,7 +71,7 @@ export function DancerPropertiesPanel({ dancer, onClose }: Props) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: dancer.color }} />
-          <span className="text-[10px] text-dorado uppercase tracking-widest">Bailarín</span>
+          <span className="text-[10px] text-dorado uppercase tracking-widest">Integrante</span>
         </div>
         <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
       </div>
