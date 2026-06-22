@@ -267,4 +267,83 @@ NO procesa cobros reales. Pendiente: integrar Stripe Billing con quantity update
 
 ---
 
-*Sesión grande completada — 20/06/2026*
+---
+
+## ✅ SESIÓN 21/06/2026 — Auditoría completa + Seguridad backend + Studio features
+
+### Resumen de lo que se construyó
+
+#### Auditoría de plataforma (12 módulos)
+- `4ac3850` — fix: rol `viewer` no se aplicaba en el frontend (Integrantes/Grupos/Eventos/Actividades).
+  Viewers veían botones de mutación; RLS bloqueaba en backend pero el form cerraba como si
+  hubiera funcionado → apariencia de pérdida de datos. Corregido con `canEdit` en todas las páginas crew.
+- `e2f9b0a` — fix: usuario deslogueado no podía leer invitación (RLS bloqueaba sin auth.uid).
+  Solución: `get_invite_preview(token)` SECURITY DEFINER — accesible para anon+authenticated.
+  **⚠️ Requiere correr `supabase-studio-invite-preview.sql`.**
+
+#### Seguridad backend — límite maxDancers
+- `3837962` — feat: trigger `enforce_max_dancers` en projects + `get_user_plan()` +
+  `validate_max_dancers()`. Refuerza el límite 10/50/∞ en el backend (antes solo era frontend).
+  Maneja downgrade de plan: solo bloquea si el máximo AUMENTA, no retroactivamente.
+  `saveProject` ahora devuelve `{ error }` y EditorPage muestra banner de error.
+  **⚠️ Requiere correr `supabase-maxdancers-trigger.sql`** (ya corrido y confirmado por Diego).
+
+#### Fix bugs post-trigger
+- `c1e1f14` — fix: error de guardado mostraba "[object Object]" (PostgrestError no es instanceof Error).
+- `8b237d9` — fix: presets del sidebar generaban 12 dancers por defecto (excedía Free).
+  Opción A elegida: `applyFormation` recibe `maxCount` y clampea al límite del plan.
+  Todos los presets (no solo Diagonal) estaban afectados — compartían `newDancerCount=12`.
+
+#### Feature: eliminar organización
+- `019296c` — SQL: `delete_organization()` + constraints ON DELETE CASCADE (members/groups/events/activities)
+  + ON DELETE SET NULL (projects.event_id, projects.group_id).
+  **⚠️ Requiere correr `supabase-delete-organization.sql`.**
+- `592d100` — UI: Zona de peligro en `/organizacion` (solo admins). Modal estilo GitHub que exige
+  escribir el nombre exacto de la org para habilitar el botón destructivo. Al confirmar:
+  switchToPersonal + loadMemberships + redirect a `/projects`.
+
+#### Fix urgente: crear org requiere Studio
+- `47aa665` — fix: `/organizacion` nunca estuvo plan-gateado → cualquier Free podía crear una org.
+  Frontend: UpgradeGate (con loading guard para evitar flash). Backend: `create_organization()`
+  verifica `get_user_plan() = 'studio'` al principio.
+  **⚠️ Requiere correr `supabase-org-requires-studio.sql`.**
+
+---
+
+### SQL pendientes de correr (ver PENDIENTES-SQL.md para instrucciones completas)
+
+| Archivo | Estado | Impacto si no se corre |
+|---|---|---|
+| `supabase-studio-invite-preview.sql` | 🔴 PENDIENTE | Invitados sin cuenta ven "inválida" en lugar de login |
+| `supabase-delete-organization.sql` | 🔴 PENDIENTE | Botón eliminar org falla (función no existe) |
+| `supabase-org-requires-studio.sql` | 🔴 PENDIENTE | Cualquier Free puede crear org vía API directa |
+
+Orden recomendado: invite-preview → delete-organization → org-requires-studio.
+Ver `PENDIENTES-SQL.md` para el contenido completo de cada uno, dependencias y query de verificación.
+
+---
+
+### Decisiones de producto pendientes (de la auditoría)
+
+**A. Límites de plan solo en frontend (seguridad parcial)**
+- maxDancers ya tiene refuerzo backend (trigger). ✅
+- maxProjects (2 para Free) sigue solo en frontend. Nota previa: NO tocar hasta 31/12/2026.
+- Gates de Reportes/Audio/Actividades son de monetización, no fuga de datos — aceptable.
+
+**B. "Bailarín" vs "integrante" en el editor**
+Quedan usos de "bailarín" en: DancerPropertiesPanel, KeyboardShortcutsModal, TutorialOverlay,
+LevelSelector, Sidebar. Los usos en el testimonial de la landing y en los tags de persona
+("Juez, Bailarín, Docente") son intencionales y no deben cambiarse.
+¿Querés unificar a "integrante" en los componentes del editor solamente?
+
+**C. includedSeats hardcodeado en 3**
+`OrganizacionPage` usa `const includedSeats = 3`. La tabla `organizations` tiene la columna
+`included_seats`. Trivial de cambiar, pero sin facturación variable no tiene efecto práctico.
+
+**D. Facturación variable de seats Studio**
+`extra_seat_price_cents` existe en la tabla. La UI ya muestra el aviso pero no cobra.
+Pendiente de sesión separada con Stripe metered billing.
+
+---
+
+*Sesión completada — 21/06/2026*
