@@ -351,7 +351,7 @@ export const FORMATION_CARDS: FormationCard[] = [
   {
     id: 'spiral',
     nameKey: 'formations.spiral',
-    icon: '🌀',
+    icon: '◎',
     advantages: ['formations.cards.spiral.adv1', 'formations.cards.spiral.adv2'],
     risks: ['formations.cards.spiral.risk1'],
     feeling: 'formations.cards.spiral.feeling',

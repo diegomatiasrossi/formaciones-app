@@ -36,6 +36,7 @@ export function EditorPage() {
   const [showTutorial, setShowTutorial] = useState(() => !isTutorialDone())
   const [showSplash, setShowSplash] = useState(true)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [justSaved, setJustSaved] = useState(false)
 
   useEffect(() => {
     if (loaded.current) return
@@ -82,6 +83,8 @@ export function EditorPage() {
       )
     } else {
       setSaveError(null)
+      setJustSaved(true)
+      setTimeout(() => setJustSaved(false), 2000)
     }
   }
 
@@ -122,6 +125,7 @@ export function EditorPage() {
         onSave={handleSave}
         onShare={() => setShowShare(true)}
         isSaving={isSaving}
+        justSaved={justSaved}
       />
       {saveError && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-[calc(100%-2rem)]

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
+import { Modal } from '@/components/ui/Modal'
 import type { Scene } from '@/types'
 import clsx from 'clsx'
 
@@ -28,6 +29,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
   const [editValue,  setEditValue]  = useState('')
   const [editField,  setEditField]  = useState<'name' | 'formation'>('name')
   const [showTransition, setShowTransition] = useState(false)
+  const [sceneToDelete, setSceneToDelete] = useState<string | null>(null)
 
   function startEdit(id: string, field: 'name' | 'formation', current: string) {
     setEditingId(id); setEditField(field); setEditValue(current)
@@ -104,7 +106,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
                 >⧉</button>
                 {scenes.length > 1 && (
                   <button
-                    onClick={() => removeScene(scene.id)}
+                    onClick={() => setSceneToDelete(scene.id)}
                     title={t('common.delete')}
                     className="w-5 h-5 flex items-center justify-center text-[11px] text-gris hover:text-red-400 transition-colors"
                   >×</button>
@@ -268,6 +270,20 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
           )}
         </div>
       )}
+
+      {/* Confirmación de borrado de escena */}
+      <Modal open={!!sceneToDelete} onClose={() => setSceneToDelete(null)} title={t('scenes.delete_confirm')}>
+        <p className="text-sm text-negro/80 mb-4">{t('scenes.delete_warning')}</p>
+        <div className="flex gap-3 justify-end">
+          <button onClick={() => setSceneToDelete(null)} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
+          <button
+            onClick={() => { if (sceneToDelete) removeScene(sceneToDelete); setSceneToDelete(null) }}
+            className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg"
+          >
+            {t('common.delete')}
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

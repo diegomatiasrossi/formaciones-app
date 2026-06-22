@@ -71,6 +71,10 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       scaleY={levelScale}
       opacity={opacity}
       draggable
+      // dragDistance evita que un micro-movimiento durante un click/ctrl+click/
+      // doble-click se interprete como drag (Konva default = 0px), lo que se comía
+      // esos eventos. Con 5px, clicks y dobles clicks disparan de forma confiable.
+      dragDistance={5}
       onDragStart={() => onDragStart(id)}
       onDragEnd={e => onDragEnd(id, e.target.x(), e.target.y())}
       onClick={e => onClick(id, (e.evt as MouseEvent).ctrlKey || (e.evt as MouseEvent).metaKey)}

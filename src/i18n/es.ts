@@ -269,6 +269,8 @@ export default {
     add: 'Nueva escena',
     scene: 'Escena',
     rename_placeholder: 'Nombre de la escena',
+    delete_confirm: '¿Eliminar esta escena?',
+    delete_warning: 'Esta acción no se puede deshacer.',
   },
   levels: {
     title: 'Nivel',

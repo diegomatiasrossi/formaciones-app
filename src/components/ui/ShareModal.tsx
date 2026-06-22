@@ -7,7 +7,9 @@ interface Props {
   onClose: () => void
 }
 
-const APP_URL = import.meta.env.VITE_APP_URL ?? window.location.origin
+// window.location.origin resuelve dev (localhost) y prod (crewficina.com) sin
+// depender de VITE_APP_URL, que en Vercel podía quedar apuntando a localhost.
+const APP_URL = window.location.origin
 
 export function ShareModal({ project, onClose }: Props) {
   const { generateShareToken, revokeShareToken, setShareShowNames } = useProjectStore()

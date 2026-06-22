@@ -123,12 +123,12 @@ create policy "invites_admin_all"
   );
 
 -- Usuarios pueden ver invitaciones dirigidas a su email (para la página de aceptar)
+-- Usa el claim de email del JWT (no auth.users — el rol authenticated no puede
+-- leer esa tabla; ver supabase-fix-invite-rls.sql).
 drop policy if exists "invites_self_select" on organization_invites;
 create policy "invites_self_select"
   on organization_invites for select
-  using (
-    email = (select email from auth.users where id = auth.uid())
-  );
+  using (email = (auth.jwt() ->> 'email'));
 
 -- ─── FUNCIÓN: Crear organización (resuelve el chicken-and-egg de RLS) ─────────
 -- SECURITY DEFINER: se ejecuta con permisos del CREADOR de la función (postgres)

@@ -269,6 +269,8 @@ export default {
     add: 'Nova cena',
     scene: 'Cena',
     rename_placeholder: 'Nome da cena',
+    delete_confirm: 'Excluir esta cena?',
+    delete_warning: 'Esta ação não pode ser desfeita.',
   },
   levels: {
     title: 'Nível',

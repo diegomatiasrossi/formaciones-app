@@ -28,9 +28,10 @@ interface Props {
   onSave: () => void
   onShare?: () => void
   isSaving?: boolean
+  justSaved?: boolean
 }
 
-export function EditorLayout({ projectName, groupName, choreographyName, stageRatio, customStageW, customStageH, memberNames, memberNameById, onBack, onSave, onShare, isSaving }: Props) {
+export function EditorLayout({ projectName, groupName, choreographyName, stageRatio, customStageW, customStageH, memberNames, memberNameById, onBack, onSave, onShare, isSaving, justSaved }: Props) {
   const { scenes, setActiveScene, stageWidth, stageHeight } = useEditorStore()
   const { features } = usePlan()
   const [showAudio, setShowAudio]       = useState(false)
@@ -119,10 +120,14 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
           <button
             onClick={onSave}
             disabled={isSaving}
-            className="px-3 py-1.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-xs font-semibold
-                       rounded-md transition-colors disabled:opacity-60 flex items-center gap-1"
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors
+                       disabled:opacity-60 flex items-center gap-1 ${
+                         justSaved
+                           ? 'bg-green-600 text-blanco'
+                           : 'bg-rojo hover:bg-rojo-oscuro text-blanco'
+                       }`}
           >
-            {isSaving ? '...' : '↑ Guardar'}
+            {isSaving ? '...' : justSaved ? 'Guardado ✓' : '↑ Guardar'}
           </button>
         </div>
       </header>

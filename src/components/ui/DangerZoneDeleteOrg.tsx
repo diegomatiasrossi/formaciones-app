@@ -40,7 +40,11 @@ export function DangerZoneDeleteOrg({ orgId, orgName, memberCount }: Props) {
     return () => { cancelled = true }
   }, [open, orgId])
 
-  const matches = confirmText === orgName  // exact, case-sensitive
+  // Comparar sin acentos: el nombre mostrado conserva su acento, pero el usuario
+  // puede confirmar escribiéndolo con o sin acento (evita el bug de "Auditoría"
+  // mostrado vs "Auditoria" tipeado).
+  const stripAccents = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').trim()
+  const matches = stripAccents(confirmText) === stripAccents(orgName)
 
   function close() {
     setOpen(false); setConfirmText(''); setError(null); setDeleting(false)

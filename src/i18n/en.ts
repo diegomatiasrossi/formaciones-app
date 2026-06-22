@@ -269,6 +269,8 @@ export default {
     add: 'New scene',
     scene: 'Scene',
     rename_placeholder: 'Scene name',
+    delete_confirm: 'Delete this scene?',
+    delete_warning: 'This action cannot be undone.',
   },
   levels: {
     title: 'Level',

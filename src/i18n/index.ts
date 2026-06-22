@@ -22,7 +22,13 @@ export { i18n }
 const LANGS = ['es', 'en', 'pt'] as const
 export type Lang = typeof LANGS[number]
 
+// Cooldown para evitar que clicks rápidos disparen varios cambios de idioma
+// encadenados y dejen la UI con strings mezclados.
+let langCooldown = false
 export function toggleLanguage() {
+  if (langCooldown) return
+  langCooldown = true
+  setTimeout(() => { langCooldown = false }, 300)
   const idx = LANGS.indexOf(i18n.language as Lang)
   const next = LANGS[(idx + 1) % LANGS.length]
   i18n.changeLanguage(next)
