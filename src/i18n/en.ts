@@ -386,7 +386,7 @@ export default {
     q1: 'Is it free?',
     a1: 'Yes, the Free plan is free forever. You can create up to 3 projects without paying anything.',
     q2: 'Do I need to be tech-savvy?',
-    a2: 'No. Crewficina is designed for choreographers, not programmers. If you can use WhatsApp, you can use Crewficina.',
+    a2: 'No. Crewficina was built for choreographers, by choreographers. If you can use WhatsApp, you can use Crewficina.',
     q3: 'Does it work on mobile?',
     a3: 'Crewficina is optimized for computer or tablet. On mobile you can view your projects, but the formation editor needs a larger screen.',
     q4: 'Can I share my formations with my crew?',

@@ -386,7 +386,7 @@ export default {
     q1: 'É grátis?',
     a1: 'Sim, o plano Free é grátis para sempre. Você pode criar até 3 projetos sem pagar nada.',
     q2: 'Preciso entender de tecnologia?',
-    a2: 'Não. A Crewficina foi feita para coreógrafos, não para programadores. Se você sabe usar o WhatsApp, sabe usar a Crewficina.',
+    a2: 'Não. Crewficina foi criada por quem faz coreografias. Se você usa WhatsApp, você usa Crewficina.',
     q3: 'Funciona no celular?',
     a3: 'A Crewficina é otimizada para computador ou tablet. No celular você pode ver seus projetos, mas o editor de formações precisa de uma tela maior.',
     q4: 'Posso compartilhar minhas formações com meu grupo?',
