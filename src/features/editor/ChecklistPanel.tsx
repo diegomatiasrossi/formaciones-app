@@ -44,7 +44,10 @@ export function ChecklistPanel({ onClose }: Props) {
           <span className="text-[10px] text-dorado uppercase tracking-widest">Checklist</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
         </div>
-        <UpgradeGate requiredPlan="pro" featureName="Checklist de producción" className="pb-4" />
+        <UpgradeGate requiredPlan="solo_pro" featureName="Checklist de producción" className="pb-4"
+          headline="Organizá cada detalle"
+          description="Con Solo Pro tenés el checklist completo de producción para tu presentación."
+          ctaText="Empezar Solo Pro — $9.99/mes" />
       </div>
     )
   }

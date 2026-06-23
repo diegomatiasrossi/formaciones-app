@@ -233,7 +233,11 @@ export function OrganizacionPage() {
             // Nota: esto solo bloquea CREAR. Quien ya es miembro de una org la ve y
             // la usa normalmente al cambiar a ese espacio desde el WorkspaceSwitcher.
             <div className="bg-blanco border border-borde-light rounded-2xl p-8 shadow-soft">
-              <UpgradeGate requiredPlan="studio" featureName={t('org.requires_studio')} />
+              <UpgradeGate requiredPlan="studio" featureName={t('org.requires_studio')}
+                headline={t('upgrade.org_headline')}
+                description={t('upgrade.org_desc')}
+                ctaText={t('upgrade.cta_studio')}
+                lightBg />
             </div>
           )}
 

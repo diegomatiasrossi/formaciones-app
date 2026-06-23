@@ -115,7 +115,10 @@ export function AudioPanel({ onSceneChange, locked }: Props) {
   if (locked) {
     return (
       <div className="border-t border-borde bg-surface-1 shrink-0 h-28 flex items-center justify-center">
-        <UpgradeGate requiredPlan="solo_pro" featureName="Sincronización de audio" />
+        <UpgradeGate requiredPlan="solo_pro" featureName="Sincronización de audio"
+          headline="Sincronizá la música"
+          description="Con Solo Pro agregás el audio de tu coreografía y todo queda junto."
+          ctaText="Empezar Solo Pro — $9.99/mes" />
       </div>
     )
   }

@@ -12,9 +12,18 @@ interface Props {
   featureName: string
   compact?: boolean
   className?: string
+  // New contextual copy — when provided, overrides the generic featureName layout
+  headline?: string
+  description?: string
+  ctaText?: string
+  // When true, uses dark text (for light backgrounds like white cards)
+  lightBg?: boolean
 }
 
-export function UpgradeGate({ requiredPlan, featureName, compact, className }: Props) {
+export function UpgradeGate({
+  requiredPlan, featureName, compact, className,
+  headline, description, ctaText, lightBg,
+}: Props) {
   const navigate = useNavigate()
   const label = PLAN_LABELS[requiredPlan]
 
@@ -29,20 +38,38 @@ export function UpgradeGate({ requiredPlan, featureName, compact, className }: P
     )
   }
 
+  const headlineColor   = lightBg ? 'text-negro font-semibold'             : 'text-blanco-calido font-semibold'
+  const bodyColor       = lightBg ? 'text-gris'                            : 'text-gris/60'
+  const featureColor    = lightBg ? 'text-negro/80 font-medium'            : 'text-blanco-calido/80 font-medium'
+  const planLabelColor  = lightBg ? 'text-dorado-oscuro'                   : 'text-dorado'
+
   return (
     <div className={`flex flex-col items-center justify-center gap-3 p-6 text-center ${className ?? ''}`}>
       <span className="text-3xl opacity-60">🔒</span>
-      <div>
-        <p className="text-xs text-blanco-calido/80 font-medium">{featureName}</p>
-        <p className="text-[11px] text-gris/60 mt-1">
-          Disponible en el plan <span className="text-dorado">{label}</span>
-        </p>
+
+      <div className="space-y-1">
+        {headline ? (
+          <>
+            <p className={`text-sm ${headlineColor}`}>{headline}</p>
+            {description && (
+              <p className={`text-[11px] leading-relaxed ${bodyColor}`}>{description}</p>
+            )}
+          </>
+        ) : (
+          <>
+            <p className={`text-xs ${featureColor}`}>{featureName}</p>
+            <p className={`text-[11px] ${bodyColor}`}>
+              Disponible en el plan <span className={planLabelColor}>{label}</span>
+            </p>
+          </>
+        )}
       </div>
+
       <button
         onClick={() => navigate('/pricing')}
-        className="px-4 py-1.5 text-[11px] border border-dorado/40 text-dorado hover:bg-dorado/10 rounded-lg transition-colors"
+        className="px-4 py-2 text-[11px] font-semibold bg-rojo hover:bg-rojo-oscuro text-blanco rounded-lg transition-colors"
       >
-        Ver planes →
+        {ctaText ?? 'Ver planes →'}
       </button>
     </div>
   )

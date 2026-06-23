@@ -74,7 +74,10 @@ export function StatisticsPanel({ onClose, locked }: Props) {
           <span className="text-[10px] text-dorado uppercase tracking-widest">Estadísticas</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
         </div>
-        <UpgradeGate requiredPlan="studio" featureName="Estadísticas y mapa de zonas" className="pb-4" />
+        <UpgradeGate requiredPlan="studio" featureName="Estadísticas y mapa de zonas" className="pb-4"
+          headline="Estadísticas del escenario"
+          description="Con Studio accedés al análisis de zonas y distribución en tiempo real."
+          ctaText="Empezar Studio — $24.99/mes" />
       </div>
     )
   }

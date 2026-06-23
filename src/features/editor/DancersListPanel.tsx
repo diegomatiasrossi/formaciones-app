@@ -31,7 +31,10 @@ export function DancersListPanel({ onClose }: Props) {
           <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">Lista</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
         </div>
-        <UpgradeGate requiredPlan="solo_pro" featureName="Lista de integrantes" className="pb-4" />
+        <UpgradeGate requiredPlan="solo_pro" featureName="Lista de integrantes" className="pb-4"
+          headline="Nombrá a tu crew"
+          description="Con Solo Pro cada integrante tiene su nombre en la formación."
+          ctaText="Empezar Solo Pro — $9.99/mes" />
       </div>
     )
   }

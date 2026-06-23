@@ -160,7 +160,10 @@ export function MembersPanel({ onClose }: Props) {
           <span className="text-[10px] text-dorado uppercase tracking-widest">Integrantes</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
         </div>
-        <UpgradeGate requiredPlan="starter" featureName="Base de datos de integrantes" className="pb-4" />
+        <UpgradeGate requiredPlan="solo_pro" featureName="Base de datos de integrantes" className="pb-4"
+          headline="Nombrá a tu crew"
+          description="Con Solo Pro cada integrante tiene su nombre en la formación."
+          ctaText="Empezar Solo Pro — $9.99/mes" />
       </div>
     )
   }

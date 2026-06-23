@@ -113,7 +113,11 @@ export function ReportesPage() {
       {!can('reportsEnabled') && (
         <div className="max-w-2xl mx-auto px-6 py-16 flex justify-center">
           <div className="bg-blanco border border-borde-light rounded-2xl p-10 shadow-soft">
-            <UpgradeGate requiredPlan="solo_pro" featureName={t('reports.title')} />
+            <UpgradeGate requiredPlan="solo_pro" featureName={t('reports.title')}
+              headline={t('upgrade.reports_headline')}
+              description={t('upgrade.reports_desc')}
+              ctaText={t('upgrade.cta_solo_pro')}
+              lightBg />
           </div>
         </div>
       )}

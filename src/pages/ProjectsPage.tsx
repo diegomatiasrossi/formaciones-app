@@ -86,6 +86,9 @@ export function ProjectsPage() {
   const preloadedEventId = searchParams.get('eventId')
 
   const { canCreateProject: canCreate, features } = usePlan()
+  const isFreePlan       = features.maxProjects !== Infinity
+  const atProjectLimit   = isFreePlan && !canCreate(projects.length)
+  const canDeleteProjects = !isFreePlan
   const [showNew, setShowNew] = useState(false)
   const [newName, setNewName] = useState('')
   const [newGroupName, setNewGroupName] = useState('')
@@ -212,8 +215,13 @@ export function ProjectsPage() {
         <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
           <div>
             <h1 className="text-xl font-semibold tracking-wide">{t('projects.title')}</h1>
-            {projects.length > 0 && (
+            {projects.length > 0 && !isFreePlan && (
               <p className="text-xs text-gris mt-0.5">{projects.length} proyecto{projects.length !== 1 ? 's' : ''}</p>
+            )}
+            {isFreePlan && (
+              <p className="text-xs text-gris mt-0.5">
+                {t('upgrade.free_project_count', { count: projects.length, limit: features.maxProjects })}
+              </p>
             )}
             <p className="text-[10px] text-gris/50 mt-0.5">Tus formaciones son personales — no cambian al cambiar de organización.</p>
           </div>
@@ -222,11 +230,24 @@ export function ProjectsPage() {
               <input type="text" placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)}
                 className="bg-blanco border border-borde-light rounded-lg px-3 py-1.5 text-xs text-negro focus:outline-none focus:border-rojo w-40 placeholder:text-gris/50" />
             )}
-            <button
-              onClick={() => canCreate(projects.length) ? setShowNew(true) : navigate('/pricing')}
-              className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-all hover:-translate-y-0.5 shadow-soft">
-              + {t('projects.new')}
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              <button
+                onClick={() => atProjectLimit ? undefined : setShowNew(true)}
+                disabled={atProjectLimit}
+                title={atProjectLimit ? t('upgrade.free_project_limit_tooltip') : undefined}
+                className={clsx(
+                  'px-4 py-2 text-blanco text-sm font-semibold rounded-lg shadow-soft transition-all',
+                  atProjectLimit
+                    ? 'bg-rojo/40 cursor-not-allowed'
+                    : 'bg-rojo hover:bg-rojo-oscuro hover:-translate-y-0.5',
+                )}
+              >
+                + {t('projects.new')}
+              </button>
+              {atProjectLimit && (
+                <p className="text-[10px] text-gris/60">{t('upgrade.free_project_limit_tooltip')}</p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -241,8 +262,8 @@ export function ProjectsPage() {
             <p className="text-xs text-gris mb-6 max-w-xs">
               {search ? `No hay proyectos que coincidan con "${search}"` : 'Creá tu primer proyecto y empezá a diseñar formaciones'}
             </p>
-            {!search && (
-              <button onClick={() => canCreate(projects.length) ? setShowNew(true) : navigate('/pricing')}
+            {!search && !atProjectLimit && (
+              <button onClick={() => setShowNew(true)}
                 className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">
                 {t('projects.create_first')}
               </button>
@@ -291,10 +312,12 @@ export function ProjectsPage() {
                         className="flex-1 text-center py-1.5 text-xs border border-borde-light rounded-lg text-negro/80 hover:border-dorado hover:text-dorado-oscuro transition-colors">
                         {t('projects.open')}
                       </button>
-                      <button onClick={() => setConfirmDelete(project)}
-                        className="w-8 py-1.5 text-xs border border-borde-light rounded-lg text-gris hover:border-rojo/50 hover:text-rojo transition-colors flex items-center justify-center" title="Eliminar">
-                        ×
-                      </button>
+                      {canDeleteProjects && (
+                        <button onClick={() => setConfirmDelete(project)}
+                          className="w-8 py-1.5 text-xs border border-borde-light rounded-lg text-gris hover:border-rojo/50 hover:text-rojo transition-colors flex items-center justify-center" title="Eliminar">
+                          ×
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -310,6 +333,14 @@ export function ProjectsPage() {
       {/* Modal nuevo proyecto */}
       <Modal open={showNew} onClose={resetForm} title={t('projects.new')}>
         <div className="space-y-4">
+          {isFreePlan && (
+            <div className="flex items-start gap-2.5 px-3 py-2.5 bg-dorado/10 border border-dorado/30 rounded-lg">
+              <span className="text-dorado shrink-0 mt-0.5">ℹ</span>
+              <p className="text-xs text-dorado-oscuro leading-snug">
+                {t('upgrade.free_no_delete')} {t('upgrade.free_no_delete_hint')}
+              </p>
+            </div>
+          )}
           <div>
             <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">
               {t('projects.name_placeholder')} <span className="text-rojo">{t('projects.form_required')}</span>

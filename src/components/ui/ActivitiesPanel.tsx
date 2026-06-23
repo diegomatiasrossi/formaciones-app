@@ -21,7 +21,11 @@ export function ActivitiesPanel({ contextType, contextId }: Props) {
   const [newTitle, setNewTitle] = useState('')
 
   if (!can('checklistEnabled')) {
-    return <UpgradeGate requiredPlan="solo_pro" featureName={t('activities.title')} />
+    return <UpgradeGate requiredPlan="solo_pro" featureName={t('activities.title')}
+      headline={t('upgrade.activities_headline')}
+      description={t('upgrade.activities_desc')}
+      ctaText={t('upgrade.cta_solo_pro')}
+      lightBg />
   }
 
   const items = activitiesFor(contextType, contextId)
