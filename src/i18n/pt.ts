@@ -36,6 +36,7 @@ export default {
     title: 'Atividades', placeholder: 'Adicionar tarefa...', empty: 'Sem atividades ainda.',
     suggested_tasks: 'Tarefas sugeridas',
     suggested_tasks_hint: 'Escolha as que você quer adicionar (opcional)',
+    suggested_tasks_travel: 'Viagem / Competição internacional',
   },
   common: {
     save: 'Salvar',
