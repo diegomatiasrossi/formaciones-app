@@ -100,6 +100,24 @@ function updateActive(
   return scenes.map(s => s.id === activeId ? fn(s) : s)
 }
 
+// Aplica una transformación a un subconjunto de dancers (los seleccionados si
+// hay selección, sino todos) pivotando alrededor del centroide de ESE subconjunto.
+function transformDancers(
+  scene: Scene,
+  selectedIds: string[],
+  fn: (d: Dancer, cx: number, cy: number) => Dancer,
+): Scene {
+  const ids = selectedIds.length > 0 ? new Set(selectedIds) : null
+  const targets = ids ? scene.dancers.filter(d => ids.has(d.id)) : scene.dancers
+  if (targets.length === 0) return scene
+  const cx = targets.reduce((a, d) => a + d.x, 0) / targets.length
+  const cy = targets.reduce((a, d) => a + d.y, 0) / targets.length
+  return {
+    ...scene,
+    dancers: scene.dancers.map(d => (!ids || ids.has(d.id)) ? fn(d, cx, cy) : d),
+  }
+}
+
 type HistorySnapshot = { scenes: Scene[]; activeSceneId: string }
 
 function snapshot(state: EditorState): string {
@@ -367,63 +385,51 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   // ── Transformaciones ─────────────────────────────────────────────
 
-  rotateAll: deg => {
-    const { stageWidth, stageHeight } = get()
-    const cx = stageWidth / 2
-    const cy = stageHeight / 2
+  // Helper: transforma los dancers afectados (los seleccionados si hay
+  // selección, sino todos) pivotando alrededor de SU PROPIO centroide, así la
+  // formación rota/espeja/escala en su lugar en vez de saltar lejos del escenario.
+  rotateAll: deg =>
     set(s => ({
       ...withHistory(s, () => ({
-        scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
-          ...sc,
-          dancers: sc.dancers.map(d => {
+        scenes: updateActive(s.scenes, s.activeSceneId, sc =>
+          transformDancers(sc, s.selectedIds, (d, cx, cy) => {
             const { x, y } = rotatePoint(d.x, d.y, cx, cy, deg)
             return { ...d, x, y }
           }),
-        })),
+        ),
       })),
-    }))
-  },
+    })),
 
-  mirrorH: () => {
-    const cx = get().stageWidth / 2
+  mirrorH: () =>
     set(s => ({
       ...withHistory(s, () => ({
-        scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
-          ...sc,
-          dancers: sc.dancers.map(d => ({ ...d, x: mirrorPointH(d.x, cx) })),
-        })),
+        scenes: updateActive(s.scenes, s.activeSceneId, sc =>
+          transformDancers(sc, s.selectedIds, (d, cx) => ({ ...d, x: mirrorPointH(d.x, cx) })),
+        ),
       })),
-    }))
-  },
+    })),
 
-  mirrorV: () => {
-    const cy = get().stageHeight / 2
+  mirrorV: () =>
     set(s => ({
       ...withHistory(s, () => ({
-        scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
-          ...sc,
-          dancers: sc.dancers.map(d => ({ ...d, y: mirrorPointV(d.y, cy) })),
-        })),
+        scenes: updateActive(s.scenes, s.activeSceneId, sc =>
+          transformDancers(sc, s.selectedIds, (d, _cx, cy) => ({ ...d, y: mirrorPointV(d.y, cy) })),
+        ),
       })),
-    }))
-  },
+    })),
 
-  scaleFormation: factor => {
-    const cx = get().stageWidth / 2
-    const cy = get().stageHeight / 2
+  scaleFormation: factor =>
     set(s => ({
       ...withHistory(s, () => ({
-        scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
-          ...sc,
-          dancers: sc.dancers.map(d => ({
+        scenes: updateActive(s.scenes, s.activeSceneId, sc =>
+          transformDancers(sc, s.selectedIds, (d, cx, cy) => ({
             ...d,
             x: Math.round(cx + (d.x - cx) * factor),
             y: Math.round(cy + (d.y - cy) * factor),
           })),
-        })),
+        ),
       })),
-    }))
-  },
+    })),
 
   // ── Undo / Redo ───────────────────────────────────────────────────
 

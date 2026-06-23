@@ -50,9 +50,21 @@ export function Toolbar({
     newSize, setNewSize,
     newDancerCount, setNewDancerCount,
     selectedIds, deleteSelected, clearAll,
+    setShape, setSize,
     undo, redo,
     scenes, activeSceneId,
   } = useEditorStore()
+
+  // Forma/tamaño: setean el default para nuevos integrantes Y, si hay selección,
+  // se aplican también a los integrantes seleccionados en el canvas.
+  function pickShape(shape: typeof newShape) {
+    setNewShape(shape)
+    if (selectedIds.length > 0) setShape(selectedIds, shape)
+  }
+  function pickSize(size: number) {
+    setNewSize(size)
+    if (selectedIds.length > 0) setSize(selectedIds, size)
+  }
 
   const activeScene = scenes.find(s => s.id === activeSceneId)
   const dancerCount = activeScene?.dancers.length ?? 0
@@ -91,7 +103,7 @@ export function Toolbar({
       {/* Forma */}
       <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.shape')}</span>
       {SHAPES.map(s => (
-        <button key={s.value} className={btn(newShape === s.value)} onClick={() => setNewShape(s.value)} title={s.title}>
+        <button key={s.value} className={btn(newShape === s.value)} onClick={() => pickShape(s.value)} title={s.title}>
           {s.icon}
         </button>
       ))}
@@ -103,7 +115,7 @@ export function Toolbar({
       {SIZE_OPTIONS.map(s => (
         <button
           key={s.value}
-          onClick={() => setNewSize(s.value)}
+          onClick={() => pickSize(s.value)}
           title={`${s.label} (radio ${s.value}px)`}
           className={clsx(
             'flex items-center gap-1.5 rounded-[5px] px-[10px] py-[5px] border text-[11px] transition-colors',
@@ -150,7 +162,7 @@ export function Toolbar({
       {sep}
 
       {/* Undo / Redo */}
-      <button className={btn(false)} onClick={undo} title={`${t('common.undo')} (Ctrl+Z)`}>↺</button>
+      <button className={btn(false)} onClick={undo} title={`${t('common.undo')} (Ctrl+Z)`}>↺ {t('common.undo')}</button>
       <button className={btn(false)} onClick={redo} title={`${t('common.redo')} (Ctrl+Shift+Z)`}>↻</button>
 
       {sep}
