@@ -39,6 +39,7 @@ export function LandingPage() {
 
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   async function handleWaitlist(e: React.FormEvent) {
     e.preventDefault()
@@ -240,6 +241,34 @@ export function LandingPage() {
           )}
           {waitlistStatus === 'error' && <p className="text-rojo text-xs mt-3">Hubo un error. Intentá de nuevo.</p>}
           <p className="text-gris/60 text-[10px] mt-5">{t('landing.waitlist_no_spam')}</p>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="border-t border-borde-light bg-crema">
+        <div className="max-w-2xl mx-auto px-8 py-20">
+          <h2 className="text-3xl font-semibold tracking-tight mb-8 text-negro text-center">
+            {t('faq.title')}
+          </h2>
+          <div className="space-y-2">
+            {[0, 1, 2, 3, 4, 5].map(i => {
+              const isOpen = openFaq === i
+              return (
+                <div key={i} className="border border-borde-light rounded-xl bg-blanco overflow-hidden">
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+                  >
+                    <span className="text-sm font-medium text-negro">{t(`faq.q${i + 1}`)}</span>
+                    <span className={`text-gris shrink-0 text-xs transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
+                  </button>
+                  {isOpen && (
+                    <p className="px-5 pb-4 text-sm text-gris leading-relaxed">{t(`faq.a${i + 1}`)}</p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
       </section>
 
