@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type {
-  Dancer, DancerLevel, DancerShape, EdgeSide, EditorTool, FormationId, Scene, SceneMarker,
+  Dancer, DancerLevel, DancerShape, DancerFacing, EdgeSide, EditorTool, FormationId, Scene, SceneMarker,
 } from '@/types'
 import { generateFormation } from '@/lib/formations'
 import { snapToGrid, rotatePoint, mirrorPointH, mirrorPointV } from '@/lib/geometry'
@@ -41,6 +41,7 @@ interface EditorActions {
   deleteSelected: () => void
   clearAll: () => void
   setLevel: (id: string, level: DancerLevel) => void
+  setFacing: (id: string, facing: DancerFacing) => void
   setColor: (ids: string[], color: string) => void
   setShape: (ids: string[], shape: DancerShape) => void
   setSize: (ids: string[], size: number) => void
@@ -263,6 +264,15 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
       ...withHistory(s, () => ({
         scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
           ...sc, dancers: sc.dancers.map(d => d.id === id ? { ...d, level } : d),
+        })),
+      })),
+    })),
+
+  setFacing: (id, facing) =>
+    set(s => ({
+      ...withHistory(s, () => ({
+        scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
+          ...sc, dancers: sc.dancers.map(d => d.id === id ? { ...d, facing } : d),
         })),
       })),
     })),

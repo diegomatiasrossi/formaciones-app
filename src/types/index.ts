@@ -3,6 +3,24 @@ export type DancerShape = 'circle' | 'triangle' | 'square'
 
 export type EdgeSide = 'top' | 'bottom' | 'left' | 'right'
 
+export type DancerFacing =
+  | 'audience' | 'back' | 'right' | 'left'
+  | 'diagonal-front-right' | 'diagonal-front-left'
+  | 'diagonal-back-right' | 'diagonal-back-left'
+
+// Rotación en grados según la dirección que mira el integrante.
+// La figura natural mira al público (abajo) = 0°.
+export const FACING_ROTATION: Record<DancerFacing, number> = {
+  'audience':             0,
+  'back':                 180,
+  'right':                90,
+  'left':                 -90,
+  'diagonal-front-right': 45,
+  'diagonal-front-left':  -45,
+  'diagonal-back-right':  135,
+  'diagonal-back-left':   -135,
+}
+
 export interface Member {
   id: string
   name: string
@@ -31,6 +49,7 @@ export interface Dancer {
   active?: boolean
   entryEdge?: EdgeSide
   exitEdge?: EdgeSide
+  facing?: DancerFacing       // dirección que mira (default 'audience')
   memberId?: string | null   // vínculo real a la tabla members (null = integrante suelto)
 }
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
-import type { Dancer, DancerLevel, DancerShape, EdgeSide } from '@/types'
+import type { Dancer, DancerLevel, DancerShape, DancerFacing, EdgeSide } from '@/types'
 import { LEVEL_META, LEVEL_OPACITY, LEVEL_SCALE, SIZE_OPTIONS } from '@/types'
 import clsx from 'clsx'
 
@@ -29,9 +29,17 @@ const EDGE_OPTIONS: { value: EdgeSide; label: string }[] = [
   { value: 'right',  label: '→' },
 ]
 
+// Grilla 3x3 de dirección (centro vacío). Fila superior = mirando atrás (lejos
+// del público), fila inferior = mirando al público.
+const FACING_GRID: ({ value: DancerFacing; arrow: string } | null)[] = [
+  { value: 'diagonal-back-left',  arrow: '↖' }, { value: 'back',     arrow: '↑' }, { value: 'diagonal-back-right',  arrow: '↗' },
+  { value: 'left',                arrow: '←' }, null,                              { value: 'right',                arrow: '→' },
+  { value: 'diagonal-front-left', arrow: '↙' }, { value: 'audience', arrow: '↓' }, { value: 'diagonal-front-right', arrow: '↘' },
+]
+
 export function DancerPropertiesPanel({ dancer, onClose }: Props) {
   const { t } = useTranslation()
-  const { renameDancer, setColor, setShape, setSize, setLevel, setDancerPresence } = useEditorStore()
+  const { renameDancer, setColor, setShape, setSize, setLevel, setFacing, setDancerPresence } = useEditorStore()
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -167,6 +175,31 @@ export function DancerPropertiesPanel({ dancer, onClose }: Props) {
               </span>
               <span className="text-[9px]">{meta.label}</span>
             </button>
+          ))}
+        </div>,
+      )}
+
+      {/* Dirección */}
+      {row(t('editor.facing'),
+        <div className="grid grid-cols-3 gap-1 w-[108px]">
+          {FACING_GRID.map((cell, i) => (
+            cell === null
+              ? <div key={i} />
+              : (
+                <button
+                  key={i}
+                  onClick={() => setFacing(dancer.id, cell.value)}
+                  title={t(`editor.facing_${cell.value.replace(/-/g, '_')}`)}
+                  className={clsx(
+                    'h-8 rounded border text-sm transition-colors flex items-center justify-center',
+                    (dancer.facing ?? 'audience') === cell.value
+                      ? 'border-dorado bg-dorado/10 text-dorado'
+                      : 'border-borde text-gris hover:border-dorado/40 hover:text-dorado',
+                  )}
+                >
+                  {cell.arrow}
+                </button>
+              )
           ))}
         </div>,
       )}

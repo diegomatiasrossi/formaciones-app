@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { Group, Circle, Rect, Text, Arrow } from 'react-konva'
-import { LEVEL_OPACITY, LEVEL_SCALE } from '@/types'
+import { LEVEL_OPACITY, LEVEL_SCALE, FACING_ROTATION } from '@/types'
 import type { Dancer } from '@/types'
 
 interface Props {
@@ -62,6 +62,7 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const selStroke   = selected ? GOLD : outsideStage ? '#E53E3E' : depthStroke
 
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
+  const facingRotation = FACING_ROTATION[dancer.facing ?? 'audience']
 
   return (
     <Group
@@ -113,31 +114,35 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         />
       )}
 
-      {/* Tallo — rectángulo (cuerpo de la i) */}
-      <Rect
-        x={-stemW / 2}
-        y={stemY}
-        width={stemW}
-        height={stemH}
-        fill={fillColor}
-        cornerRadius={stemW * 0.15}
-        stroke={selStroke}
-        strokeWidth={strokeW}
-        listening={false}
-      />
+      {/* Figura (tallo + cabeza) — rota según la dirección que mira el integrante.
+          Se agrupa aparte para NO rotar etiqueta, anillo de selección ni flecha. */}
+      <Group rotation={facingRotation}>
+        {/* Tallo — rectángulo (cuerpo de la i) */}
+        <Rect
+          x={-stemW / 2}
+          y={stemY}
+          width={stemW}
+          height={stemH}
+          fill={fillColor}
+          cornerRadius={stemW * 0.15}
+          stroke={selStroke}
+          strokeWidth={strokeW}
+          listening={false}
+        />
 
-      {/* Punto — círculo (cabeza de la i) */}
-      <Circle
-        x={0}
-        y={0}
-        radius={headR}
-        fill={fillColor}
-        stroke={selStroke}
-        strokeWidth={strokeW}
-        shadowColor={selected ? GOLD : undefined}
-        shadowBlur={selected ? 8 : 0}
-        shadowOpacity={0.5}
-      />
+        {/* Punto — círculo (cabeza de la i) */}
+        <Circle
+          x={0}
+          y={0}
+          radius={headR}
+          fill={fillColor}
+          stroke={selStroke}
+          strokeWidth={strokeW}
+          shadowColor={selected ? GOLD : undefined}
+          shadowBlur={selected ? 8 : 0}
+          shadowOpacity={0.5}
+        />
+      </Group>
 
       {/* Etiqueta */}
       {showLabel && (
