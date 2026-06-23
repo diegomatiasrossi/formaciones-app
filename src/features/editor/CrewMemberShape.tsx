@@ -100,16 +100,17 @@ export const CrewMemberShape = memo(function CrewMemberShape({
         />
       )}
 
-      {/* Alerta fuera del escenario */}
+      {/* Alerta fuera del escenario — anillo punteado tenue (advierte sin dominar la figura) */}
       {outsideStage && (
         <Circle
           x={0}
           y={totalH / 2 - headR}
           radius={Math.max(headR, stemW / 2) + 8}
           fill="transparent"
-          stroke="#E53E3E"
-          strokeWidth={2 / levelScale}
-          opacity={0.9}
+          stroke="#F87171"
+          strokeWidth={1 / levelScale}
+          dash={[3 / levelScale, 3 / levelScale]}
+          opacity={0.55}
           listening={false}
         />
       )}

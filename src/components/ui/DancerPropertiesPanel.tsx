@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
-import type { Dancer, DancerLevel, DancerShape, DancerFacing, EdgeSide } from '@/types'
+import type { Dancer, DancerLevel, DancerFacing, EdgeSide } from '@/types'
 import { LEVEL_META, LEVEL_OPACITY, LEVEL_SCALE, SIZE_OPTIONS } from '@/types'
 import clsx from 'clsx'
 
@@ -9,12 +9,6 @@ interface Props {
   dancer: Dancer
   onClose: () => void
 }
-
-const SHAPES: { icon: string; value: DancerShape }[] = [
-  { icon: '●', value: 'circle' },
-  { icon: '■', value: 'square' },
-  { icon: '▲', value: 'triangle' },
-]
 
 const COLOR_SWATCHES = [
   '#C9A961', '#FFFFFF', '#FF4466', '#FF8C42',
@@ -39,7 +33,7 @@ const FACING_GRID: ({ value: DancerFacing; arrow: string } | null)[] = [
 
 export function DancerPropertiesPanel({ dancer, onClose }: Props) {
   const { t } = useTranslation()
-  const { renameDancer, setColor, setShape, setSize, setLevel, setFacing, setDancerPresence } = useEditorStore()
+  const { renameDancer, setColor, setSize, setLevel, setFacing, setDancerPresence } = useEditorStore()
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -133,11 +127,6 @@ export function DancerPropertiesPanel({ dancer, onClose }: Props) {
             </label>
           </div>
         </>,
-      )}
-
-      {/* Forma */}
-      {row(t('editor.toolbar.shape'),
-        SHAPES.map(s => selBtn(dancer.shape === s.value, () => setShape([dancer.id], s.value), s.icon)),
       )}
 
       {/* Tamaño */}
