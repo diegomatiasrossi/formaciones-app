@@ -245,7 +245,9 @@ export function ProjectsPage() {
                 + {t('projects.new')}
               </button>
               {atProjectLimit && (
-                <p className="text-[10px] text-gris/60">{t('upgrade.free_project_limit_tooltip')}</p>
+                <button onClick={() => navigate('/pricing')} className="text-[10px] text-rojo hover:text-rojo-oscuro underline underline-offset-2 transition-colors">
+                  {t('upgrade.free_project_limit_tooltip')}
+                </button>
               )}
             </div>
           </div>
