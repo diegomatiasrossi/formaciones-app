@@ -226,7 +226,7 @@ export function Toolbar({
       <button
         onClick={onToggleChecklist}
         className={clsx(btn(showChecklist && !checklistLocked), checklistLocked && 'opacity-50')}
-        title={checklistLocked ? 'Checklist requiere plan Pro' : 'Checklist de producción'}
+        title={checklistLocked ? 'Lista de integrantes requiere plan Pro' : 'Lista de integrantes en la escena'}
       >
         ☑ Lista{checklistLocked && ' 🔒'}
       </button>

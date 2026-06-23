@@ -4,7 +4,7 @@ import { Toolbar } from './Toolbar'
 import { Sidebar } from './Sidebar'
 import { StageCanvas } from './StageCanvas'
 import { StatisticsPanel } from './StatisticsPanel'
-import { ChecklistPanel } from './ChecklistPanel'
+import { DancersListPanel } from './DancersListPanel'
 import { MembersPanel } from './MembersPanel'
 import { ScenePanel } from '@/features/scenes/ScenePanel'
 import { AudioPanel } from '@/features/audio/AudioPanel'
@@ -141,7 +141,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
         statsLocked={!features.statsEnabled}
         onToggleChecklist={() => { setShowChecklist(v => !v); setShowMembers(false) }}
         showChecklist={showChecklist}
-        checklistLocked={!features.checklistEnabled}
+        checklistLocked={!features.membersEnabled}
         onToggleMembers={() => { setShowMembers(v => !v); setShowChecklist(false) }}
         showMembers={showMembers}
         membersLocked={!features.membersEnabled}
@@ -173,7 +173,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
           <div className="flex-1 overflow-hidden relative">
             <StageCanvas animationOverride={animOverride} stageRatio={stageRatio} customStageW={customStageW} customStageH={customStageH} maxDancers={features.maxDancers} memberNames={memberNames} memberNameById={memberNameById} showMemberNames={features.membersEnabled} />
             {showStats && <StatisticsPanel onClose={() => setShowStats(false)} locked={!features.statsEnabled} />}
-            {showChecklist && <ChecklistPanel onClose={() => setShowChecklist(false)} />}
+            {showChecklist && <DancersListPanel onClose={() => setShowChecklist(false)} />}
             {showMembers && <MembersPanel onClose={() => setShowMembers(false)} />}
           </div>
 
