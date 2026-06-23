@@ -17,7 +17,7 @@ export function EditorPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { projects, saveProject, fetchProjectById } = useProjectStore()
-  const { scenes, activeSceneId, audioMarkers, loadScenes } = useEditorStore()
+  const { scenes, activeSceneId, audioMarkers, canons, loadScenes } = useEditorStore()
   const { members, fetchAll } = useCrewStore()
   const { features } = usePlan()
 
@@ -52,7 +52,7 @@ export function EditorPage() {
     }
 
     if (project.scenes.length) {
-      loadScenes(project.scenes, project.activeSceneId, project.audioMarkers)
+      loadScenes(project.scenes, project.activeSceneId, project.audioMarkers, project.canons)
       loaded.current = true
     }
   }, [projectId, projects, loadScenes, fetchProjectById])
@@ -67,6 +67,7 @@ export function EditorPage() {
       scenes,
       activeSceneId,
       audioMarkers,
+      canons,
       updatedAt: new Date().toISOString(),
     }
     const { error } = await saveProject(updated)

@@ -38,6 +38,13 @@ export default {
     suggested_tasks_hint: 'Elegí las que quieras agregar (opcional)',
     suggested_tasks_travel: 'Viaje / Competencia internacional',
   },
+  canon: {
+    title: 'Canon',
+    from: 'Inicio',
+    to: 'Fin',
+    offset: 'Tiempos de desfase',
+    name: 'Nombre del canon',
+  },
   common: {
     save: 'Guardar',
     cancel: 'Cancelar',

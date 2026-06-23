@@ -38,6 +38,13 @@ export default {
     suggested_tasks_hint: 'Choose the ones you want to add (optional)',
     suggested_tasks_travel: 'Travel / International competition',
   },
+  canon: {
+    title: 'Canon',
+    from: 'Start',
+    to: 'End',
+    offset: 'Offset beats',
+    name: 'Canon name',
+  },
   common: {
     save: 'Save',
     cancel: 'Cancel',

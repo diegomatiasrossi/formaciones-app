@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Project, StageRatio, Member, ChecklistItem, Dancer, Scene } from '@/types'
+import type { Project, StageRatio, Member, ChecklistItem, Dancer, Scene, Canon } from '@/types'
 import { supabase } from '@/features/auth/supabaseClient'
 import { nanoid } from './nanoid'
 import { DEFAULT_CHECKLIST } from '@/data/checklist'
@@ -49,6 +49,7 @@ function parseProject(row: Record<string, unknown>): Project {
     scenes: (row.data as Record<string, unknown>)?.scenes as Project['scenes'] ?? [],
     activeSceneId: (row.data as Record<string, unknown>)?.activeSceneId as string ?? '',
     audioMarkers: (row.data as Record<string, unknown>)?.audioMarkers as Project['audioMarkers'] ?? [],
+    canons: (row.data as Record<string, unknown>)?.canons as Canon[] | undefined ?? [],
     startDate: (row.data as Record<string, unknown>)?.startDate as string | undefined,
     endDate: (row.data as Record<string, unknown>)?.endDate as string | undefined,
     notes: (row.data as Record<string, unknown>)?.notes as string | undefined,
@@ -112,6 +113,7 @@ async function projectToRow(project: Project) {
       scenes: project.scenes,
       activeSceneId: project.activeSceneId,
       audioMarkers: project.audioMarkers ?? [],
+      canons: project.canons ?? [],
       startDate: project.startDate,
       endDate: project.endDate,
       notes: project.notes,

@@ -167,6 +167,17 @@ export interface SceneMarker {
   timestampMs: number
 }
 
+// Canon entre escenas: metadatos que describen un desfase coreográfico desde
+// una escena de inicio hasta una de fin (no confundir con el transitionMode
+// 'canon' por-escena, que es el canon DENTRO de una transición).
+export interface Canon {
+  id: string
+  fromScene: number   // índice de escena de inicio
+  toScene: number     // índice de escena de fin
+  offsetBeats: number // tiempos de desfase
+  label?: string
+}
+
 export type StageRatio = '1:1' | '16:9' | '9:16' | 'custom'
 
 export interface Project {
@@ -180,6 +191,7 @@ export interface Project {
   scenes: Scene[]
   activeSceneId: string
   audioMarkers: SceneMarker[]
+  canons?: Canon[]
   shareToken?: string
   shareShowNames?: boolean
   createdAt: string

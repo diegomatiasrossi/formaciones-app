@@ -20,9 +20,9 @@ interface Props { canonLocked?: boolean; namesLocked?: boolean }
 export function ScenePanel({ canonLocked, namesLocked }: Props) {
   const { t } = useTranslation()
   const {
-    scenes, activeSceneId,
+    scenes, activeSceneId, canons,
     setActiveScene, addScene, removeScene, renameScene, duplicateScene,
-    setFormationName, updateSceneTransition,
+    setFormationName, updateSceneTransition, addCanon, removeCanon,
   } = useEditorStore()
 
   const [editingId,  setEditingId]  = useState<string | null>(null)
@@ -30,6 +30,20 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
   const [editField,  setEditField]  = useState<'name' | 'formation'>('name')
   const [showTransition, setShowTransition] = useState(false)
   const [sceneToDelete, setSceneToDelete] = useState<string | null>(null)
+  const [showCanonModal, setShowCanonModal] = useState(false)
+  const [canonForm, setCanonForm] = useState({ fromScene: 0, toScene: 0, offsetBeats: 8, label: '' })
+
+  function saveCanon() {
+    if (scenes.length === 0) return
+    addCanon({
+      fromScene: canonForm.fromScene,
+      toScene: canonForm.toScene,
+      offsetBeats: Math.max(0, canonForm.offsetBeats),
+      label: canonForm.label.trim() || undefined,
+    })
+    setCanonForm({ fromScene: 0, toScene: 0, offsetBeats: 8, label: '' })
+    setShowCanonModal(false)
+  }
 
   function startEdit(id: string, field: 'name' | 'formation', current: string) {
     setEditingId(id); setEditField(field); setEditValue(current)
@@ -123,7 +137,28 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
         >
           + {t('scenes.add')}
         </button>
+
+        {scenes.length > 1 && (
+          <button
+            onClick={() => { setCanonForm({ fromScene: 0, toScene: scenes.length - 1, offsetBeats: 8, label: '' }); setShowCanonModal(true) }}
+            className="px-2 py-1 text-xs text-dorado/70 border border-dorado/30 border-dashed rounded hover:border-dorado hover:text-dorado transition-colors shrink-0 ml-1"
+          >
+            {t('canon.title')} +
+          </button>
+        )}
       </div>
+
+      {/* Badges de canones definidos */}
+      {canons.length > 0 && (
+        <div className="flex items-center gap-1.5 px-3 pb-1.5 flex-wrap">
+          {canons.map(c => (
+            <span key={c.id} className="group flex items-center gap-1 text-[10px] text-dorado bg-dorado/10 border border-dorado/30 rounded-full px-2 py-0.5">
+              ↪︎ {c.label || `${t('canon.title')}`}: {t('scenes.scene')} {c.fromScene + 1}→{c.toScene + 1} · {c.offsetBeats}t
+              <button onClick={() => removeCanon(c.id)} className="text-dorado/50 hover:text-red-400 ml-0.5">×</button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Sub-fila: formación + transición */}
       {activeScene && (
@@ -270,6 +305,44 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
           )}
         </div>
       )}
+
+      {/* Definir canon entre escenas */}
+      <Modal open={showCanonModal} onClose={() => setShowCanonModal(false)} title={t('canon.title')}>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">{t('canon.from')}</label>
+              <select value={canonForm.fromScene} onChange={e => setCanonForm(f => ({ ...f, fromScene: Number(e.target.value) }))}
+                className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo">
+                {scenes.map((s, i) => <option key={s.id} value={i}>{i + 1}. {s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">{t('canon.to')}</label>
+              <select value={canonForm.toScene} onChange={e => setCanonForm(f => ({ ...f, toScene: Number(e.target.value) }))}
+                className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo">
+                {scenes.map((s, i) => <option key={s.id} value={i}>{i + 1}. {s.name}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">{t('canon.offset')}</label>
+            <input type="number" min={0} value={canonForm.offsetBeats}
+              onChange={e => setCanonForm(f => ({ ...f, offsetBeats: Number(e.target.value) }))}
+              className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo" />
+          </div>
+          <div>
+            <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">{t('canon.name')}</label>
+            <input value={canonForm.label} onChange={e => setCanonForm(f => ({ ...f, label: e.target.value }))}
+              placeholder={t('canon.name')}
+              className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo" />
+          </div>
+          <div className="flex gap-3 justify-end pt-1">
+            <button onClick={() => setShowCanonModal(false)} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
+            <button onClick={saveCanon} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg">{t('common.save')}</button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Confirmación de borrado de escena */}
       <Modal open={!!sceneToDelete} onClose={() => setSceneToDelete(null)} title={t('scenes.delete_confirm')}>

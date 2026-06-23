@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type {
-  Dancer, DancerLevel, DancerShape, DancerFacing, EdgeSide, EditorTool, FormationId, Scene, SceneMarker,
+  Dancer, DancerLevel, DancerShape, DancerFacing, EdgeSide, EditorTool, FormationId, Scene, SceneMarker, Canon,
 } from '@/types'
 import { generateFormation } from '@/lib/formations'
 import { snapToGrid, rotatePoint, mirrorPointH, mirrorPointV } from '@/lib/geometry'
@@ -25,6 +25,7 @@ interface EditorState {
   stageWidth: number
   stageHeight: number
   audioMarkers: SceneMarker[]
+  canons: Canon[]
   _past: string[]
   _future: string[]
 }
@@ -70,7 +71,9 @@ interface EditorActions {
   setNewShape: (s: DancerShape) => void
   setNewSize: (s: number) => void
   setNewDancerCount: (n: number) => void
-  loadScenes: (scenes: Scene[], activeId: string, audioMarkers?: SceneMarker[]) => void
+  addCanon: (canon: Omit<Canon, 'id'>) => void
+  removeCanon: (id: string) => void
+  loadScenes: (scenes: Scene[], activeId: string, audioMarkers?: SceneMarker[], canons?: Canon[]) => void
   undo: () => void
   redo: () => void
 }
@@ -139,6 +142,7 @@ const INITIAL: EditorState = {
   stageWidth: 800,
   stageHeight: 560,
   audioMarkers: [],
+  canons: [],
   _past: [],
   _future: [],
 }
@@ -505,6 +509,16 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
   setNewShape: s => set({ newShape: s }),
   setNewSize: s => set({ newSize: s }),
   setNewDancerCount: n => set({ newDancerCount: Math.max(1, Math.min(50, n)) }),
-  loadScenes: (scenes, activeId, audioMarkers) =>
-    set({ scenes, activeSceneId: activeId, selectedIds: [], _past: [], _future: [], ...(audioMarkers ? { audioMarkers } : {}) }),
+  addCanon: canon =>
+    set(s => ({ canons: [...s.canons, { ...canon, id: nanoid() }] })),
+
+  removeCanon: id =>
+    set(s => ({ canons: s.canons.filter(c => c.id !== id) })),
+
+  loadScenes: (scenes, activeId, audioMarkers, canons) =>
+    set({
+      scenes, activeSceneId: activeId, selectedIds: [], _past: [], _future: [],
+      ...(audioMarkers ? { audioMarkers } : {}),
+      canons: canons ?? [],
+    }),
 }))
