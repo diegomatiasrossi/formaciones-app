@@ -16,17 +16,22 @@ export function AuthPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const { error: err } = mode === 'signin'
+    const result = mode === 'signin'
       ? await signInWithEmail(email, password)
       : await signUpWithEmail(email, password)
     setLoading(false)
-    if (err) {
-      setError(err.message)
+    if (result.error) {
+      setError(result.error.message)
+    } else if (mode === 'signup' && !result.data.session) {
+      // Supabase requires email confirmation — show the pending screen
+      // instead of navigating (user has no session yet)
+      setPendingEmail(email)
     } else {
       navigate(redirectTo)
     }
@@ -36,6 +41,33 @@ export function AuthPage() {
     setError('')
     const { error: err } = await signInWithGoogle()
     if (err) setError(err.message)
+  }
+
+  if (pendingEmail) {
+    return (
+      <div className="min-h-screen bg-crema flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          <div className="flex justify-center mb-10">
+            <Logo size={34} />
+          </div>
+          <div className="bg-blanco border border-borde-light rounded-2xl shadow-soft p-8 text-center">
+            <div className="text-4xl mb-4">✉️</div>
+            <h2 className="text-negro text-base font-semibold mb-3">Revisá tu email</h2>
+            <p className="text-sm text-gris leading-relaxed">
+              Te enviamos un email a{' '}
+              <strong className="text-negro">{pendingEmail}</strong>.
+              Hacé click en el link para confirmar tu cuenta y empezar.
+            </p>
+            <button
+              onClick={() => { setPendingEmail(null); setMode('signin') }}
+              className="mt-6 text-xs text-gris hover:text-negro underline underline-offset-2 transition-colors"
+            >
+              Ya confirmé — iniciar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
