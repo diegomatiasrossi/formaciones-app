@@ -1,15 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
-import type { DancerShape } from '@/types'
 import { SIZE_OPTIONS } from '@/types'
 import { toggleLanguage } from '@/i18n'
 import clsx from 'clsx'
-
-const SHAPES: { icon: string; value: DancerShape; title: string }[] = [
-  { icon: '●', value: 'circle',   title: 'Círculo' },
-  { icon: '■', value: 'square',   title: 'Cuadrado' },
-  { icon: '▲', value: 'triangle', title: 'Triángulo' },
-]
 
 interface Props {
   onToggleAudio: () => void
@@ -46,21 +39,16 @@ export function Toolbar({
   const {
     tool, setTool,
     newColor, setNewColor,
-    newShape, setNewShape,
     newSize, setNewSize,
     newDancerCount, setNewDancerCount,
     selectedIds, deleteSelected, clearAll,
-    setShape, setSize,
+    setSize,
     undo, redo,
     scenes, activeSceneId,
   } = useEditorStore()
 
-  // Forma/tamaño: setean el default para nuevos integrantes Y, si hay selección,
-  // se aplican también a los integrantes seleccionados en el canvas.
-  function pickShape(shape: typeof newShape) {
-    setNewShape(shape)
-    if (selectedIds.length > 0) setShape(selectedIds, shape)
-  }
+  // Tamaño: setea el default para nuevos integrantes Y, si hay selección,
+  // se aplica también a los integrantes seleccionados en el canvas.
   function pickSize(size: number) {
     setNewSize(size)
     if (selectedIds.length > 0) setSize(selectedIds, size)
@@ -97,16 +85,6 @@ export function Toolbar({
       >
         + {t('editor.tool_add')}
       </button>
-
-      {sep}
-
-      {/* Forma */}
-      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.shape')}</span>
-      {SHAPES.map(s => (
-        <button key={s.value} className={btn(newShape === s.value)} onClick={() => pickShape(s.value)} title={s.title}>
-          {s.icon}
-        </button>
-      ))}
 
       {sep}
 

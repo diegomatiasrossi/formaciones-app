@@ -107,7 +107,7 @@ export default {
       show_grid: 'Grid',
       show_labels: 'Etiquetas',
       show_zones: 'Zonas',
-      snap: 'Snap a grid',
+      snap: 'Ajustar a grilla',
       collapse: 'Colapsar panel',
       expand: 'Expandir panel',
     },
