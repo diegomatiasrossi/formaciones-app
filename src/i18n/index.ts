@@ -22,16 +22,19 @@ export { i18n }
 const LANGS = ['es', 'en', 'pt'] as const
 export type Lang = typeof LANGS[number]
 
-// Cooldown para evitar que clicks rápidos disparen varios cambios de idioma
-// encadenados y dejen la UI con strings mezclados.
-let langCooldown = false
+// Debounce por timestamp (no puede quedar trabado como un boolean). El primer
+// click siempre pasa; solo se ignoran clicks repetidos dentro de 250ms.
+let lastToggle = 0
 export function toggleLanguage() {
-  if (langCooldown) return
-  langCooldown = true
-  setTimeout(() => { langCooldown = false }, 300)
-  const idx = LANGS.indexOf(i18n.language as Lang)
-  const next = LANGS[(idx + 1) % LANGS.length]
-  i18n.changeLanguage(next)
+  const now = Date.now()
+  if (now - lastToggle < 250) return
+  lastToggle = now
+  // Normalizar: i18n.language puede venir como 'es-AR' / 'en-US' según el entorno,
+  // lo que rompía indexOf y dejaba el cambio sin aplicarse.
+  const base = (i18n.language || 'es').slice(0, 2) as Lang
+  const idx = LANGS.indexOf(base)
+  const next = LANGS[(idx < 0 ? 0 : idx + 1) % LANGS.length]
+  void i18n.changeLanguage(next)
   localStorage.setItem('lang', next)
 }
 
