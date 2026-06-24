@@ -473,5 +473,10 @@ export default {
     free_no_delete_hint: 'Pasate a Pro cuando quieras para desbloquear esta función.',
     free_project_count:         '{{count}} de {{limit}} proyectos',
     free_project_limit_tooltip: 'Pasate a Solo Pro para proyectos ilimitados',
+    free_count:        '{{count}} de {{limit}}',
+    groups_headline:   'Creá grupos ilimitados',
+    groups_desc:       'Con Solo Pro organizás tantos grupos como necesites.',
+    events_headline:   'Creá eventos ilimitados',
+    events_desc:       'Con Solo Pro registrás todas tus presentaciones y competencias.',
   },
 } as const

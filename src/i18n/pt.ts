@@ -473,5 +473,10 @@ export default {
     free_no_delete_hint: 'Atualize para o Pro quando quiser para desbloquear esta função.',
     free_project_count:         '{{count}} de {{limit}} projetos',
     free_project_limit_tooltip: 'Atualize para Solo Pro para projetos ilimitados',
+    free_count:        '{{count}} de {{limit}}',
+    groups_headline:   'Crie grupos ilimitados',
+    groups_desc:       'Com o Solo Pro, organize quantos grupos precisar.',
+    events_headline:   'Crie eventos ilimitados',
+    events_desc:       'Com o Solo Pro, registre todas as suas apresentações e competições.',
   },
 } as const

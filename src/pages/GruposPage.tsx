@@ -10,7 +10,10 @@ import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
 import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
+import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import type { CrewGroup } from '@/types'
+
+const FREE_LIMIT = 3
 
 export function GruposPage() {
   const { t } = useTranslation()
@@ -21,12 +24,17 @@ export function GruposPage() {
     createGroup, updateGroup, deleteGroup,
     membersOfGroup, createActivity,
   } = useCrewStore()
-  const { can } = usePlan()
+  const { can, features } = usePlan()
   const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
   const wsRole = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.role : null)
   const canEdit = wsRole === null || wsRole === 'admin' || wsRole === 'editor'
+  // Límite Free (3) solo en espacio personal — las orgs son Studio. Owner/Pro/Studio
+  // tienen maxProjects Infinity, así que isFree los excluye automáticamente.
+  const isFree = features.maxProjects !== Infinity && activeOrgId === null
+  const atLimit = isFree && groups.length >= FREE_LIMIT
 
   const [showNew, setShowNew] = useState(false)
+  const [showUpgrade, setShowUpgrade] = useState(false)
   const [newName, setNewName] = useState('')
   const [selectedPresets, setSelectedPresets] = useState<string[]>([])
   const [active, setActive] = useState<CrewGroup | null>(null)
@@ -37,7 +45,7 @@ export function GruposPage() {
   useEffect(() => { if (user) fetchAll() }, [user, fetchAll, activeOrgId])
 
   async function create() {
-    if (!newName.trim() || !canEdit) return
+    if (!newName.trim() || !canEdit || atLimit) return
     const newGroup = await createGroup(newName.trim())
     if (newGroup && selectedPresets.length > 0) {
       await Promise.all(
@@ -118,8 +126,11 @@ export function GruposPage() {
       <ModuleNav active="groups" />
       <main className="max-w-5xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold tracking-wide">{t('groups.title')}</h1>
-          {canEdit && <button onClick={() => setShowNew(true)} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg shadow-soft hover:-translate-y-0.5 transition-all">+ {t('groups.new')}</button>}
+          <div>
+            <h1 className="text-xl font-semibold tracking-wide">{t('groups.title')}</h1>
+            {isFree && <p className="text-xs text-gris mt-0.5">{t('upgrade.free_count', { count: groups.length, limit: FREE_LIMIT })}</p>}
+          </div>
+          {canEdit && <button onClick={() => atLimit ? setShowUpgrade(true) : setShowNew(true)} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg shadow-soft hover:-translate-y-0.5 transition-all">+ {t('groups.new')}</button>}
         </div>
 
         {loading && <p className="text-gris text-sm">{t('common.loading')}</p>}
@@ -128,7 +139,7 @@ export function GruposPage() {
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-16 h-16 rounded-2xl border border-borde-light bg-blanco flex items-center justify-center mb-6 text-2xl text-dorado">⬢</div>
             <h2 className="text-base font-semibold mb-2">{t('groups.empty')}</h2>
-            {canEdit && <button onClick={() => setShowNew(true)} className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg mt-4">{t('groups.create_first')}</button>}
+            {canEdit && <button onClick={() => atLimit ? setShowUpgrade(true) : setShowNew(true)} className="px-5 py-2.5 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg mt-4">{t('groups.create_first')}</button>}
           </div>
         )}
 
@@ -186,6 +197,18 @@ export function GruposPage() {
           <button onClick={() => setConfirmDelete(null)} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
           <button onClick={() => { deleteGroup(confirmDelete!.id); setConfirmDelete(null) }} className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg">{t('common.delete')}</button>
         </div>
+      </Modal>
+
+      {/* Upgrade — límite de grupos Free */}
+      <Modal open={showUpgrade} onClose={() => setShowUpgrade(false)} title="">
+        <UpgradeGate
+          requiredPlan="solo_pro"
+          featureName={t('groups.title')}
+          headline={t('upgrade.groups_headline')}
+          description={t('upgrade.groups_desc')}
+          ctaText={t('upgrade.cta_solo_pro')}
+          lightBg
+        />
       </Modal>
     </div>
   )

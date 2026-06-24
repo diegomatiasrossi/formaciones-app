@@ -473,5 +473,10 @@ export default {
     free_no_delete_hint: 'Upgrade to Pro whenever you want to unlock this feature.',
     free_project_count:         '{{count}} of {{limit}} projects',
     free_project_limit_tooltip: 'Upgrade to Solo Pro for unlimited projects',
+    free_count:        '{{count}} of {{limit}}',
+    groups_headline:   'Create unlimited groups',
+    groups_desc:       'With Solo Pro, organize as many groups as you need.',
+    events_headline:   'Create unlimited events',
+    events_desc:       'With Solo Pro, track all your performances and competitions.',
   },
 } as const
