@@ -8,11 +8,11 @@ import clsx from 'clsx'
 
 type CanonOrder = NonNullable<Scene['canonOrder']>
 
-const CANON_ORDERS: { id: CanonOrder; label: string; icon: string }[] = [
-  { id: 'by-index',       label: 'Orden',         icon: '→' },
-  { id: 'left-to-right',  label: 'Izq → Der',     icon: '⇒' },
-  { id: 'right-to-left',  label: 'Der → Izq',     icon: '⇐' },
-  { id: 'center-out',     label: 'Centro → Borde', icon: '⊙' },
+const CANON_ORDERS: { id: CanonOrder; i18nKey: string; icon: string }[] = [
+  { id: 'by-index',       i18nKey: 'transition.order_by_index',      icon: '→' },
+  { id: 'left-to-right',  i18nKey: 'transition.order_left_to_right', icon: '⇒' },
+  { id: 'right-to-left',  i18nKey: 'transition.order_right_to_left', icon: '⇐' },
+  { id: 'center-out',     i18nKey: 'transition.order_center_out',    icon: '⊙' },
 ]
 
 interface Props { canonLocked?: boolean; namesLocked?: boolean }
@@ -163,7 +163,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
       {/* Sub-fila: formación + transición */}
       {activeScene && (
         <div className="flex items-center gap-2 px-3 pb-1.5 flex-wrap">
-          <span className="text-[10px] text-gris/50 uppercase tracking-wider">Formación:</span>
+          <span className="text-[10px] text-gris/50 uppercase tracking-wider">{t('scenes.formation_label')}</span>
           {editingId === activeScene.id && editField === 'formation' ? (
             <input
               autoFocus value={editValue}
@@ -174,7 +174,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
             />
           ) : namesLocked ? (
             <span className="flex items-center gap-1 text-xs text-gris/40 italic">
-              {activeScene.formationName || '(sin nombre)'}
+              {activeScene.formationName || t('scenes.formation_unnamed')}
               <UpgradeGate requiredPlan="solo_pro" featureName={t('plan.scene_names_locked')} compact />
             </span>
           ) : (
@@ -182,7 +182,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
               onClick={() => startEdit(activeScene.id, 'formation', activeScene.formationName ?? '')}
               className="text-xs text-gris/70 hover:text-dorado transition-colors italic"
             >
-              {activeScene.formationName || '(sin nombre — click para agregar)'}
+              {activeScene.formationName || t('scenes.formation_unnamed_hint')}
             </button>
           )}
 
@@ -192,7 +192,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
             const outScene = activeScene.dancers.length - inScene
             return outScene > 0 ? (
               <span className="text-[10px] text-gris/40 ml-auto">
-                {inScene} en escena · {outScene} fuera
+                {inScene} {t('scenes.in_stage')} · {outScene} {t('scenes.off_stage')}
               </span>
             ) : null
           })()}
@@ -261,7 +261,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
                     <button
                       key={o.id}
                       onClick={() => updateSceneTransition(activeScene.id, { canonOrder: o.id })}
-                      title={o.label}
+                      title={t(o.i18nKey as Parameters<typeof t>[0])}
                       className={clsx(
                         'w-7 h-7 text-sm rounded border transition-colors',
                         (activeScene.canonOrder ?? 'by-index') === o.id

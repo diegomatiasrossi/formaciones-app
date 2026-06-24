@@ -28,13 +28,13 @@ export function DancersListPanel({ onClose }: Props) {
     return (
       <div className="absolute top-3 right-3 z-20 w-72 bg-negro border border-borde rounded-xl shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">Lista</span>
+          <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.checklist')}</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
         </div>
-        <UpgradeGate requiredPlan="solo_pro" featureName="Lista de integrantes" className="pb-4"
-          headline="Nombrá a tu crew"
-          description="Con Solo Pro cada integrante tiene su nombre en la formación."
-          ctaText="Empezar Solo Pro — $9.99/mes" />
+        <UpgradeGate requiredPlan="solo_pro" featureName={t('editor.toolbar.checklist_title')} className="pb-4"
+          headline={t('upgrade.members_headline')}
+          description={t('upgrade.members_desc')}
+          ctaText={t('upgrade.cta_solo_pro')} />
       </div>
     )
   }
@@ -44,9 +44,9 @@ export function DancersListPanel({ onClose }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-borde/40 shrink-0">
         <div>
-          <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">Lista</span>
+          <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.checklist')}</span>
           <p className="text-[10px] text-gris/40 mt-0.5">
-            {inScene} {t('members.count')} en escena
+            {inScene} {t('members.count')} {t('scenes.in_stage')}
           </p>
         </div>
         <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>

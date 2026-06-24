@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useProjectStore } from '@/store/projectStore'
 import { useCrewStore } from '@/store/crewStore'
 import { useEditorStore } from '@/store/editorStore'
@@ -12,6 +13,7 @@ interface Props { onClose: () => void }
 const inputCls = 'w-full bg-negro border border-borde rounded-md px-2.5 py-1.5 text-xs text-blanco-calido focus:outline-none focus:border-dorado placeholder:text-gris/30'
 
 export function MembersPanel({ onClose }: Props) {
+  const { t } = useTranslation()
   const { projectId } = useParams<{ projectId: string }>()
   const { projects, saveProject } = useProjectStore()
   const { members, fetchAll, createMember } = useCrewStore()
@@ -157,13 +159,13 @@ export function MembersPanel({ onClose }: Props) {
     return (
       <div className="absolute top-3 right-3 z-20 w-80 bg-negro border border-borde rounded-xl shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          <span className="text-[10px] text-dorado uppercase tracking-widest">Integrantes</span>
+          <span className="text-[10px] text-dorado uppercase tracking-widest">{t('editor.toolbar.members_panel')}</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
         </div>
-        <UpgradeGate requiredPlan="solo_pro" featureName="Base de datos de integrantes" className="pb-4"
-          headline="Nombrá a tu crew"
-          description="Con Solo Pro cada integrante tiene su nombre en la formación."
-          ctaText="Empezar Solo Pro — $9.99/mes" />
+        <UpgradeGate requiredPlan="solo_pro" featureName={t('editor.toolbar.members_panel_title')} className="pb-4"
+          headline={t('upgrade.members_headline')}
+          description={t('upgrade.members_desc')}
+          ctaText={t('upgrade.cta_solo_pro')} />
       </div>
     )
   }
@@ -179,8 +181,8 @@ export function MembersPanel({ onClose }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-borde/40 shrink-0">
         <div>
-          <span className="text-[10px] text-dorado uppercase tracking-widest">Integrantes</span>
-          <p className="text-[10px] text-gris/50 mt-0.5">{members.length} en total · {memberIdsInScene.size} en escena</p>
+          <span className="text-[10px] text-dorado uppercase tracking-widest">{t('editor.toolbar.members_panel')}</span>
+          <p className="text-[10px] text-gris/50 mt-0.5">{members.length} {t('scenes.members_total')} · {memberIdsInScene.size} {t('scenes.in_stage')}</p>
         </div>
         <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
       </div>

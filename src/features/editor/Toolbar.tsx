@@ -177,7 +177,7 @@ export function Toolbar({
           ⏹ Detener
         </button>
       ) : (
-        <button id="btn-preview" onClick={onPlayAnimation} className={btn(false)} title="Preview de transición entre escenas">
+        <button id="btn-preview" onClick={onPlayAnimation} className={btn(false)} title={t('editor.toolbar.preview_title')}>
           ▶ Preview
         </button>
       )}
@@ -187,7 +187,7 @@ export function Toolbar({
           min={500} max={3000} step={100}
           value={animationDuration}
           onChange={e => onAnimationDurationChange(Number(e.target.value))}
-          title={`Duración de transición: ${animationDuration}ms`}
+          title={`${t('editor.toolbar.preview_title')}: ${animationDuration}ms`}
           className="w-16 accent-dorado"
         />
       )}
@@ -198,7 +198,7 @@ export function Toolbar({
       <button
         onClick={onToggleAudio}
         className={clsx(btn(showAudio && !audioLocked), audioLocked && 'opacity-50')}
-        title={audioLocked ? 'Audio requiere plan Solo Pro' : 'Panel de audio'}
+        title={audioLocked ? t('editor.toolbar.audio_locked') : t('editor.toolbar.audio_title')}
       >
         🎵 Audio{audioLocked && ' 🔒'}
       </button>
@@ -207,7 +207,7 @@ export function Toolbar({
       <button
         onClick={onToggleStats}
         className={clsx(btn(showStats && !statsLocked), statsLocked && 'opacity-50')}
-        title={statsLocked ? 'Estadísticas requieren plan Studio' : 'Panel de estadísticas'}
+        title={statsLocked ? t('editor.toolbar.stats_locked') : t('editor.toolbar.stats_title')}
       >
         ◎ Stats{statsLocked && ' 🔒'}
       </button>
@@ -216,18 +216,18 @@ export function Toolbar({
       <button
         onClick={onToggleChecklist}
         className={clsx(btn(showChecklist && !checklistLocked), checklistLocked && 'opacity-50')}
-        title={checklistLocked ? 'Lista de integrantes requiere plan Pro' : 'Lista de integrantes en la escena'}
+        title={checklistLocked ? t('editor.toolbar.checklist_locked') : t('editor.toolbar.checklist_title')}
       >
-        ☑ Lista{checklistLocked && ' 🔒'}
+        ☑ {t('editor.toolbar.checklist')}{checklistLocked && ' 🔒'}
       </button>
 
       {/* Integrantes */}
       <button
         onClick={onToggleMembers}
         className={clsx(btn(showMembers && !membersLocked), membersLocked && 'opacity-50')}
-        title={membersLocked ? 'Integrantes requiere plan Starter' : 'Base de datos de integrantes'}
+        title={membersLocked ? t('editor.toolbar.members_panel_locked') : t('editor.toolbar.members_panel_title')}
       >
-        ◉ Equipo{membersLocked && ' 🔒'}
+        ◉ {t('editor.toolbar.members_panel')}{membersLocked && ' 🔒'}
       </button>
 
       {/* Spacer */}
@@ -255,9 +255,9 @@ export function Toolbar({
           id="btn-share"
           onClick={onShare}
           className={clsx(btn(false), 'text-dorado/80 hover:text-dorado border-dorado/30 hover:border-dorado/60')}
-          title="Compartir proyecto"
+          title={t('editor.toolbar.share_title')}
         >
-          ↗ Compartir
+          ↗ {t('editor.toolbar.share')}
         </button>
       )}
 
