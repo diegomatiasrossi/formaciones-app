@@ -11,6 +11,7 @@ import { ModuleNav } from '@/components/ui/ModuleNav'
 import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
 import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
+import { DEFAULT_CHECKLIST, TRAVEL_CHECKLIST } from '@/data/checklist'
 import type { CrewGroup } from '@/types'
 
 const FREE_LIMIT = 3
@@ -22,7 +23,7 @@ export function GruposPage() {
   const {
     groups, events, loading, fetchAll,
     createGroup, updateGroup, deleteGroup,
-    membersOfGroup, createActivity,
+    membersOfGroup, createActivity, deleteActivity, activities,
   } = useCrewStore()
   const { can, features } = usePlan()
   const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
@@ -111,6 +112,56 @@ export function GruposPage() {
           <div className="bg-blanco border border-borde-light rounded-2xl p-5 shadow-soft mt-6">
             <ActivitiesPanel contextType="group" contextId={active.id} />
           </div>
+
+          {/* Tareas predefinidas (solo Pro+) */}
+          {can('checklistEnabled') && (() => {
+            const groupActivities = activities.filter(a => a.contextType === 'group' && a.contextId === active.id && a.isPreset)
+            const togglePreset = async (label: string) => {
+              const existing = groupActivities.find(a => a.title === label)
+              if (existing) {
+                await deleteActivity(existing.id)
+              } else {
+                await createActivity(label, 'group', active.id, true)
+              }
+            }
+            const section = (items: typeof DEFAULT_CHECKLIST, title?: string) => (
+              <div className="space-y-1.5">
+                {title && (
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-dorado-oscuro mt-3 mb-1.5 pt-2 border-t border-borde-light/60">
+                    {title}
+                  </p>
+                )}
+                {items.map(item => {
+                  const isAdded = groupActivities.some(a => a.title === item.label)
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => togglePreset(item.label)}
+                      className="flex items-center gap-2.5 cursor-pointer group"
+                    >
+                      <div className={[
+                        'w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors',
+                        isAdded ? 'bg-rojo border-rojo text-blanco' : 'border-borde-light group-hover:border-rojo',
+                      ].join(' ')}>
+                        {isAdded && <span className="text-[9px]">✓</span>}
+                      </div>
+                      <span className="text-sm text-negro/80 group-hover:text-negro transition-colors">{item.label}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+            return (
+              <div className="bg-blanco border border-borde-light rounded-2xl p-5 shadow-soft mt-6">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-gris mb-1">{t('groups.preset_activities')}</h3>
+                <p className="text-[10px] text-gris/60 mb-3">{t('groups.preset_activities_hint')}</p>
+                <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                  {section(DEFAULT_CHECKLIST)}
+                  {section(TRAVEL_CHECKLIST, t('activities.suggested_tasks_travel'))}
+                </div>
+              </div>
+            )
+          })()}
         </main>
       </div>
     )
