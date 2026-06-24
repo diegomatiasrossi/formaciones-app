@@ -23,16 +23,20 @@ export function PricingPage() {
   const { planName, startCheckout } = usePlan()
   const [cycle, setCycle]           = useState<Cycle>('monthly')
   const [loading, setLoading]       = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   async function handleCta(plan: 'solo_pro' | 'studio') {
     if (!user) { navigate('/login?redirect=/pricing'); return }
+    setCheckoutError(null)
     const price = PRICES[plan][cycle]
-    if (!price.id) { alert('Stripe no configurado aún — volvé pronto.'); return }
+    if (!price.id) { setCheckoutError('El pago todavía no está disponible para este plan. Probá de nuevo en un rato.'); return }
     try {
       setLoading(plan)
       await startCheckout(price.id, user.email ?? '')
-    } catch {
-      alert('Error al iniciar el pago. Intentá de nuevo.')
+    } catch (err) {
+      // Mostrar el mensaje real del backend (no un genérico) para poder diagnosticar.
+      const message = err instanceof Error ? err.message : 'No se pudo iniciar el pago.'
+      setCheckoutError(message)
       setLoading(null)
     }
   }
@@ -72,6 +76,12 @@ export function PricingPage() {
             </button>
           </div>
         </div>
+
+        {checkoutError && (
+          <div className="max-w-md mx-auto mb-6 px-4 py-3 bg-rojo/8 border border-rojo/30 rounded-lg text-sm text-rojo text-center">
+            {checkoutError}
+          </div>
+        )}
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
