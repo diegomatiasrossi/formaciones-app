@@ -19,7 +19,7 @@ export function Sidebar() {
     showZones, setShowZones,
     snapEnabled, setSnapEnabled,
     selectedIds, scenes, activeSceneId,
-    setColor, setShape, setMultiLevel,
+    setColor, setMultiLevel,
   } = useEditorStore()
 
   const activeScene = scenes.find(s => s.id === activeSceneId)
@@ -99,20 +99,6 @@ export function Sidebar() {
               onChange={e => setColor(selectedIds, e.target.value)}
               className="w-7 h-6 rounded cursor-pointer border border-borde bg-transparent p-0.5"
             />
-          </div>
-
-          {/* Forma en bloque */}
-          <div className="flex items-center gap-1 mb-2">
-            <span className="text-[10px] text-gris mr-1">Forma</span>
-            {(['circle', 'square', 'triangle'] as const).map(sh => (
-              <button
-                key={sh}
-                onClick={() => setShape(selectedIds, sh)}
-                className="flex-1 py-1 text-xs border border-borde rounded hover:border-dorado/50 hover:text-dorado transition-colors text-gris"
-              >
-                {sh === 'circle' ? '●' : sh === 'square' ? '■' : '▲'}
-              </button>
-            ))}
           </div>
 
           {/* Nivel en bloque */}
