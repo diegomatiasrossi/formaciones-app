@@ -233,14 +233,19 @@ export function Toolbar({
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Contador X/maxDancers */}
-      <span className={clsx(
-        'text-xs font-medium tabular-nums',
-        dancerCount >= maxDancers ? 'text-red-400' : dancerCount >= maxDancers * 0.9 ? 'text-orange-400' : 'text-gris',
-      )}>
-        {dancerCount} / {maxDancers === Infinity ? '∞' : maxDancers}
-        {selectedIds.length > 0 && <span className="text-dorado"> · {selectedIds.length} sel.</span>}
-      </span>
+      {/* Contador X/límite (Free 10 · Pro 50 · Studio 50) */}
+      {(() => {
+        const displayLimit = maxDancers === Infinity ? 50 : maxDancers
+        return (
+          <span className={clsx(
+            'text-xs font-medium tabular-nums',
+            dancerCount > displayLimit ? 'text-red-400' : dancerCount >= displayLimit ? 'text-orange-400' : 'text-gris',
+          )}>
+            {dancerCount} / {displayLimit}
+            {selectedIds.length > 0 && <span className="text-dorado"> · {selectedIds.length} sel.</span>}
+          </span>
+        )
+      })()}
 
       {sep}
 
