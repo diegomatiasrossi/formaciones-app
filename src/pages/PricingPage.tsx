@@ -84,7 +84,7 @@ export function PricingPage() {
               <div className="text-3xl font-semibold">$0</div>
             </div>
             <ul className="space-y-2 flex-1">
-              {['15 integrantes por escena', '2 proyectos', 'Canvas drag & drop', '20+ formaciones', 'Link de solo lectura'].map(f => (
+              {['10 integrantes por escena', '3 proyectos', 'Canvas drag & drop', '20+ formaciones', 'Link de solo lectura'].map(f => (
                 <li key={f} className="flex items-start gap-2 text-xs text-negro/75">
                   <span className="text-green-600 mt-0.5 shrink-0">✓</span>{f}
                 </li>
