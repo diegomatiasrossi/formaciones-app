@@ -8,6 +8,7 @@ import { useWorkspaceStore } from '@/store/workspaceStore'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
+import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import type { CrewMember, MemberType, MemberLevel } from '@/types'
 import clsx from 'clsx'
 
@@ -58,6 +59,7 @@ export function IntegrantesPage() {
   const [selGroups, setSelGroups] = useState<string[]>([])
   const [duplicates, setDuplicates] = useState<CrewMember[]>([])
   const [showDuplicateModal, setShowDuplicateModal] = useState(false)
+  const [showUpgrade, setShowUpgrade] = useState(false)
 
   useEffect(() => { if (user) fetchAll() }, [user, fetchAll, activeOrgId])
 
@@ -177,7 +179,7 @@ export function IntegrantesPage() {
                   {canEdit && (
                     <div className="flex gap-2 mt-3 pt-3 border-t border-borde-light">
                       <button onClick={() => openGroups(m)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-dorado text-gris hover:text-dorado-oscuro transition-colors">{t('members.groups_btn')}</button>
-                      <button onClick={() => openEdit(m)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-rojo/50 text-gris hover:text-rojo transition-colors">{t('common.rename')}</button>
+                      <button onClick={() => namesVisible ? openEdit(m) : setShowUpgrade(true)} className="flex-1 text-[11px] py-1.5 border border-borde-light rounded-lg hover:border-rojo/50 text-gris hover:text-rojo transition-colors flex items-center justify-center gap-1">{t('common.rename')}{!namesVisible && <span className="text-gris/40">🔒</span>}</button>
                       <button onClick={() => setConfirmDelete(m)} className="w-8 text-[11px] py-1.5 border border-borde-light rounded-lg text-gris hover:border-rojo/50 hover:text-rojo flex items-center justify-center">×</button>
                     </div>
                   )}
@@ -296,6 +298,18 @@ export function IntegrantesPage() {
             {t('org.create_new_anyway')}
           </button>
         </div>
+      </Modal>
+
+      {/* Upgrade — editar/renombrar integrante requiere Pro */}
+      <Modal open={showUpgrade} onClose={() => setShowUpgrade(false)} title="">
+        <UpgradeGate
+          requiredPlan="solo_pro"
+          featureName={t('members.title')}
+          headline={t('upgrade.members_headline')}
+          description={t('upgrade.members_desc')}
+          ctaText={t('upgrade.cta_solo_pro')}
+          lightBg
+        />
       </Modal>
     </div>
   )
