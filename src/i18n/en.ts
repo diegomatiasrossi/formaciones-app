@@ -25,11 +25,16 @@ export default {
     title: 'Groups', new: 'New group', open: 'Open', empty: 'You have no groups yet.', create_first: 'Create your first group',
     name_placeholder: 'Group name', members: 'Members', manage: 'Manage', no_members: 'No members assigned.',
     events: 'Events', no_events: 'No events yet.', delete_confirm: 'Delete group',
+    preset_activities: 'Preset tasks',
+    preset_activities_hint: 'Select checklist tasks to add to this group',
   },
   events: {
     title: 'Events', new: 'New event', open: 'Open', empty: 'You have no events yet.', create_first: 'Create your first event',
     name: 'Event name', date: 'Date', location: 'Location', group: 'Associated group',
     formation: 'Choreography', open_formation: 'Open formation', create_formation: 'Create formation for this event',
+    assign_existing_project: 'Assign existing project',
+    choose_project: 'Choose a project',
+    no_projects_available: 'You have no projects to assign yet.',
     has_formation: 'With formation', no_formation: 'No formation', delete_confirm: 'Delete event',
   },
   activities: {
@@ -342,6 +347,11 @@ export default {
     delete_warning: 'This action cannot be undone.',
     link_group: 'Link to a group',
     members_loaded: 'on-stage members will be loaded',
+    link_event: 'Link event',
+    linked_event: 'Event',
+    unlink_event: 'Unlink',
+    no_events_to_link: 'You have no events yet. Create one from Events.',
+    choose_event: 'Choose an event',
   },
   landing: {
     headline: 'Your choreographic office.',

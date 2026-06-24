@@ -25,11 +25,16 @@ export default {
     title: 'Grupos', new: 'Nuevo grupo', open: 'Abrir', empty: 'Todavía no tenés grupos.', create_first: 'Creá tu primer grupo',
     name_placeholder: 'Nombre del grupo', members: 'Integrantes', manage: 'Gestionar', no_members: 'Sin integrantes asignados.',
     events: 'Eventos', no_events: 'Sin eventos todavía.', delete_confirm: '¿Eliminar el grupo',
+    preset_activities: 'Tareas predefinidas',
+    preset_activities_hint: 'Seleccioná tareas del checklist para agregar a este grupo',
   },
   events: {
     title: 'Eventos', new: 'Nuevo evento', open: 'Abrir', empty: 'Todavía no tenés eventos.', create_first: 'Creá tu primer evento',
     name: 'Nombre del evento', date: 'Fecha', location: 'Lugar', group: 'Grupo asociado',
     formation: 'Coreografía', open_formation: 'Abrir formación', create_formation: 'Crear formación para este evento',
+    assign_existing_project: 'Asignar proyecto existente',
+    choose_project: 'Elegí un proyecto',
+    no_projects_available: 'Todavía no tenés proyectos para asignar.',
     has_formation: 'Con formación', no_formation: 'Sin formación', delete_confirm: '¿Eliminar el evento',
   },
   activities: {
@@ -342,6 +347,11 @@ export default {
     delete_warning: 'Esta acción no se puede deshacer.',
     link_group: 'Vincular a un grupo',
     members_loaded: 'integrantes en escena se cargarán',
+    link_event: 'Vincular evento',
+    linked_event: 'Evento',
+    unlink_event: 'Desvincular',
+    no_events_to_link: 'Todavía no tenés eventos. Creá uno desde Eventos.',
+    choose_event: 'Elegí un evento',
   },
   landing: {
     headline: 'Tu oficina coreográfica.',

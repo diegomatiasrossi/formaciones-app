@@ -13,6 +13,7 @@ import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
 import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import type { CrewEvent } from '@/types'
+import clsx from 'clsx'
 
 const FREE_LIMIT = 3
 
@@ -21,7 +22,7 @@ export function EventosPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { events, groups, loading, fetchAll, createEvent, deleteEvent, createActivity } = useCrewStore()
-  const { projects, fetchProjects } = useProjectStore()
+  const { projects, fetchProjects, linkProjectToEvent } = useProjectStore()
   const { can, features } = usePlan()
   const activeOrgId = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.orgId : null)
   const wsRole = useWorkspaceStore(s => s.activeWorkspace.type === 'org' ? s.activeWorkspace.role : null)
@@ -31,6 +32,7 @@ export function EventosPage() {
 
   const [showNew, setShowNew] = useState(false)
   const [showUpgrade, setShowUpgrade] = useState(false)
+  const [showAssignProject, setShowAssignProject] = useState(false)
   const [form, setForm] = useState({ name: '', eventDate: '', location: '', groupId: '' })
   const [selectedPresets, setSelectedPresets] = useState<string[]>([])
   const [active, setActive] = useState<CrewEvent | null>(null)
@@ -80,17 +82,30 @@ export function EventosPage() {
           <div className="bg-blanco border border-borde-light rounded-2xl p-5 shadow-soft mb-6">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gris mb-3">{t('events.formation')}</h3>
             {linkedProject ? (
-              <button onClick={() => navigate(`/editor/${linkedProject.id}`)} className="flex items-center gap-3 w-full text-left p-3 rounded-lg border border-borde-light hover:border-rojo/50 transition-colors">
-                <span className="text-2xl text-dorado">⬡</span>
-                <div>
-                  <div className="font-semibold text-sm">{linkedProject.name}</div>
-                  <div className="text-xs text-gris">{t('events.open_formation')} →</div>
-                </div>
-              </button>
+              <div className="space-y-2">
+                <button onClick={() => navigate(`/editor/${linkedProject.id}`)} className="flex items-center gap-3 w-full text-left p-3 rounded-lg border border-borde-light hover:border-rojo/50 transition-colors">
+                  <span className="text-2xl text-dorado">⬡</span>
+                  <div>
+                    <div className="font-semibold text-sm">{linkedProject.name}</div>
+                    <div className="text-xs text-gris">{t('events.open_formation')} →</div>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setShowAssignProject(true)}
+                  className="w-full text-center text-[11px] text-gris hover:text-rojo transition-colors py-1"
+                >
+                  {t('events.assign_existing_project')}
+                </button>
+              </div>
             ) : (
-              <button onClick={() => navigate(`/projects?eventId=${active.id}`)} className="w-full p-3 rounded-lg border border-dashed border-borde-light hover:border-rojo text-sm text-gris hover:text-rojo transition-colors">
-                + {t('events.create_formation')}
-              </button>
+              <div className="flex flex-col gap-2">
+                <button onClick={() => navigate(`/projects?eventId=${active.id}`)} className="w-full p-3 rounded-lg border border-dashed border-borde-light hover:border-rojo text-sm text-gris hover:text-rojo transition-colors">
+                  + {t('events.create_formation')}
+                </button>
+                <button onClick={() => setShowAssignProject(true)} className="w-full p-3 rounded-lg border border-dashed border-dorado/40 hover:border-dorado text-sm text-gris hover:text-dorado-oscuro transition-colors">
+                  ⬡ {t('events.assign_existing_project')}
+                </button>
+              </div>
             )}
           </div>
 
@@ -99,6 +114,41 @@ export function EventosPage() {
             <ActivitiesPanel contextType="event" contextId={active.id} />
           </div>
         </main>
+
+        {/* Modal — Asignar proyecto existente */}
+        <Modal open={showAssignProject} onClose={() => setShowAssignProject(false)} title={t('events.choose_project')}>
+          {projects.length === 0 ? (
+            <p className="text-sm text-gris py-4 text-center">{t('events.no_projects_available')}</p>
+          ) : (
+            <div className="space-y-2 max-h-72 overflow-y-auto">
+              {projects.map(p => {
+                const isLinked = p.eventId === active.id
+                return (
+                  <button
+                    key={p.id}
+                    onClick={async () => {
+                      await linkProjectToEvent(p.id, isLinked ? null : active.id)
+                      setShowAssignProject(false)
+                    }}
+                    className={clsx(
+                      'w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-colors',
+                      isLinked
+                        ? 'border-rojo bg-rojo/5 text-negro'
+                        : 'border-borde-light hover:border-rojo/40 hover:bg-rojo/3',
+                    )}
+                  >
+                    <span className="text-lg text-dorado shrink-0">⬡</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold truncate">{p.name}</div>
+                      {p.groupName && <div className="text-[10px] text-gris truncate">{p.groupName}</div>}
+                    </div>
+                    {isLinked && <span className="text-[10px] text-rojo shrink-0">✓ vinculado</span>}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </Modal>
       </div>
     )
   }

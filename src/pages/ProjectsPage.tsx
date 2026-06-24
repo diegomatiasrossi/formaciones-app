@@ -82,8 +82,8 @@ export function ProjectsPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
-  const { projects, loading, fetchProjects, createLocalProject, saveProject, deleteProject } = useProjectStore()
-  const { groups, fetchAll, membersOfGroup } = useCrewStore()
+  const { projects, loading, fetchProjects, createLocalProject, saveProject, deleteProject, linkProjectToEvent } = useProjectStore()
+  const { groups, events, fetchAll, membersOfGroup } = useCrewStore()
   const loadScenes = useEditorStore(s => s.loadScenes)
   const [searchParams] = useSearchParams()
   const preloadedEventId = searchParams.get('eventId')
@@ -103,6 +103,7 @@ export function ProjectsPage() {
   const [newStartDate, setNewStartDate] = useState('')
   const [newEndDate, setNewEndDate] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<Project | null>(null)
+  const [assignEventFor, setAssignEventFor] = useState<Project | null>(null)
   const [search, setSearch] = useState('')
   const [showOnboarding, setShowOnboarding] = useState(
     () => !localStorage.getItem('crewficina_onboarded'),
@@ -312,6 +313,27 @@ export function ProjectsPage() {
                       <Badge>{sceneCount} escena{sceneCount !== 1 ? 's' : ''}</Badge>
                       {project.scenes[0]?.formationName && <Badge accent>{project.scenes[0].formationName}</Badge>}
                     </div>
+                    {/* Vínculo a evento */}
+                    {events.length > 0 && (
+                      <div className="mt-1" onClick={e => e.stopPropagation()}>
+                        {project.eventId && events.find(e => e.id === project.eventId) ? (
+                          <button
+                            onClick={() => setAssignEventFor(project)}
+                            className="flex items-center gap-1 text-[10px] text-rojo hover:text-rojo-oscuro transition-colors"
+                          >
+                            <span>◈</span>
+                            <span className="truncate max-w-[140px]">{events.find(e => e.id === project.eventId)!.name}</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setAssignEventFor(project)}
+                            className="text-[10px] text-gris/50 hover:text-rojo transition-colors"
+                          >
+                            + {t('projects.link_event')}
+                          </button>
+                        )}
+                      </div>
+                    )}
                     <div className="flex gap-2 mt-auto" onClick={e => e.stopPropagation()}>
                       <button onClick={() => openProject(project)}
                         className="flex-1 text-center py-1.5 text-xs border border-borde-light rounded-lg text-negro/80 hover:border-dorado hover:text-dorado-oscuro transition-colors">
@@ -487,6 +509,56 @@ export function ProjectsPage() {
               className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">{t('common.delete')}</button>
           </div>
         </div>
+      </Modal>
+
+      {/* Modal — Vincular proyecto a evento */}
+      <Modal open={!!assignEventFor} onClose={() => setAssignEventFor(null)} title={t('projects.choose_event')}>
+        {events.length === 0 ? (
+          <p className="text-sm text-gris py-4 text-center">{t('projects.no_events_to_link')}</p>
+        ) : (
+          <div className="space-y-2">
+            <div className="space-y-2 max-h-72 overflow-y-auto">
+              {events.map(ev => {
+                const isLinked = assignEventFor?.eventId === ev.id
+                return (
+                  <button
+                    key={ev.id}
+                    onClick={async () => {
+                      if (assignEventFor) {
+                        await linkProjectToEvent(assignEventFor.id, isLinked ? null : ev.id)
+                      }
+                      setAssignEventFor(null)
+                    }}
+                    className={clsx(
+                      'w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-colors',
+                      isLinked
+                        ? 'border-rojo bg-rojo/5'
+                        : 'border-borde-light hover:border-rojo/40 hover:bg-rojo/3',
+                    )}
+                  >
+                    <span className="text-lg text-rojo shrink-0">◈</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold truncate">{ev.name}</div>
+                      {ev.eventDate && <div className="text-[10px] text-gris">{ev.eventDate}</div>}
+                    </div>
+                    {isLinked && <span className="text-[10px] text-rojo shrink-0">✓</span>}
+                  </button>
+                )
+              })}
+            </div>
+            {assignEventFor?.eventId && (
+              <button
+                onClick={async () => {
+                  if (assignEventFor) await linkProjectToEvent(assignEventFor.id, null)
+                  setAssignEventFor(null)
+                }}
+                className="w-full text-center text-xs text-gris hover:text-rojo py-2 transition-colors"
+              >
+                {t('projects.unlink_event')}
+              </button>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   )

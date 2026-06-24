@@ -25,11 +25,16 @@ export default {
     title: 'Grupos', new: 'Novo grupo', open: 'Abrir', empty: 'Você ainda não tem grupos.', create_first: 'Crie seu primeiro grupo',
     name_placeholder: 'Nome do grupo', members: 'Integrantes', manage: 'Gerenciar', no_members: 'Sem integrantes atribuídos.',
     events: 'Eventos', no_events: 'Sem eventos ainda.', delete_confirm: 'Excluir o grupo',
+    preset_activities: 'Tarefas predefinidas',
+    preset_activities_hint: 'Selecione tarefas do checklist para adicionar a este grupo',
   },
   events: {
     title: 'Eventos', new: 'Novo evento', open: 'Abrir', empty: 'Você ainda não tem eventos.', create_first: 'Crie seu primeiro evento',
     name: 'Nome do evento', date: 'Data', location: 'Local', group: 'Grupo associado',
     formation: 'Coreografia', open_formation: 'Abrir formação', create_formation: 'Criar formação para este evento',
+    assign_existing_project: 'Atribuir projeto existente',
+    choose_project: 'Escolha um projeto',
+    no_projects_available: 'Você ainda não tem projetos para atribuir.',
     has_formation: 'Com formação', no_formation: 'Sem formação', delete_confirm: 'Excluir o evento',
   },
   activities: {
@@ -342,6 +347,11 @@ export default {
     delete_warning: 'Esta ação não pode ser desfeita.',
     link_group: 'Vincular a um grupo',
     members_loaded: 'integrantes em cena serão carregados',
+    link_event: 'Vincular evento',
+    linked_event: 'Evento',
+    unlink_event: 'Desvincular',
+    no_events_to_link: 'Você ainda não tem eventos. Crie um em Eventos.',
+    choose_event: 'Escolha um evento',
   },
   landing: {
     headline: 'Seu escritório coreográfico.',

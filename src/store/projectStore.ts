@@ -33,6 +33,7 @@ interface ProjectActions {
   generateShareToken: (projectId: string) => Promise<string>
   revokeShareToken: (projectId: string) => Promise<void>
   setShareShowNames: (projectId: string, show: boolean) => Promise<void>
+  linkProjectToEvent: (projectId: string, eventId: string | null) => Promise<void>
 }
 
 function parseProject(row: Record<string, unknown>): Project {
@@ -285,6 +286,18 @@ export const useProjectStore = create<ProjectState & ProjectActions>()(set => ({
     set(s => ({
       projects: s.projects.map(p =>
         p.id === projectId ? { ...p, shareShowNames: show } : p
+      ),
+    }))
+  },
+
+  linkProjectToEvent: async (projectId, eventId) => {
+    const { error } = await supabase.from('projects')
+      .update({ event_id: eventId })
+      .eq('id', projectId)
+    if (error) throw error
+    set(s => ({
+      projects: s.projects.map(p =>
+        p.id === projectId ? { ...p, eventId } : p
       ),
     }))
   },
