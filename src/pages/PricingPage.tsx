@@ -167,7 +167,7 @@ export function PricingPage() {
 
         {/* Footer notes */}
         <div className="text-center mt-10 space-y-2">
-          <p className="text-[11px] text-gris/60">Pagos procesados por Stripe · Cancelá cuando quieras desde tu panel</p>
+          <p className="text-[11px] text-gris/60">Pagos procesados por Lemon Squeezy · Cancelá cuando quieras desde tu panel</p>
           <p className="text-[11px] text-gris/50">El cobro es en USD. Si estás en Argentina, tu banco puede aplicar impuestos adicionales (PAÍS, etc.)</p>
         </div>
       </div>
