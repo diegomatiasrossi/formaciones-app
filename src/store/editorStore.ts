@@ -24,6 +24,9 @@ interface EditorState {
   newDancerCount: number
   stageWidth: number
   stageHeight: number
+  // Rectángulo real del escenario (respeta ratio/custom), en coords del canvas.
+  // Lo publica StageCanvas; applyFormation lo usa para encajar la formación.
+  stageRect: { x: number; y: number; w: number; h: number }
   audioMarkers: SceneMarker[]
   canons: Canon[]
   _past: string[]
@@ -67,6 +70,7 @@ interface EditorActions {
   setShowZones: (v: boolean) => void
   setSnapEnabled: (v: boolean) => void
   setStageSize: (w: number, h: number) => void
+  setStageRect: (rect: { x: number; y: number; w: number; h: number }) => void
   setNewColor: (c: string) => void
   setNewShape: (s: DancerShape) => void
   setNewSize: (s: number) => void
@@ -159,6 +163,7 @@ const INITIAL: EditorState = {
   newDancerCount: 12,
   stageWidth: 800,
   stageHeight: 560,
+  stageRect: { x: 40, y: 40, w: 720, h: 480 },
   audioMarkers: [],
   canons: [],
   _past: [],
@@ -365,15 +370,32 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
   // ── Formaciones ──────────────────────────────────────────────────
 
   applyFormation: (id, memberNames?, maxCount?) => {
-    const { newDancerCount, newColor, newShape, newSize, stageWidth, stageHeight } = get()
-    const cx = stageWidth / 2
-    const cy = stageHeight / 2
+    const { newDancerCount, newColor, newShape, newSize, stageRect } = get()
     // Clamp the preset's dancer count to the plan limit so a Free user never
     // gets a formation that exceeds 10 (the backend trigger would reject the save).
     const count = Math.max(1, Math.min(newDancerCount, maxCount ?? Infinity))
-    const pts = generateFormation(id, count, cx, cy, 40)
-    const dancers: Dancer[] = pts.map((p, i) =>
-      makeDancer(p.x, p.y, i + 1, newColor, newShape, newSize, memberNames?.[i]),
+
+    // Generar alrededor del origen y luego encajar dentro del rectángulo REAL del
+    // escenario (respeta portrait/custom). Se centra en el escenario y se ESCALA
+    // para que no exceda el área visible (solo achica, nunca agranda).
+    const raw = generateFormation(id, count, 0, 0, 40)
+    const xs = raw.map(p => p.x), ys = raw.map(p => p.y)
+    const minX = Math.min(...xs), maxX = Math.max(...xs)
+    const minY = Math.min(...ys), maxY = Math.max(...ys)
+    const bw = (maxX - minX) || 1, bh = (maxY - minY) || 1
+    const bcx = (minX + maxX) / 2, bcy = (minY + maxY) / 2
+
+    const margin = 0.85
+    const scale = Math.min((stageRect.w * margin) / bw, (stageRect.h * margin) / bh, 1)
+    const ccx = stageRect.x + stageRect.w / 2
+    const ccy = stageRect.y + stageRect.h / 2
+
+    const dancers: Dancer[] = raw.map((p, i) =>
+      makeDancer(
+        Math.round(ccx + (p.x - bcx) * scale),
+        Math.round(ccy + (p.y - bcy) * scale),
+        i + 1, newColor, newShape, newSize, memberNames?.[i],
+      ),
     )
     set(s => ({
       ...withHistory(s, () => ({
@@ -511,6 +533,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
   setShowZones: v => set({ showZones: v }),
   setSnapEnabled: v => set({ snapEnabled: v }),
   setStageSize: (w, h) => set({ stageWidth: w, stageHeight: h }),
+  setStageRect: rect => set({ stageRect: rect }),
   setNewColor: c => set({ newColor: c }),
   setNewShape: s => set({ newShape: s }),
   setNewSize: s => set({ newSize: s }),

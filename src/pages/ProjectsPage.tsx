@@ -26,24 +26,27 @@ function relativeTime(iso: string) {
   return `hace ${days} día${days > 1 ? 's' : ''}`
 }
 
+// Misma figura "i" que CrewMemberShape en el editor: cabeza (círculo) arriba +
+// tallo (rectángulo redondeado) abajo. (cx,cy) = centro de la cabeza.
 function MiniMember({ cx, cy, r, color }: { cx: number; cy: number; r: number; color: string }) {
-  const hr = Math.max(1.5, r * 0.55)
-  const bw = r * 0.9
-  const bh = r * 1.0
-  const by = cy + hr * 0.9
+  const headR = Math.max(1.2, r * 0.55)
+  const stemW = headR * 1.3
+  const stemH = headR * 3.0
+  const gap   = headR * 0.15
+  const stemY = cy + headR + gap
   return (
     <g opacity={0.9}>
-      {/* Cuerpo ∧ */}
-      <path
-        d={`M ${cx - bw} ${by + bh} L ${cx} ${by} L ${cx + bw} ${by + bh}`}
-        stroke={color}
-        strokeWidth={r * 0.55}
-        fill="none"
-        strokeLinecap="butt"
-        strokeLinejoin="miter"
+      {/* Tallo (cuerpo de la i) */}
+      <rect
+        x={cx - stemW / 2}
+        y={stemY}
+        width={stemW}
+        height={stemH}
+        rx={stemW * 0.15}
+        fill={color}
       />
-      {/* Cabeza */}
-      <circle cx={cx} cy={cy} r={hr} fill={color} />
+      {/* Cabeza (punto de la i) */}
+      <circle cx={cx} cy={cy} r={headR} fill={color} />
     </g>
   )
 }

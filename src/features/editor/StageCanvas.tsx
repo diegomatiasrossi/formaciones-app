@@ -57,7 +57,7 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
     scenes, activeSceneId, selectedIds, tool,
     showGrid, showLabels, showZones, gridSize,
     stageWidth, stageHeight,
-    setStageSize, addDancerAt, moveDancer, moveDancers,
+    setStageSize, setStageRect, addDancerAt, moveDancer, moveDancers,
     select, clearSelection, setSelectedIds,
     undo, redo,
   } = useEditorStore()
@@ -149,6 +149,12 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
   } else {
     sw = availW; sh = availH
   }
+
+  // Publicar el rectángulo real del escenario al store (lo usa applyFormation
+  // para encajar las formaciones dentro del área visible en cualquier orientación).
+  useEffect(() => {
+    setStageRect({ x: sx, y: sy, w: sw, h: sh })
+  }, [sx, sy, sw, sh, setStageRect])
 
   // ── Grid ──────────────────────────────────────────────────────
   const gridLines: React.ReactNode[] = []
