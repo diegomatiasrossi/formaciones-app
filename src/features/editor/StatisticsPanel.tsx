@@ -69,7 +69,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
   // ── Early returns DESPUÉS de todos los hooks ─────────────────────────
   if (locked) {
     return (
-      <div className="absolute top-3 left-3 z-20 w-64 bg-negro border border-borde rounded-xl shadow-2xl">
+      <div className="absolute top-3 left-3 z-20 w-64 max-w-[calc(100vw-5rem)] bg-negro border border-borde rounded-xl shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <span className="text-[10px] text-dorado uppercase tracking-widest">Estadísticas</span>
           <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
@@ -84,7 +84,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
 
   if (dancers.length === 0) {
     return (
-      <div className="absolute top-3 left-3 z-20 w-64 bg-negro border border-borde rounded-xl shadow-2xl p-5">
+      <div className="absolute top-3 left-3 z-20 w-64 max-w-[calc(100vw-5rem)] bg-negro border border-borde rounded-xl shadow-2xl p-5">
         <PanelHeader onClose={onClose} />
         <p className="text-gris text-xs text-center mt-4">No hay integrantes en esta escena.</p>
       </div>
@@ -92,7 +92,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
   }
 
   return (
-    <div className="absolute top-3 left-3 z-20 w-72 bg-negro border border-borde rounded-xl shadow-2xl p-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+    <div className="absolute top-3 left-3 z-20 w-72 max-w-[calc(100vw-5rem)] bg-negro border border-borde rounded-xl shadow-2xl p-4 max-h-[calc(100vh-120px)] overflow-y-auto">
       <PanelHeader onClose={onClose} />
 
       <div className="flex gap-2 mb-4">

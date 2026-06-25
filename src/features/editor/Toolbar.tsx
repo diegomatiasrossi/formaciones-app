@@ -70,7 +70,7 @@ export function Toolbar({
   const sep = <div className="w-px h-5 bg-borde mx-0.5 shrink-0" />
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 px-3 py-2 border-b border-borde bg-negro text-blanco-calido select-none shrink-0">
+    <div className="flex flex-wrap md:flex-nowrap md:overflow-x-auto items-center gap-1.5 px-3 py-2 border-b border-borde bg-negro text-blanco-calido select-none shrink-0">
 
       {/* Herramienta */}
       <button className={btn(tool === 'select')} onClick={() => setTool('select')} title={t('editor.tool_select_hint')}>
