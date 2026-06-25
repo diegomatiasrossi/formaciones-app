@@ -28,6 +28,7 @@ export function PrivacyPage() {
               <li><strong className="text-negro">Datos de cuenta:</strong> dirección de email y contraseña (encriptada). Si te registrás con Google, recibimos tu email y nombre de perfil público.</li>
               <li><strong className="text-negro">Datos de uso:</strong> proyectos creados, formaciones diseñadas, escenas y configuraciones del editor. Todo esto se guarda en tu cuenta para que puedas acceder desde cualquier dispositivo.</li>
               <li><strong className="text-negro">Datos técnicos:</strong> tipo de navegador, idioma preferido y errores técnicos anónimos para mejorar la app.</li>
+              <li><strong className="text-negro">Datos de integrantes:</strong> nombre y apodo opcionales que el crew leader carga sobre los miembros de su crew. Estos datos son ingresados y gestionados por el crew leader bajo su responsabilidad.</li>
             </ul>
           </section>
 
@@ -52,6 +53,9 @@ export function PrivacyPage() {
               </div>
               <div>
                 <strong className="text-negro">Vercel</strong> — infraestructura de hosting. Los archivos estáticos y las funciones serverless se ejecutan en Vercel. Política de privacidad: <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-dorado-oscuro hover:text-dorado underline">vercel.com/legal/privacy-policy</a>
+              </div>
+              <div>
+                <strong className="text-negro">Sentry</strong> — monitoreo de errores técnicos. Captura errores anónimos del navegador para mejorar la estabilidad de la plataforma. Nunca captura datos personales ni contenido de los proyectos. Política de privacidad: <a href="https://sentry.io/privacy" target="_blank" rel="noopener noreferrer" className="text-dorado-oscuro hover:text-dorado underline">sentry.io/privacy</a>
               </div>
             </div>
           </section>
@@ -93,7 +97,14 @@ export function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold mb-3">8. Contacto</h2>
+            <h2 className="text-lg font-semibold mb-3">8. Edad mínima</h2>
+            <p className="text-gris">
+              Crewficina está dirigido a crew leaders mayores de 18 años. Los datos de integrantes que pueden incluir personas menores de edad son responsabilidad del crew leader que los carga. Crewficina no recopila datos directamente de menores.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-semibold mb-3">9. Contacto</h2>
             <p className="text-gris">
               Para preguntas sobre privacidad o para ejercer tus derechos:
               <br />
@@ -105,8 +116,10 @@ export function PrivacyPage() {
       </div>
 
       {/* Footer mínimo */}
-      <footer className="px-8 py-5 border-t border-borde-light text-center text-[11px] text-gris">
-        © 2026 Crewficina — <a href="/" className="hover:text-dorado-oscuro">crewficina.com</a>
+      <footer className="px-8 py-5 border-t border-borde-light text-center text-[11px] text-gris flex flex-wrap items-center justify-center gap-3">
+        <span>© 2026 Crewficina — <a href="/" className="hover:text-dorado-oscuro">crewficina.com</a></span>
+        <span>·</span>
+        <a href="/terminos" className="hover:text-dorado-oscuro">Términos</a>
       </footer>
     </div>
   )

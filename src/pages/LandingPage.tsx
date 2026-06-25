@@ -281,6 +281,7 @@ export function LandingPage() {
             <button onClick={() => navigate('/pricing')} className="hover:text-negro transition-colors">Precios</button>
             <a href="mailto:hola@crewficina.com" className="hover:text-negro transition-colors">hola@crewficina.com</a>
             <button onClick={() => navigate('/privacidad')} className="hover:text-negro transition-colors">Privacidad</button>
+            <button onClick={() => navigate('/terminos')} className="hover:text-negro transition-colors">Términos</button>
           </nav>
           <div className="flex items-center gap-3 text-[10px] text-gris/60">
             <span className="flex items-center gap-1.5">

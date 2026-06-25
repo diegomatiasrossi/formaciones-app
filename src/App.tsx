@@ -6,6 +6,7 @@ import { EditorPage } from '@/pages/EditorPage'
 import { SharePage } from '@/pages/SharePage'
 import { PricingPage } from '@/pages/PricingPage'
 import { PrivacyPage } from '@/pages/PrivacyPage'
+import { TermsPage } from '@/pages/TermsPage'
 import { IntegrantesPage } from '@/pages/IntegrantesPage'
 import { GruposPage } from '@/pages/GruposPage'
 import { EventosPage } from '@/pages/EventosPage'
@@ -84,6 +85,8 @@ function AppWithAuth() {
       <Route path="/login" element={<AuthPage />} />
       <Route path="/privacidad" element={<PrivacyPage />} />
       <Route path="/privacy" element={<Navigate to="/privacidad" replace />} />
+      <Route path="/terminos" element={<TermsPage />} />
+      <Route path="/terms" element={<Navigate to="/terminos" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
