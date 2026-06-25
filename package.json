@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@sentry/react": "^10.60.0",
     "@supabase/supabase-js": "^2.45.4",
     "clsx": "^2.1.1",
     "express": "^5.2.1",
