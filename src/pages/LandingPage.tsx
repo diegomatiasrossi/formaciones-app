@@ -5,16 +5,14 @@ import { toggleLanguage, getLangLabel } from '@/i18n'
 import { FormationDemo } from '@/components/ui/FormationDemo'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
-import { ARTICLES } from '@/data/articles'
-import { supabase } from '@/features/auth/supabaseClient'
 
 const FEATURES = [
-  { icon: '⬡', title: '20+ Formaciones', desc: 'Línea, círculo, espiral, ola, bloques, X, flecha — con fichas pedagógicas detalladas.' },
+  { icon: '⬡', title: '20+ Formaciones', desc: 'Línea, círculo, espiral, ola, bloques, X, flecha y más.' },
   { icon: '◉', title: 'Niveles coreográficos', desc: 'Suelo, medio, de pie y aéreo. Opacidad y escala representan visualmente cada nivel.' },
-  { icon: '▶', title: 'Preview de transición', desc: 'Animación fluida entre escenas con interpolación cúbica. Sin librerías externas.' },
-  { icon: '🎵', title: 'Línea de audio', desc: 'Sincronizá cada escena con un marcador temporal en la pista de audio.' },
+  { icon: '▶', title: 'Preview de transición', desc: 'Transiciones suaves entre escenas, en tiempo real.' },
+  { icon: '♪', title: 'Línea de audio', desc: 'Sincronizá cada escena con un marcador temporal en la pista de audio.' },
   { icon: '⊞', title: 'Multi-escena', desc: 'Creá hasta 100 escenas por proyecto. Duplicá, renombrá y reordenás en segundos.' },
-  { icon: '◎', title: 'Estadísticas', desc: 'Mapa de zonas, distribución de niveles, densidad del escenario y paleta del grupo.' },
+  { icon: '◎', title: 'Estadísticas', desc: 'Mapa de zonas, distribución de niveles, densidad del escenario y colores por grupo.' },
 ]
 
 const STATS = [
@@ -25,9 +23,9 @@ const STATS = [
 ]
 
 const PLANS = [
-  { name: 'Free', price: '$0', period: '', desc: 'Para explorar', features: ['15 integrantes', '2 proyectos', 'Formaciones + preview', 'Link de solo lectura'], cta: 'Empezar gratis', highlight: false },
+  { name: 'Free', price: '$0', period: '', desc: 'Para explorar', features: ['10 integrantes por escena', '3 proyectos', '3 grupos', '3 eventos', '20+ formaciones', 'Preview de transiciones', 'Link de solo lectura'], cta: 'Empezar gratis', highlight: false },
   { name: 'Solo Pro', price: '$9.99', period: '/mes', desc: 'Para coreógrafos activos', features: ['50 integrantes', 'Proyectos ilimitados', 'Audio + timeline', 'Canon + PDF', '14 días gratis'], cta: 'Empezar Solo Pro', highlight: true },
-  { name: 'Studio', price: '$24.99', period: '/mes', desc: 'Para academias', features: ['Integrantes ilimitados', 'Todo de Solo Pro', 'Estadísticas avanzadas', 'Hasta 5 usuarios', 'Soporte prioritario'], cta: 'Empezar Studio', highlight: false },
+  { name: 'Studio', price: '$24.99', period: '/mes', desc: 'Para academias', features: ['Integrantes ilimitados', 'Todo de Solo Pro', 'Estadísticas avanzadas', 'Hasta 3 usuarios incluidos'], cta: 'Empezar Studio', highlight: false },
 ]
 
 export function LandingPage() {
@@ -37,17 +35,14 @@ export function LandingPage() {
   const [demoDancers, setDemoDancers] = useState(7)
   const [demoColor, setDemoColor] = useState('#C9A961')
 
-  const [waitlistEmail, setWaitlistEmail] = useState('')
-  const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterSent, setNewsletterSent] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
-  async function handleWaitlist(e: React.FormEvent) {
+  function handleNewsletter(e: React.FormEvent) {
     e.preventDefault()
-    if (!waitlistEmail.trim()) return
-    setWaitlistStatus('loading')
-    const { error } = await supabase.from('waitlist').insert({ email: waitlistEmail.trim() })
-    if (error && error.code !== '23505') setWaitlistStatus('error')
-    else setWaitlistStatus('success')
+    if (!newsletterEmail.trim()) return
+    setNewsletterSent(true)
   }
 
   return (
@@ -82,7 +77,7 @@ export function LandingPage() {
             {t('landing.body')}
           </p>
           <div className="flex gap-4 flex-wrap">
-            <button onClick={() => navigate('/projects')} className="px-8 py-3.5 bg-negro hover:bg-negro/90 text-crema font-semibold rounded-xl transition-all text-sm shadow-card hover:-translate-y-0.5">
+            <button onClick={() => navigate('/projects')} className="px-8 py-3.5 bg-rojo hover:bg-rojo-oscuro text-blanco font-semibold rounded-xl transition-all text-sm shadow-card hover:-translate-y-0.5">
               {t('landing.cta')} →
             </button>
             <button onClick={() => setShowDemo(true)} className="px-8 py-3.5 border border-borde-light hover:border-dorado text-negro/80 hover:text-negro rounded-xl transition-colors text-sm bg-blanco">
@@ -196,51 +191,28 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Artículos */}
-      <section className="border-t border-borde-light bg-blanco">
-        <div className="max-w-6xl mx-auto px-8 py-16 w-full">
-          <div className="text-center mb-10">
-            <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">Pedagogía</div>
-            <h2 className="text-2xl font-semibold tracking-tight">Aprendé composición coreográfica</h2>
-            <p className="text-xs text-gris mt-2">Artículos de Diego Póleo para profundizar en cada herramienta</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {ARTICLES.map(a => (
-              <a key={a.titleKey} href={a.url} target="_blank" rel="noopener noreferrer"
-                className="p-5 rounded-xl border border-borde-light bg-crema hover:border-dorado/50 hover:shadow-soft transition-all group hover:-translate-y-0.5 flex flex-col gap-3">
-                <div className="text-dorado text-lg">📖</div>
-                <p className="text-xs text-negro/80 group-hover:text-negro transition-colors leading-snug flex-1">{t(a.titleKey)}</p>
-                <span className="text-[10px] text-dorado-oscuro transition-colors">diegopoleo.com ↗</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Waitlist */}
+      {/* Newsletter */}
       <section className="border-t border-borde-light bg-negro">
         <div className="max-w-xl mx-auto px-8 py-20 text-center">
-          <div className="text-[10px] text-dorado uppercase tracking-[0.3em] mb-4 font-semibold">Acceso anticipado</div>
+          <div className="text-[10px] text-dorado uppercase tracking-[0.3em] mb-4 font-semibold">Newsletter</div>
           <h2 className="text-3xl font-semibold tracking-tight mb-3 text-crema">{t('landing.waitlist_headline')}</h2>
           <p className="text-gris text-sm mb-8 leading-relaxed">{t('landing.waitlist_body')}</p>
 
-          {waitlistStatus === 'success' ? (
+          {newsletterSent ? (
             <div className="flex flex-col items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-green-500/15 border border-green-500/40 flex items-center justify-center text-green-400 text-xl">✓</div>
               <p className="text-green-400 text-sm">{t('landing.waitlist_success')}</p>
             </div>
           ) : (
-            <form onSubmit={handleWaitlist} className="flex gap-2 max-w-sm mx-auto">
-              <input type="email" required value={waitlistEmail} onChange={e => setWaitlistEmail(e.target.value)} placeholder={t('landing.waitlist_placeholder')}
+            <form onSubmit={handleNewsletter} className="flex gap-2 max-w-sm mx-auto">
+              <input type="email" required value={newsletterEmail} onChange={e => setNewsletterEmail(e.target.value)} placeholder={t('landing.waitlist_placeholder')}
                 className="flex-1 bg-[#2a2a2a] border border-[#3a3a3a] rounded-xl px-4 py-3 text-sm text-crema placeholder:text-gris focus:outline-none focus:border-dorado transition-colors" />
-              <button type="submit" disabled={waitlistStatus === 'loading'}
-                className="px-5 py-3 bg-dorado hover:bg-dorado-oscuro text-negro text-sm font-semibold rounded-xl transition-colors disabled:opacity-60 shrink-0">
-                {waitlistStatus === 'loading' ? '...' : t('landing.waitlist_cta')}
+              <button type="submit"
+                className="px-5 py-3 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-xl transition-colors shrink-0">
+                {t('landing.waitlist_cta')}
               </button>
             </form>
           )}
-          {waitlistStatus === 'error' && <p className="text-rojo text-xs mt-3">Hubo un error. Intentá de nuevo.</p>}
-          <p className="text-gris/60 text-[10px] mt-5">{t('landing.waitlist_no_spam')}</p>
         </div>
       </section>
 
