@@ -12,7 +12,7 @@ const PRICES = {
     yearly:  { id: import.meta.env.VITE_STRIPE_PRICE_SOLO_PRO_YEARLY  ?? '', label: '$7.99', period: '/mes · cobrado anual' },
   },
   studio: {
-    monthly: { id: import.meta.env.VITE_STRIPE_PRICE_STUDIO_MONTHLY ?? '', label: '$24.99', period: '/mes' },
+    monthly: { id: import.meta.env.VITE_STRIPE_STUDIO_PRICE_ID ?? '', label: '$24.99', period: '/mes' },
     yearly:  { id: import.meta.env.VITE_STRIPE_PRICE_STUDIO_YEARLY  ?? '', label: '$19.99', period: '/mes · cobrado anual' },
   },
 }
