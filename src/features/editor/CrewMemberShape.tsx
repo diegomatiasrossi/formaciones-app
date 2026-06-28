@@ -64,6 +64,14 @@ export const CrewMemberShape = memo(function CrewMemberShape({
   const arrowDir = dancer.entryEdge ? EDGE_ARROW[dancer.entryEdge] : null
   const facingRotation = FACING_ROTATION[dancer.facing ?? 'audience']
 
+  // Área de agarre (hit area) generosa alrededor de la figura para poder iniciar
+  // el drag desde cualquier punto cercano, no solo sobre el píxel exacto del
+  // cuerpo. Se calcula sin rotar (independiente de `facing`) para mantener un
+  // área estable y predecible.
+  const hitHalfW = Math.max(headR, stemW / 2) + size * 0.7
+  const hitTop   = -headR - size * 0.55
+  const hitH     = totalH + headR + size * 1.1
+
   return (
     <Group
       x={x}
@@ -85,6 +93,18 @@ export const CrewMemberShape = memo(function CrewMemberShape({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
+      {/* Hit area invisible — amplía la zona de agarre sin alterar lo que se ve.
+          Konva incluye en el hit-graph cualquier shape con `fill` (aunque sea
+          transparente), de modo que este Rect captura el drag en toda el área
+          generosa pero no se dibuja. Va primero (debajo) para no tapar nada. */}
+      <Rect
+        x={-hitHalfW}
+        y={hitTop}
+        width={hitHalfW * 2}
+        height={hitH}
+        fill="transparent"
+      />
+
       {/* Anillo de selección */}
       {selected && (
         <Circle
