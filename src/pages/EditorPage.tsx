@@ -73,12 +73,18 @@ export function EditorPage() {
   const project = projects.find(p => p.id === projectId)
 
   // Salida por el botón "← Proyectos": confirmar si hay cambios sin guardar.
+  // Leemos el flag VIVO del store con getState() en vez de la variable del
+  // render: las mutaciones del canvas vienen de eventos de Konva (fuera del
+  // sistema de eventos de React), así que el closure capturado por onBack podía
+  // quedar leyendo un render viejo con hasUnsavedChanges=false y navegar directo.
+  // getState() devuelve siempre el valor actual, inmune a stale closures/timing.
+  //
   // TODO: la navegación interna por React Router (links del menú, atrás del
   // browser) no se intercepta porque unstable_useBlocker requiere un data router
   // (createBrowserRouter) y la app usa <BrowserRouter>. Migrar el router para
   // cubrir ese caso, o el beforeunload cubre el cierre/recarga de pestaña.
   function handleBackRequest() {
-    if (hasUnsavedChanges) setShowExitConfirm(true)
+    if (useEditorStore.getState().hasUnsavedChanges) setShowExitConfirm(true)
     else navigate('/projects')
   }
 
