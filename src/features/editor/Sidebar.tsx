@@ -5,12 +5,10 @@ import { FORMATION_CARDS } from '@/lib/formations'
 import { FormationCardButton } from './FormationCard'
 import type { DancerLevel } from '@/types'
 import { LEVEL_META, LEVEL_OPACITY, LEVEL_SCALE } from '@/types'
-import { ARTICLES } from '@/data/articles'
 import clsx from 'clsx'
 
 export function Sidebar() {
   const { t } = useTranslation()
-  const [showArticles, setShowArticles] = useState(false)
   const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1280)
   const {
     rotateAll, mirrorH, mirrorV, scaleFormation,
@@ -162,31 +160,6 @@ export function Sidebar() {
         ))}
       </div>
       <p className="text-[10px] text-gris/40 mb-2">Doble click en integrante para editar nivel</p>
-
-      {/* ── Aprender más ─────────────────────────────────────────── */}
-      <button
-        onClick={() => setShowArticles(v => !v)}
-        className="flex items-center justify-between w-full text-[10px] font-semibold text-dorado uppercase tracking-widest mt-4 mb-1 hover:text-dorado-oscuro transition-colors"
-      >
-        {t('articles.section_title')}
-        <span className="text-gris/40">{showArticles ? '▲' : '▼'}</span>
-      </button>
-
-      {showArticles && (
-        <div className="space-y-1 mb-2">
-          {ARTICLES.map(a => (
-            <a
-              key={a.titleKey}
-              href={a.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-[10px] text-gris/70 hover:text-dorado transition-colors leading-snug py-0.5"
-            >
-              {t(a.titleKey)} ↗
-            </a>
-          ))}
-        </div>
-      )}
     </aside>
   )
 }
