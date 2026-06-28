@@ -67,6 +67,9 @@ export default {
     language: 'Idioma',
   },
   editor: {
+    unsaved_title: 'Cambios sin guardar',
+    unsaved_message: 'Si salís ahora, perdés los cambios del editor.',
+    unsaved_leave: 'Salir sin guardar',
     tool_select: 'Selección',
     tool_add: 'Agregar',
     tool_select_hint: 'Click para seleccionar · Ctrl+Click múltiple · Arrastrar para mover',

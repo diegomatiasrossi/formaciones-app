@@ -31,6 +31,7 @@ interface EditorState {
   stageRect: { x: number; y: number; w: number; h: number }
   audioMarkers: SceneMarker[]
   canons: Canon[]
+  hasUnsavedChanges: boolean
   _past: string[]
   _future: string[]
 }
@@ -81,6 +82,8 @@ interface EditorActions {
   addCanon: (canon: Omit<Canon, 'id'>) => void
   removeCanon: (id: string) => void
   loadScenes: (scenes: Scene[], activeId: string, audioMarkers?: SceneMarker[], canons?: Canon[]) => void
+  markDirty: () => void
+  markSaved: () => void
   undo: () => void
   redo: () => void
 }
@@ -196,6 +199,7 @@ const INITIAL: EditorState = {
   stageRect: { x: 40, y: 40, w: 720, h: 480 },
   audioMarkers: [],
   canons: [],
+  hasUnsavedChanges: false,
   _past: [],
   _future: [],
 }
@@ -599,5 +603,11 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
       activeSceneId: activeId, selectedIds: [], _past: [], _future: [],
       ...(audioMarkers ? { audioMarkers } : {}),
       canons: canons ?? [],
+      hasUnsavedChanges: false,
     }),
+
+  // El editor marca cambios sin guardar vía suscripción al store (ver EditorPage):
+  // cualquier mutación de scenes/audioMarkers/canons dispara markDirty.
+  markDirty: () => { if (!get().hasUnsavedChanges) set({ hasUnsavedChanges: true }) },
+  markSaved: () => set({ hasUnsavedChanges: false }),
 }))

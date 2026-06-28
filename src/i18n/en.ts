@@ -67,6 +67,9 @@ export default {
     language: 'Language',
   },
   editor: {
+    unsaved_title: 'Unsaved changes',
+    unsaved_message: 'If you leave now, you will lose the editor changes.',
+    unsaved_leave: 'Leave without saving',
     tool_select: 'Select',
     tool_add: 'Add',
     tool_select_hint: 'Click to select · Ctrl+Click for multiple · Drag to move',
