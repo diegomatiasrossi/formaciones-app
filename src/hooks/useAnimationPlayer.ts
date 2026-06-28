@@ -74,6 +74,7 @@ function canonDelays(
   to: Scene,
   config: CanonConfig,
   offsetMs: number,
+  baseTransitionMs: number,
 ): number[] {
   const fromActive = from.dancers.filter(d => d.active !== false)
   const toActive   = to.dancers.filter(d => d.active !== false)
@@ -89,6 +90,7 @@ function canonDelays(
   const participants = config.selection === 'all'
     ? allIdx
     : allIdx.filter(i => (config.selection as string[]).includes(idAt(i)))
+  const participantSet = new Set(participants)
 
   let ordered: number[]
   switch (config.order) {
@@ -109,9 +111,22 @@ function canonDelays(
 
   const delays = new Array<number>(n).fill(0)
   ordered.forEach((idx, pos) => { delays[idx] = pos * offsetMs })
-  // TODO (producto): los NO participantes quedan con delay 0 → se mueven al
-  // inicio (simultáneos) para igual llegar a la escena B. Si se prefiere que
-  // permanezcan fijos en A hasta el final, asignarles delay = duración total.
+
+  // Los no-participantes permanecen quietos en su posición de la escena A mientras
+  // el canon transcurre. Arrancan a moverse simultáneamente hacia B solo cuando el
+  // último participante termina (delay = lastParticipantStart + baseTransitionMs).
+  // La duración del segmento se extiende naturalmente: transitionMs + maxDelay,
+  // donde maxDelay pasa a ser lastStart + baseTransitionMs.
+  if (config.selection !== 'all' && participants.length < n) {
+    const maxParticipantDelay = participants.length > 0
+      ? Math.max(...participants.map(idx => delays[idx]))
+      : 0
+    const nonParticipantDelay = maxParticipantDelay + baseTransitionMs
+    for (let i = 0; i < n; i++) {
+      if (!participantSet.has(i)) delays[i] = nonParticipantDelay
+    }
+  }
+
   return delays
 }
 
@@ -187,7 +202,7 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
       const toScene   = scenes[i + 1]
       if (toScene.transitionType === 'canon' && toScene.canonConfig) {
         const offsetMs = Math.max(0, toScene.canonConfig.offsetSeconds) * 1000
-        const delays = canonDelays(fromScene, toScene, toScene.canonConfig, offsetMs)
+        const delays = canonDelays(fromScene, toScene, toScene.canonConfig, offsetMs, transitionMs)
         const maxDelay = delays.length ? Math.max(...delays) : 0
         return { canon: true as const, delays, duration: transitionMs + maxDelay }
       }
