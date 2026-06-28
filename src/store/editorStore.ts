@@ -82,7 +82,6 @@ interface EditorActions {
   addCanon: (canon: Omit<Canon, 'id'>) => void
   removeCanon: (id: string) => void
   loadScenes: (scenes: Scene[], activeId: string, audioMarkers?: SceneMarker[], canons?: Canon[]) => void
-  markDirty: () => void
   markSaved: () => void
   undo: () => void
   redo: () => void
@@ -171,6 +170,7 @@ function withHistory(
   const next = updater(state)
   return {
     ...next,
+    hasUnsavedChanges: true,
     _past: [...state._past.slice(-MAX_HISTORY + 1), snap],
     _future: [],
   }
@@ -235,6 +235,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   renameScene: (id, name) =>
     set(s => ({
+      hasUnsavedChanges: true,
       scenes: s.scenes.map(sc => sc.id === id ? { ...sc, name } : sc),
     })),
 
@@ -274,6 +275,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
     const x = snapEnabled ? snapToGrid(rawX, gridSize) : Math.round(rawX)
     const y = snapEnabled ? snapToGrid(rawY, gridSize) : Math.round(rawY)
     set(s => ({
+      hasUnsavedChanges: true,
       scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
         ...sc,
         dancers: sc.dancers.map(d => d.id === id ? { ...d, x, y } : d),
@@ -285,6 +287,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
     const { snapEnabled, gridSize } = get()
     const map = new Map(deltas.map(d => [d.id, d]))
     set(s => ({
+      hasUnsavedChanges: true,
       scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
         ...sc,
         dancers: sc.dancers.map(d => {
@@ -373,6 +376,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   renameDancer: (id, name) =>
     set(s => ({
+      hasUnsavedChanges: true,
       scenes: updateActive(s.scenes, s.activeSceneId, sc => ({
         ...sc, dancers: sc.dancers.map(d => d.id === id ? { ...d, name } : d),
       })),
@@ -496,6 +500,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
     const currentSnap = snapshot(get() as EditorState)
     const parsed: HistorySnapshot = JSON.parse(prev)
     set({
+      hasUnsavedChanges: true,
       scenes: parsed.scenes,
       activeSceneId: parsed.activeSceneId,
       selectedIds: [],
@@ -511,6 +516,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
     const currentSnap = snapshot(get() as EditorState)
     const parsed: HistorySnapshot = JSON.parse(next)
     set({
+      hasUnsavedChanges: true,
       scenes: parsed.scenes,
       activeSceneId: parsed.activeSceneId,
       selectedIds: [],
@@ -523,13 +529,14 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   setFormationName: (sceneId, name) =>
     set(s => ({
+      hasUnsavedChanges: true,
       scenes: s.scenes.map(sc => sc.id === sceneId ? { ...sc, formationName: name } : sc),
     })),
 
   setSceneMarker: (sceneId, timestampMs) =>
     set(s => {
       const existing = s.audioMarkers.filter(m => m.sceneId !== sceneId)
-      return { audioMarkers: [...existing, { sceneId, timestampMs }] }
+      return { hasUnsavedChanges: true, audioMarkers: [...existing, { sceneId, timestampMs }] }
     }),
 
   setMultiLevel: (ids, level) => {
@@ -558,6 +565,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   setTransitionType: (sceneId, type) =>
     set(s => ({
+      hasUnsavedChanges: true,
       scenes: s.scenes.map(sc =>
         sc.id === sceneId
           ? {
@@ -573,6 +581,7 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   setCanonConfig: (sceneId, patch) =>
     set(s => ({
+      hasUnsavedChanges: true,
       scenes: s.scenes.map(sc =>
         sc.id === sceneId
           ? { ...sc, canonConfig: { ...(sc.canonConfig ?? DEFAULT_CANON_CONFIG), ...patch } }
@@ -592,10 +601,10 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
   setNewSize: s => set({ newSize: s }),
   setNewDancerCount: n => set({ newDancerCount: Math.max(1, Math.min(50, n)) }),
   addCanon: canon =>
-    set(s => ({ canons: [...s.canons, { ...canon, id: nanoid() }] })),
+    set(s => ({ hasUnsavedChanges: true, canons: [...s.canons, { ...canon, id: nanoid() }] })),
 
   removeCanon: id =>
-    set(s => ({ canons: s.canons.filter(c => c.id !== id) })),
+    set(s => ({ hasUnsavedChanges: true, canons: s.canons.filter(c => c.id !== id) })),
 
   loadScenes: (scenes, activeId, audioMarkers, canons) =>
     set({
@@ -606,8 +615,5 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
       hasUnsavedChanges: false,
     }),
 
-  // El editor marca cambios sin guardar vía suscripción al store (ver EditorPage):
-  // cualquier mutación de scenes/audioMarkers/canons dispara markDirty.
-  markDirty: () => { if (!get().hasUnsavedChanges) set({ hasUnsavedChanges: true }) },
   markSaved: () => set({ hasUnsavedChanges: false }),
 }))

@@ -31,7 +31,7 @@ export function EditorPage() {
     members.forEach(m => { map[m.id] = [m.firstName, m.lastName].filter(Boolean).join(' ') })
     return map
   }, [members])
-  const loaded = useRef(false)
+  const loaded      = useRef(false)
   const fetchingById = useRef(false)
   const [isSaving, setIsSaving] = useState(false)
   const [showShare, setShowShare] = useState(false)
@@ -59,20 +59,6 @@ export function EditorPage() {
       loaded.current = true
     }
   }, [projectId, projects, loadScenes, fetchProjectById])
-
-  // Marca cambios sin guardar: cualquier mutación de contenido (scenes /
-  // audioMarkers / canons) ensucia el editor. Se ignora la carga inicial
-  // (loaded.current todavía false durante loadScenes). Vista/selección/escena
-  // activa no tocan estas refs, así que no marcan dirty.
-  useEffect(() => {
-    const unsub = useEditorStore.subscribe((s, prev) => {
-      if (!loaded.current) return
-      if (s.scenes !== prev.scenes || s.audioMarkers !== prev.audioMarkers || s.canons !== prev.canons) {
-        useEditorStore.getState().markDirty()
-      }
-    })
-    return unsub
-  }, [])
 
   // Cierre de pestaña / navegación externa: diálogo nativo del browser solo
   // cuando hay cambios sin guardar. El texto no es personalizable en browsers
