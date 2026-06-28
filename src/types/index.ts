@@ -150,15 +150,50 @@ export interface OrgInvite {
   expiresAt?: string
 }
 
+// ── Transición entre escenas ───────────────────────────────────────────────
+// La config vive en la escena DESTINO y describe cómo se entra a ella desde la
+// escena anterior (transición N → N+1).
+
+export type TransitionType = 'simultaneous' | 'canon'
+
+export type CanonOrder =
+  | 'left-to-right' | 'right-to-left'
+  | 'front-to-back' | 'back-to-front'
+  | 'manual'
+
+export interface CanonConfig {
+  order: CanonOrder
+  manualOrder?: string[]       // dancer IDs en orden (cuando order === 'manual')
+  offsetSeconds: number        // desfase entre integrantes en segundos (default 0.3)
+  selection: 'all' | string[]  // 'all' o IDs de los integrantes que participan
+}
+
+export const DEFAULT_CANON_CONFIG: CanonConfig = {
+  order: 'left-to-right',
+  offsetSeconds: 0.3,
+  selection: 'all',
+}
+
 export interface Scene {
   id: string
   name: string
   formationName?: string
   dancers: Dancer[]
   notes?: string
+
+  // Transición de ENTRADA a esta escena (desde la anterior).
+  transitionType?: TransitionType   // ausente = 'simultaneous'
+  canonConfig?: CanonConfig
+
+  // ── Campos legacy (deprecados) — se migran a transitionType/canonConfig al
+  //    cargar el proyecto. Se conservan en el tipo para parsear JSON viejo. ──
+  /** @deprecated usar transitionType */
   transitionMode?: 'unison' | 'canon'
+  /** @deprecated usar canonConfig.order */
   canonOrder?: 'by-index' | 'left-to-right' | 'right-to-left' | 'center-out' | 'custom'
+  /** @deprecated usar canonConfig.offsetSeconds */
   canonDelayMs?: number
+  /** @deprecated usar canonConfig.manualOrder */
   canonCustomOrder?: string[]
 }
 

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import type { Scene } from '@/types'
+import type { Scene, CanonConfig } from '@/types'
 
 export interface AnimFrame {
   dancers: { id: string; x: number; y: number; opacity: number }[]
@@ -65,49 +65,63 @@ export function interpolateScenes(
 
 // ── Canon helpers ─────────────────────────────────────────────────────────────
 
-function computeCanonOrder(
-  fromScene: Scene,
-  toScene: Scene,
-  order: NonNullable<Scene['canonOrder']>,
-  customOrder: string[] | undefined,
-  sw: number,
-  sh: number,
-): string[] {
-  const fromActive = fromScene.dancers.filter(d => d.active !== false)
-  const toActive   = toScene.dancers.filter(d => d.active !== false)
-  const allIds = Array.from(new Set([...fromActive.map(d => d.id), ...toActive.map(d => d.id)]))
+// Calcula el delay (ms) de cada figura en una transición de canon, indexado por
+// la MISMA posición que usa interpolateScenes (índice sobre dancers activos).
+// La identidad/selección se toma de la escena destino `to` (donde vive la
+// config); la posición para ordenar se toma de `from` (punto de partida).
+function canonDelays(
+  from: Scene,
+  to: Scene,
+  config: CanonConfig,
+  offsetMs: number,
+): number[] {
+  const fromActive = from.dancers.filter(d => d.active !== false)
+  const toActive   = to.dancers.filter(d => d.active !== false)
+  const n = Math.max(fromActive.length, toActive.length)
 
-  const posMap = new Map<string, { x: number; y: number }>()
-  for (const d of fromActive) posMap.set(d.id, { x: d.x, y: d.y })
-  for (const d of toActive)   if (!posMap.has(d.id)) posMap.set(d.id, { x: d.x, y: d.y })
-
-  switch (order) {
-    case 'by-index': return allIds
-    case 'left-to-right':
-      return [...allIds].sort((a, b) => (posMap.get(a)?.x ?? 0) - (posMap.get(b)?.x ?? 0))
-    case 'right-to-left':
-      return [...allIds].sort((a, b) => (posMap.get(b)?.x ?? 0) - (posMap.get(a)?.x ?? 0))
-    case 'center-out': {
-      const cx = sw / 2; const cy = sh / 2
-      return [...allIds].sort((a, b) => {
-        const pa = posMap.get(a) ?? { x: cx, y: cy }
-        const pb = posMap.get(b) ?? { x: cx, y: cy }
-        return Math.hypot(pa.x - cx, pa.y - cy) - Math.hypot(pb.x - cx, pb.y - cy)
-      })
-    }
-    case 'custom': return customOrder ?? allIds
-    default:        return allIds
+  const idAt = (i: number) => toActive[i]?.id ?? fromActive[i]?.id ?? String(i)
+  const posAt = (i: number) => {
+    const ref = fromActive[i] ?? toActive[i]
+    return { x: ref?.x ?? 0, y: ref?.y ?? 0 }
   }
+
+  const allIdx = Array.from({ length: n }, (_, i) => i)
+  const participants = config.selection === 'all'
+    ? allIdx
+    : allIdx.filter(i => (config.selection as string[]).includes(idAt(i)))
+
+  let ordered: number[]
+  switch (config.order) {
+    case 'left-to-right': ordered = [...participants].sort((a, b) => posAt(a).x - posAt(b).x); break
+    case 'right-to-left': ordered = [...participants].sort((a, b) => posAt(b).x - posAt(a).x); break
+    // El público está abajo: Y alta = frente (downstage), Y baja = fondo (upstage).
+    case 'back-to-front': ordered = [...participants].sort((a, b) => posAt(a).y - posAt(b).y); break
+    case 'front-to-back': ordered = [...participants].sort((a, b) => posAt(b).y - posAt(a).y); break
+    case 'manual': {
+      const rank = new Map((config.manualOrder ?? []).map((id, idx) => [id, idx]))
+      ordered = [...participants].sort(
+        (a, b) => (rank.get(idAt(a)) ?? Infinity) - (rank.get(idAt(b)) ?? Infinity),
+      )
+      break
+    }
+    default: ordered = participants
+  }
+
+  const delays = new Array<number>(n).fill(0)
+  ordered.forEach((idx, pos) => { delays[idx] = pos * offsetMs })
+  // TODO (producto): los NO participantes quedan con delay 0 → se mueven al
+  // inicio (simultáneos) para igual llegar a la escena B. Si se prefiere que
+  // permanezcan fijos en A hasta el final, asignarles delay = duración total.
+  return delays
 }
 
-function interpolateScenesCanon(
+function interpolateCanon(
   from: Scene,
   to: Scene,
   segmentElapsed: number,
   sw: number,
   sh: number,
-  canonOrder: string[],
-  canonDelayMs: number,
+  delays: number[],
   baseTransitionMs: number,
 ): AnimFrame['dancers'] {
   const fromActive = from.dancers.filter(d => d.active !== false)
@@ -118,10 +132,7 @@ function interpolateScenesCanon(
   for (let i = 0; i < maxLen; i++) {
     const a = fromActive[i]
     const b = toActive[i]
-    const dancerId = a?.id ?? b?.id ?? ''
-    const canonIndex = canonOrder.indexOf(dancerId)
-    const delay = (canonIndex >= 0 ? canonIndex : i) * canonDelayMs
-    const localT = Math.min(1, Math.max(0, (segmentElapsed - delay) / baseTransitionMs))
+    const localT = Math.min(1, Math.max(0, (segmentElapsed - (delays[i] ?? 0)) / baseTransitionMs))
     const eased = ease(localT)
 
     if (a && b) {
@@ -169,16 +180,20 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
     const withStableIds = (arr: AnimFrame['dancers']): AnimFrame['dancers'] =>
       arr.map((d, i) => (refIds[i] ? { ...d, id: refIds[i] } : d))
 
-    // Compute per-segment durations (variable for canon)
-    const segmentDurations = scenes.slice(0, -1).map((_, i) => {
-      const toScene = scenes[i + 1]
-      if (toScene.transitionMode === 'canon') {
-        const n = toScene.dancers.filter(d => d.active !== false).length
-        const delay = toScene.canonDelayMs ?? 150
-        return transitionMs + Math.max(0, n - 1) * delay
+    // Plan por segmento: duración + (si es canon) delays por figura, calculados
+    // una sola vez al iniciar el preview.
+    const segmentPlans = scenes.slice(0, -1).map((_, i) => {
+      const fromScene = scenes[i]
+      const toScene   = scenes[i + 1]
+      if (toScene.transitionType === 'canon' && toScene.canonConfig) {
+        const offsetMs = Math.max(0, toScene.canonConfig.offsetSeconds) * 1000
+        const delays = canonDelays(fromScene, toScene, toScene.canonConfig, offsetMs)
+        const maxDelay = delays.length ? Math.max(...delays) : 0
+        return { canon: true as const, delays, duration: transitionMs + maxDelay }
       }
-      return transitionMs
+      return { canon: false as const, delays: [] as number[], duration: transitionMs }
     })
+    const segmentDurations = segmentPlans.map(p => p.duration)
     const totalDuration = segmentDurations.reduce((a, b) => a + b, 0)
 
     setState({ isPlaying: true, currentFrame: null })
@@ -222,18 +237,10 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
       const segDur    = segmentDurations[segmentIndex]
       const globalT   = elapsed / totalDuration
 
+      const plan = segmentPlans[segmentIndex]
       let dancers: AnimFrame['dancers']
-      if (toScene.transitionMode === 'canon') {
-        const canonOrder = computeCanonOrder(
-          fromScene, toScene,
-          toScene.canonOrder ?? 'by-index',
-          toScene.canonCustomOrder,
-          sw, sh,
-        )
-        dancers = interpolateScenesCanon(
-          fromScene, toScene, segmentElapsed, sw, sh,
-          canonOrder, toScene.canonDelayMs ?? 150, transitionMs,
-        )
+      if (plan.canon) {
+        dancers = interpolateCanon(fromScene, toScene, segmentElapsed, sw, sh, plan.delays, transitionMs)
       } else {
         dancers = interpolateScenes(fromScene, toScene, segmentElapsed / segDur, sw, sh)
       }

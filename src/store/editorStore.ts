@@ -1,7 +1,9 @@
 import { create } from 'zustand'
 import type {
   Dancer, DancerLevel, DancerShape, DancerFacing, EdgeSide, EditorTool, FormationId, Scene, SceneMarker, Canon,
+  TransitionType, CanonConfig,
 } from '@/types'
+import { DEFAULT_CANON_CONFIG } from '@/types'
 import { generateFormation } from '@/lib/formations'
 import { snapToGrid, rotatePoint, mirrorPointH, mirrorPointV } from '@/lib/geometry'
 import { nanoid } from './nanoid'
@@ -63,7 +65,8 @@ interface EditorActions {
   setSceneMarker: (sceneId: string, timestampMs: number) => void
   setMultiLevel: (ids: string[], level: DancerLevel) => void
   setDancerPresence: (id: string, active: boolean, entryEdge?: EdgeSide, exitEdge?: EdgeSide) => void
-  updateSceneTransition: (id: string, patch: Partial<Pick<Scene, 'transitionMode' | 'canonOrder' | 'canonDelayMs' | 'canonCustomOrder'>>) => void
+  setTransitionType: (sceneId: string, type: TransitionType) => void
+  setCanonConfig: (sceneId: string, patch: Partial<CanonConfig>) => void
   setTool: (tool: EditorTool) => void
   setShowGrid: (v: boolean) => void
   setShowLabels: (v: boolean) => void
@@ -95,6 +98,33 @@ function makeDancer(
 
 function makeScene(name: string): Scene {
   return { id: nanoid(), name, dancers: [] }
+}
+
+// Normaliza una escena al nuevo modelo de transición. Proyectos viejos pueden
+// traer `transitionMode/canonOrder/canonDelayMs/canonCustomOrder`; los migramos a
+// `transitionType/canonConfig`. Sin datos → 'simultaneous' (no rompe nada).
+function migrateSceneTransition(s: Scene): Scene {
+  if (s.transitionType) return s   // ya está en el modelo nuevo
+  if (s.transitionMode === 'canon') {
+    const legacyOrder = s.canonOrder
+    const order: CanonConfig['order'] =
+      legacyOrder === 'left-to-right' || legacyOrder === 'right-to-left'
+        ? legacyOrder
+        : legacyOrder === 'custom'
+        ? 'manual'
+        : 'left-to-right' // 'by-index' / 'center-out' → aproximación razonable
+    return {
+      ...s,
+      transitionType: 'canon',
+      canonConfig: {
+        order,
+        manualOrder: s.canonCustomOrder,
+        offsetSeconds: (s.canonDelayMs ?? 150) / 1000,
+        selection: 'all',
+      },
+    }
+  }
+  return { ...s, transitionType: 'simultaneous' }
 }
 
 function updateActive(
@@ -522,9 +552,28 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
     }))
   },
 
-  updateSceneTransition: (id, patch) =>
+  setTransitionType: (sceneId, type) =>
     set(s => ({
-      scenes: s.scenes.map(sc => sc.id === id ? { ...sc, ...patch } : sc),
+      scenes: s.scenes.map(sc =>
+        sc.id === sceneId
+          ? {
+              ...sc,
+              transitionType: type,
+              // Al pasar a canon, garantizar que exista config con defaults.
+              // Al volver a simultánea conservamos la config para no perderla.
+              canonConfig: type === 'canon' ? (sc.canonConfig ?? { ...DEFAULT_CANON_CONFIG }) : sc.canonConfig,
+            }
+          : sc,
+      ),
+    })),
+
+  setCanonConfig: (sceneId, patch) =>
+    set(s => ({
+      scenes: s.scenes.map(sc =>
+        sc.id === sceneId
+          ? { ...sc, canonConfig: { ...(sc.canonConfig ?? DEFAULT_CANON_CONFIG), ...patch } }
+          : sc,
+      ),
     })),
 
   setTool: tool => set({ tool }),
@@ -546,7 +595,8 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
 
   loadScenes: (scenes, activeId, audioMarkers, canons) =>
     set({
-      scenes, activeSceneId: activeId, selectedIds: [], _past: [], _future: [],
+      scenes: scenes.map(migrateSceneTransition),
+      activeSceneId: activeId, selectedIds: [], _past: [], _future: [],
       ...(audioMarkers ? { audioMarkers } : {}),
       canons: canons ?? [],
     }),
