@@ -155,6 +155,20 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
 
     const totalSegments = scenes.length - 1
 
+    // Identidad estable de figuras durante el preview.
+    // El preview se reproduce SIEMPRE desde la primera escena y el canvas dibuja
+    // las figuras de la escena activa (la primera). Como cada escena tiene ids de
+    // dancer distintos (duplicar escena o aplicar formación generan ids nuevos) y
+    // el emparejamiento entre escenas es POSICIONAL (por índice), re-etiquetamos
+    // cada frame con el id de la 1ª escena según su índice. Sin esto, a partir del
+    // 2º segmento los ids del frame no coinciden con los del canvas y las figuras
+    // se "congelan" tras la primera transición (escena 1 → 2).
+    const refIds = (scenes[0]?.dancers ?? [])
+      .filter(d => d.active !== false)
+      .map(d => d.id)
+    const withStableIds = (arr: AnimFrame['dancers']): AnimFrame['dancers'] =>
+      arr.map((d, i) => (refIds[i] ? { ...d, id: refIds[i] } : d))
+
     // Compute per-segment durations (variable for canon)
     const segmentDurations = scenes.slice(0, -1).map((_, i) => {
       const toScene = scenes[i + 1]
@@ -178,9 +192,11 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
         setState({
           isPlaying: false,
           currentFrame: {
-            dancers: last.dancers
-              .filter(d => d.active !== false)
-              .map(d => ({ id: d.id, x: d.x, y: d.y, opacity: 1 })),
+            dancers: withStableIds(
+              last.dancers
+                .filter(d => d.active !== false)
+                .map(d => ({ id: d.id, x: d.x, y: d.y, opacity: 1 })),
+            ),
             sceneName: last.name,
             progress: 1,
           },
@@ -225,7 +241,7 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
       setState({
         isPlaying: true,
         currentFrame: {
-          dancers,
+          dancers: withStableIds(dancers),
           sceneName: (segmentElapsed / segDur) < 0.5 ? fromScene.name : toScene.name,
           progress: globalT,
         },
