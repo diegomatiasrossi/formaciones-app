@@ -17,7 +17,7 @@ export default {
     first_name: 'Nome', last_name: 'Sobrenome', nickname: 'Apelido', phone: 'Telefone', email: 'E-mail',
     type: 'Tipo', type_stage: 'Em cena', type_team: 'Equipe',
     level: 'Nível', level_beginner: 'Iniciante', level_intermediate: 'Intermediário', level_advanced: 'Avançado', level_professional: 'Profissional',
-    role: 'Função', role_member: 'Integrante', role_captain: 'Capitão/ã', role_choreographer: 'Coreógrafo/a', role_logistics: 'Logística', role_other: 'Outro',
+    role: 'Função', role_member: 'Integrante', role_captain: 'Líder', role_choreographer: 'Coreógrafo/a', role_logistics: 'Logística', role_other: 'Outro',
     notes: 'Notas', groups_btn: 'Grupos', assign_groups: 'Atribuir a grupos', no_groups_yet: 'Você ainda não criou nenhum grupo.',
     delete_confirm: 'Excluir',
   },

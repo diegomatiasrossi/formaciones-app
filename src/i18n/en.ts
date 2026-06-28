@@ -17,7 +17,7 @@ export default {
     first_name: 'First name', last_name: 'Last name', nickname: 'Nickname', phone: 'Phone', email: 'Email',
     type: 'Type', type_stage: 'On stage', type_team: 'Team',
     level: 'Level', level_beginner: 'Beginner', level_intermediate: 'Intermediate', level_advanced: 'Advanced', level_professional: 'Professional',
-    role: 'Role', role_member: 'Member', role_captain: 'Captain', role_choreographer: 'Choreographer', role_logistics: 'Logistics', role_other: 'Other',
+    role: 'Role', role_member: 'Member', role_captain: 'Leader', role_choreographer: 'Choreographer', role_logistics: 'Logistics', role_other: 'Other',
     notes: 'Notes', groups_btn: 'Groups', assign_groups: 'Assign to groups', no_groups_yet: "You haven't created any groups yet.",
     delete_confirm: 'Delete',
   },
