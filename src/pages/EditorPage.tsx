@@ -6,6 +6,7 @@ import { useProjectStore } from '@/store/projectStore'
 import { useCrewStore } from '@/store/crewStore'
 import { usePlan } from '@/hooks/usePlan'
 import { EditorLayout } from '@/features/editor/EditorLayout'
+import { Modal } from '@/components/ui/Modal'
 import { ShareModal } from '@/components/ui/ShareModal'
 import { MobileWarningBanner } from '@/components/ui/MobileWarningBanner'
 import { TutorialOverlay, isTutorialDone } from '@/features/tutorial/TutorialOverlay'
@@ -18,6 +19,7 @@ export function EditorPage() {
   const { t } = useTranslation()
   const { projects, saveProject, fetchProjectById } = useProjectStore()
   const { scenes, activeSceneId, audioMarkers, canons, loadScenes } = useEditorStore()
+  const hasUnsavedChanges = useEditorStore(s => s.hasUnsavedChanges)
   const { members, fetchAll } = useCrewStore()
   const { features } = usePlan()
 
@@ -37,6 +39,7 @@ export function EditorPage() {
   const [showSplash, setShowSplash] = useState(true)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [justSaved, setJustSaved] = useState(false)
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
 
   useEffect(() => {
     if (loaded.current) return
@@ -57,7 +60,41 @@ export function EditorPage() {
     }
   }, [projectId, projects, loadScenes, fetchProjectById])
 
+  // Marca cambios sin guardar: cualquier mutación de contenido (scenes /
+  // audioMarkers / canons) ensucia el editor. Se ignora la carga inicial
+  // (loaded.current todavía false durante loadScenes). Vista/selección/escena
+  // activa no tocan estas refs, así que no marcan dirty.
+  useEffect(() => {
+    const unsub = useEditorStore.subscribe((s, prev) => {
+      if (!loaded.current) return
+      if (s.scenes !== prev.scenes || s.audioMarkers !== prev.audioMarkers || s.canons !== prev.canons) {
+        useEditorStore.getState().markDirty()
+      }
+    })
+    return unsub
+  }, [])
+
+  // Cierre de pestaña / navegación externa: diálogo nativo del browser solo
+  // cuando hay cambios sin guardar. El texto no es personalizable en browsers
+  // modernos (comportamiento esperado).
+  useEffect(() => {
+    if (!hasUnsavedChanges) return
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [hasUnsavedChanges])
+
   const project = projects.find(p => p.id === projectId)
+
+  // Salida por el botón "← Proyectos": confirmar si hay cambios sin guardar.
+  // TODO: la navegación interna por React Router (links del menú, atrás del
+  // browser) no se intercepta porque unstable_useBlocker requiere un data router
+  // (createBrowserRouter) y la app usa <BrowserRouter>. Migrar el router para
+  // cubrir ese caso, o el beforeunload cubre el cierre/recarga de pestaña.
+  function handleBackRequest() {
+    if (hasUnsavedChanges) setShowExitConfirm(true)
+    else navigate('/projects')
+  }
 
   async function handleSave() {
     if (!project || project._sceneCount !== undefined) return
@@ -84,6 +121,7 @@ export function EditorPage() {
       )
     } else {
       setSaveError(null)
+      useEditorStore.getState().markSaved()
       setJustSaved(true)
       setTimeout(() => setJustSaved(false), 2000)
     }
@@ -122,7 +160,7 @@ export function EditorPage() {
         customStageH={project.stageHeight}
         memberNames={(project.members ?? []).map(m => [m.name, m.lastName].filter(Boolean).join(' '))}
         memberNameById={memberNameById}
-        onBack={() => navigate('/projects')}
+        onBack={handleBackRequest}
         onSave={handleSave}
         onShare={() => setShowShare(true)}
         isSaving={isSaving}
@@ -142,6 +180,20 @@ export function EditorPage() {
       {showTutorial && (
         <TutorialOverlay onFinish={() => setShowTutorial(false)} />
       )}
+      <Modal open={showExitConfirm} onClose={() => setShowExitConfirm(false)} title={t('editor.unsaved_title')}>
+        <p className="text-sm text-negro/80 mb-4">{t('editor.unsaved_message')}</p>
+        <div className="flex gap-3 justify-end">
+          <button onClick={() => setShowExitConfirm(false)} className="px-4 py-2 text-sm text-gris hover:text-negro">
+            {t('common.cancel')}
+          </button>
+          <button
+            onClick={() => { setShowExitConfirm(false); navigate('/projects') }}
+            className="px-4 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg"
+          >
+            {t('editor.unsaved_leave')}
+          </button>
+        </div>
+      </Modal>
     </>
   )
 }
