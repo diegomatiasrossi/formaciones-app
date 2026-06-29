@@ -323,7 +323,17 @@ export default {
     standing: 'Standing',
     aerial: 'Aerial',
   },
+  validation: {
+    invalid: 'Invalid data.',
+    email_invalid: 'Invalid email.',
+    password_min: 'Password must be at least 8 characters.',
+    password_max: 'Password cannot exceed 100 characters.',
+    name_required: 'Name is required.',
+    name_max: 'Name cannot exceed 100 characters.',
+    nickname_max: 'Nickname cannot exceed 50 characters.',
+  },
   auth: {
+    invalid_credentials: 'Incorrect email or password.',
     sign_in: 'Sign in',
     sign_up: 'Sign up',
     sign_out: 'Sign out',

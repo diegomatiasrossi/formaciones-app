@@ -12,6 +12,7 @@ import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import { toggleLanguage } from '@/i18n'
 import { usePlan } from '@/hooks/usePlan'
+import { projectSchema, firstErrorKey } from '@/lib/validation'
 import type { Project, StageRatio } from '@/types'
 import clsx from 'clsx'
 
@@ -93,6 +94,7 @@ export function ProjectsPage() {
   const atProjectLimit   = isFreePlan && !canCreate(projects.length)
   const canDeleteProjects = !isFreePlan
   const [showNew, setShowNew] = useState(false)
+  const [createError, setCreateError] = useState('')
   const [newName, setNewName] = useState('')
   const [newGroupName, setNewGroupName] = useState('')
   const [newChoreographyName, setNewChoreographyName] = useState('')
@@ -139,6 +141,9 @@ export function ProjectsPage() {
   async function handleCreate() {
     if (!customValid) return
     const name = newName.trim() || t('projects.untitled')
+    const parsed = projectSchema.safeParse({ name })
+    if (!parsed.success) { setCreateError(t(firstErrorKey(parsed)!)); return }
+    setCreateError('')
     const project = createLocalProject({
       name,
       groupName: newGroupName.trim() || undefined,
@@ -372,9 +377,10 @@ export function ProjectsPage() {
             <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">
               {t('projects.name_placeholder')} <span className="text-rojo">{t('projects.form_required')}</span>
             </label>
-            <input autoFocus type="text" value={newName} onChange={e => setNewName(e.target.value)}
+            <input autoFocus type="text" value={newName} onChange={e => { setNewName(e.target.value); if (createError) setCreateError('') }}
               onKeyDown={e => e.key === 'Enter' && handleCreate()} placeholder={t('projects.untitled')} maxLength={200}
               className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm text-negro focus:outline-none focus:border-rojo placeholder:text-gris/50" />
+            {createError && <p className="text-rojo text-xs mt-1.5">{createError}</p>}
           </div>
           <div>
             <label className="block text-xs text-gris uppercase tracking-wider mb-1.5">{t('projects.form_group')} <span className="text-gris/50">{t('projects.form_optional')}</span></label>

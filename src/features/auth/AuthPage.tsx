@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from './useAuth'
 import { Logo } from '@/components/ui/Logo'
+import { registerSchema, firstErrorKey } from '@/lib/validation'
 
 export function AuthPage() {
   const { t } = useTranslation()
@@ -21,13 +22,20 @@ export function AuthPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    // Validación de registro (email + password) antes de llamar a Supabase.
+    if (mode === 'signup') {
+      const parsed = registerSchema.safeParse({ email, password })
+      if (!parsed.success) { setError(t(firstErrorKey(parsed)!)); return }
+    }
     setLoading(true)
     const result = mode === 'signin'
       ? await signInWithEmail(email, password)
       : await signUpWithEmail(email, password)
     setLoading(false)
     if (result.error) {
-      setError(result.error.message)
+      // Anti-enumeración: en login NO revelamos si el email existe o si la
+      // contraseña es incorrecta — mensaje genérico siempre.
+      setError(mode === 'signin' ? t('auth.invalid_credentials') : result.error.message)
     } else if (mode === 'signup' && !result.data.session) {
       // Supabase requires email confirmation — show the pending screen
       // instead of navigating (user has no session yet)

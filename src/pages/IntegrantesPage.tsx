@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
+import { memberSchema, firstErrorKey } from '@/lib/validation'
 import type { CrewMember, MemberType, MemberLevel } from '@/types'
 import clsx from 'clsx'
 
@@ -60,18 +61,23 @@ export function IntegrantesPage() {
   const [duplicates, setDuplicates] = useState<CrewMember[]>([])
   const [showDuplicateModal, setShowDuplicateModal] = useState(false)
   const [showUpgrade, setShowUpgrade] = useState(false)
+  const [formError, setFormError] = useState('')
 
   useEffect(() => { if (user) fetchAll() }, [user, fetchAll, activeOrgId])
 
-  function openNew() { setEditing(null); setForm(EMPTY); setShowForm(true) }
+  function openNew() { setEditing(null); setForm(EMPTY); setFormError(''); setShowForm(true) }
   function openEdit(m: CrewMember) {
     setEditing(m)
+    setFormError('')
     setForm({ firstName: m.firstName, lastName: m.lastName ?? '', nickname: m.nickname ?? '', phone: m.phone ?? '', email: m.email ?? '', type: m.type, level: m.level, role: m.role ?? '', notes: m.notes ?? '' })
     setShowForm(true)
   }
 
   async function save() {
     if (!form.firstName.trim()) return
+    const parsed = memberSchema.safeParse({ name: form.firstName, nickname: form.nickname?.trim() || undefined })
+    if (!parsed.success) { setFormError(t(firstErrorKey(parsed)!)); return }
+    setFormError('')
     if (!canEdit) { setShowForm(false); return }
     if (editing) {
       await updateMember(editing.id, form)
@@ -238,6 +244,7 @@ export function IntegrantesPage() {
             <textarea value={form.notes ?? ''} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2}
               className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm text-negro focus:outline-none focus:border-rojo resize-none" />
           </div>
+          {formError && <p className="text-rojo text-xs">{formError}</p>}
           <div className="flex gap-3 justify-end pt-1">
             <button onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-gris hover:text-negro">{t('common.cancel')}</button>
             <button onClick={save} disabled={!form.firstName.trim()} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg disabled:opacity-40">{t('common.save')}</button>

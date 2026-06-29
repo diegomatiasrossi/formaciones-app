@@ -12,6 +12,7 @@ import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
 import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import { DEFAULT_CHECKLIST, TRAVEL_CHECKLIST } from '@/data/checklist'
+import { nameSchema, firstErrorKey } from '@/lib/validation'
 import type { CrewGroup } from '@/types'
 
 const FREE_LIMIT = 3
@@ -37,6 +38,7 @@ export function GruposPage() {
   const [showNew, setShowNew] = useState(false)
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [newName, setNewName] = useState('')
+  const [newError, setNewError] = useState('')
   const [selectedPresets, setSelectedPresets] = useState<string[]>([])
   const [active, setActive] = useState<CrewGroup | null>(null)
   const [rename, setRename] = useState<CrewGroup | null>(null)
@@ -47,6 +49,9 @@ export function GruposPage() {
 
   async function create() {
     if (!newName.trim() || !canEdit || atLimit) return
+    const parsed = nameSchema.safeParse({ name: newName })
+    if (!parsed.success) { setNewError(t(firstErrorKey(parsed)!)); return }
+    setNewError('')
     const newGroup = await createGroup(newName.trim())
     if (newGroup && selectedPresets.length > 0) {
       await Promise.all(
@@ -219,8 +224,9 @@ export function GruposPage() {
 
       <Modal open={showNew} onClose={() => { setShowNew(false); setSelectedPresets([]) }} title={t('groups.new')}>
         <div className="space-y-3">
-          <input autoFocus value={newName} onChange={e => setNewName(e.target.value)} onKeyDown={e => e.key === 'Enter' && create()}
+          <input autoFocus value={newName} onChange={e => { setNewName(e.target.value); if (newError) setNewError('') }} onKeyDown={e => e.key === 'Enter' && create()}
             placeholder={t('groups.name_placeholder')} className="w-full bg-crema border border-borde-light rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-rojo" />
+          {newError && <p className="text-rojo text-xs">{newError}</p>}
           {can('checklistEnabled') && (
             <PresetChecklistSelector onSelectionChange={setSelectedPresets} />
           )}
