@@ -175,21 +175,26 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
     setState({ isPlaying: false, currentFrame: null })
   }, [])
 
-  const play = useCallback(() => {
+  const play = useCallback((fromIndex = 0, toIndex = scenes.length - 1) => {
     if (scenes.length < 2) return
+    // Rango de escenas a reproducir. Clamp defensivo (el modal ya valida from < to).
+    const from = Math.max(0, Math.min(fromIndex, toIndex))
+    const to   = Math.min(scenes.length - 1, Math.max(fromIndex, toIndex))
+    const seq  = scenes.slice(from, to + 1)
+    if (seq.length < 2) return
     cancelAnimationFrame(rafRef.current)
 
-    const totalSegments = scenes.length - 1
+    const totalSegments = seq.length - 1
 
     // Identidad estable de figuras durante el preview.
-    // El preview se reproduce SIEMPRE desde la primera escena y el canvas dibuja
-    // las figuras de la escena activa (la primera). Como cada escena tiene ids de
-    // dancer distintos (duplicar escena o aplicar formación generan ids nuevos) y
-    // el emparejamiento entre escenas es POSICIONAL (por índice), re-etiquetamos
-    // cada frame con el id de la 1ª escena según su índice. Sin esto, a partir del
-    // 2º segmento los ids del frame no coinciden con los del canvas y las figuras
-    // se "congelan" tras la primera transición (escena 1 → 2).
-    const refIds = (scenes[0]?.dancers ?? [])
+    // El preview se reproduce desde la PRIMERA escena del rango y el canvas dibuja
+    // las figuras de la escena activa (que EditorLayout pone en esa primera escena
+    // del rango). Como cada escena tiene ids de dancer distintos (duplicar escena o
+    // aplicar formación generan ids nuevos) y el emparejamiento entre escenas es
+    // POSICIONAL (por índice), re-etiquetamos cada frame con el id de la 1ª escena
+    // del rango según su índice. Sin esto, a partir del 2º segmento los ids del
+    // frame no coinciden con los del canvas y las figuras se "congelan".
+    const refIds = (seq[0]?.dancers ?? [])
       .filter(d => d.active !== false)
       .map(d => d.id)
     const withStableIds = (arr: AnimFrame['dancers']): AnimFrame['dancers'] =>
@@ -197,9 +202,9 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
 
     // Plan por segmento: duración + (si es canon) delays por figura, calculados
     // una sola vez al iniciar el preview.
-    const segmentPlans = scenes.slice(0, -1).map((_, i) => {
-      const fromScene = scenes[i]
-      const toScene   = scenes[i + 1]
+    const segmentPlans = seq.slice(0, -1).map((_, i) => {
+      const fromScene = seq[i]
+      const toScene   = seq[i + 1]
       if (toScene.transitionType === 'canon' && toScene.canonConfig) {
         const offsetMs = Math.max(0, toScene.canonConfig.offsetSeconds) * 1000
         const delays = canonDelays(fromScene, toScene, toScene.canonConfig, offsetMs, transitionMs)
@@ -218,7 +223,7 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
       const elapsed = now - startTimeRef.current
 
       if (elapsed >= totalDuration) {
-        const last = scenes[scenes.length - 1]
+        const last = seq[seq.length - 1]
         setState({
           isPlaying: false,
           currentFrame: {
@@ -247,8 +252,8 @@ export function useAnimationPlayer(scenes: Scene[], transitionMs: number, sw = 7
         cumulative += segmentDurations[i]
       }
 
-      const fromScene = scenes[segmentIndex]
-      const toScene   = scenes[segmentIndex + 1]
+      const fromScene = seq[segmentIndex]
+      const toScene   = seq[segmentIndex + 1]
       const segDur    = segmentDurations[segmentIndex]
       const globalT   = elapsed / totalDuration
 

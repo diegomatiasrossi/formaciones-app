@@ -168,7 +168,7 @@ export function SharePage() {
             </button>
           ) : (
             <button
-              onClick={play}
+              onClick={() => play()}
               disabled={scenes.length < 2}
               className="px-6 py-2 bg-dorado hover:bg-dorado-oscuro text-negro rounded-lg text-sm font-medium
                          transition-colors disabled:opacity-40"
