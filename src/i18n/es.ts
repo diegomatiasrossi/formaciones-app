@@ -323,7 +323,17 @@ export default {
     standing: 'De pie',
     aerial: 'Aéreo',
   },
+  validation: {
+    invalid: 'Datos inválidos.',
+    email_invalid: 'Email inválido.',
+    password_min: 'La contraseña debe tener al menos 8 caracteres.',
+    password_max: 'La contraseña no puede superar los 100 caracteres.',
+    name_required: 'El nombre es obligatorio.',
+    name_max: 'El nombre no puede superar los 100 caracteres.',
+    nickname_max: 'El apodo no puede superar los 50 caracteres.',
+  },
   auth: {
+    invalid_credentials: 'Email o contraseña incorrectos.',
     sign_in: 'Iniciar sesión',
     sign_up: 'Registrarse',
     sign_out: 'Cerrar sesión',

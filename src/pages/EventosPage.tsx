@@ -12,6 +12,7 @@ import { ModuleNav } from '@/components/ui/ModuleNav'
 import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
 import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
+import { nameSchema, firstErrorKey } from '@/lib/validation'
 import type { CrewEvent } from '@/types'
 import clsx from 'clsx'
 
@@ -34,6 +35,7 @@ export function EventosPage() {
   const [showUpgrade, setShowUpgrade] = useState(false)
   const [showAssignProject, setShowAssignProject] = useState(false)
   const [form, setForm] = useState({ name: '', eventDate: '', location: '', groupId: '' })
+  const [newError, setNewError] = useState('')
   const [selectedPresets, setSelectedPresets] = useState<string[]>([])
   const [active, setActive] = useState<CrewEvent | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<CrewEvent | null>(null)
@@ -42,6 +44,9 @@ export function EventosPage() {
 
   async function create() {
     if (!form.name.trim() || !canEdit || atLimit) return
+    const parsed = nameSchema.safeParse({ name: form.name })
+    if (!parsed.success) { setNewError(t(firstErrorKey(parsed)!)); return }
+    setNewError('')
     const newEvent = await createEvent({
       name: form.name.trim(),
       eventDate: form.eventDate || undefined,
@@ -214,8 +219,9 @@ export function EventosPage() {
         <div className="space-y-3">
           <div>
             <label className="block text-[10px] text-gris uppercase tracking-wider mb-1.5">{t('events.name')} <span className="text-rojo">*</span></label>
-            <input autoFocus value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+            <input autoFocus value={form.name} onChange={e => { setForm(f => ({ ...f, name: e.target.value })); if (newError) setNewError('') }}
               className="w-full bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rojo" />
+            {newError && <p className="text-rojo text-xs mt-1.5">{newError}</p>}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
