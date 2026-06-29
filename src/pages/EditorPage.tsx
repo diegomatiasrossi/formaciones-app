@@ -84,8 +84,13 @@ export function EditorPage() {
   // (createBrowserRouter) y la app usa <BrowserRouter>. Migrar el router para
   // cubrir ese caso, o el beforeunload cubre el cierre/recarga de pestaña.
   function handleBackRequest() {
-    if (useEditorStore.getState().hasUnsavedChanges) setShowExitConfirm(true)
-    else navigate('/projects')
+    console.log('[DEBUG back] hasUnsavedChanges:', useEditorStore.getState().hasUnsavedChanges)
+    if (useEditorStore.getState().hasUnsavedChanges) {
+      console.log('[DEBUG modal] showing modal:', useEditorStore.getState().hasUnsavedChanges)
+      setShowExitConfirm(true)
+    } else {
+      navigate('/projects')
+    }
   }
 
   async function handleSave() {

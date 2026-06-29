@@ -168,6 +168,7 @@ function withHistory(
 ): Partial<EditorState> {
   const snap = snapshot(state)
   const next = updater(state)
+  console.log('[DEBUG dirty] hasUnsavedChanges set to true')
   return {
     ...next,
     hasUnsavedChanges: true,
