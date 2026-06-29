@@ -67,6 +67,15 @@ export default {
     language: 'Language',
   },
   editor: {
+    preview: {
+      title: 'Preview',
+      from: 'From',
+      to: 'To',
+      all: 'All',
+      play: 'Play →',
+      need_two: 'Select at least two scenes.',
+      need_two_toolbar: 'You need at least 2 scenes to use preview.',
+    },
     unsaved_title: 'Unsaved changes',
     unsaved_message: 'If you leave now, you will lose the editor changes.',
     unsaved_leave: 'Leave without saving',

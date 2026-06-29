@@ -67,6 +67,15 @@ export default {
     language: 'Idioma',
   },
   editor: {
+    preview: {
+      title: 'Vista previa',
+      from: 'Desde',
+      to: 'Hasta',
+      all: 'Todas',
+      play: 'Reproducir →',
+      need_two: 'Seleccioná al menos dos escenas.',
+      need_two_toolbar: 'Necesitás al menos 2 escenas para usar el preview.',
+    },
     unsaved_title: 'Cambios sin guardar',
     unsaved_message: 'Si salís ahora, perdés los cambios del editor.',
     unsaved_leave: 'Salir sin guardar',

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from './Toolbar'
 import { Sidebar } from './Sidebar'
@@ -6,6 +6,7 @@ import { StageCanvas } from './StageCanvas'
 import { StatisticsPanel } from './StatisticsPanel'
 import { DancersListPanel } from './DancersListPanel'
 import { MembersPanel } from './MembersPanel'
+import { PreviewModal } from './PreviewModal'
 import { ScenePanel } from '@/features/scenes/ScenePanel'
 import { AudioPanel } from '@/features/audio/AudioPanel'
 import { useAnimationPlayer, interpolateScenes, ease, type AnimFrame } from '@/hooks/useAnimationPlayer'
@@ -40,12 +41,35 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
   const [showChecklist, setShowChecklist] = useState(false)
   const [showMembers, setShowMembers]   = useState(false)
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const [showPreview, setShowPreview]   = useState(false)
   const [transitionDuration, setTransitionDuration] = useState(1500)
 
   const sw = stageWidth  - STAGE_PADDING * 2
   const sh = stageHeight - STAGE_PADDING * 2
 
   const { isPlaying, currentFrame, play, stop } = useAnimationPlayer(scenes, transitionDuration, sw, sh)
+
+  // Preview con rango: el modal pide [from, to]. Antes de reproducir movemos la
+  // escena activa a la primera del rango (el canvas dibuja sus figuras y el player
+  // re-etiqueta los frames con sus ids). Al terminar, volvemos a la escena previa.
+  const prevSceneRef = useRef<string | null>(null)
+
+  const handleStartPreview = useCallback((from: number, to: number) => {
+    setShowPreview(false)
+    prevSceneRef.current = useEditorStore.getState().activeSceneId
+    const startScene = scenes[from]
+    if (startScene) setActiveScene(startScene.id)
+    play(from, to)
+  }, [scenes, setActiveScene, play])
+
+  // Restaurar la escena activa anterior cuando el preview termina (o se detiene).
+  useEffect(() => {
+    if (!isPlaying && prevSceneRef.current != null) {
+      const prev = prevSceneRef.current
+      prevSceneRef.current = null
+      setActiveScene(prev)
+    }
+  }, [isPlaying, setActiveScene])
 
   // ── Audio-sync animated transition ──────────────────────────────
   const audioRafRef   = useRef<number>(0)
@@ -145,7 +169,7 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
         onToggleMembers={() => { setShowMembers(v => !v); setShowChecklist(false) }}
         showMembers={showMembers}
         membersLocked={!features.membersEnabled}
-        onPlayAnimation={play}
+        onPlayAnimation={() => setShowPreview(true)}
         isAnimating={isPlaying}
         onStopAnimation={stop}
         animationDuration={transitionDuration}
@@ -184,6 +208,13 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
       </div>
 
       {showShortcuts && <KeyboardShortcutsModal onClose={() => setShowShortcuts(false)} />}
+
+      <PreviewModal
+        open={showPreview}
+        scenes={scenes}
+        onClose={() => setShowPreview(false)}
+        onPlay={handleStartPreview}
+      />
     </div>
   )
 }

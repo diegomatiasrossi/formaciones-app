@@ -177,7 +177,13 @@ export function Toolbar({
           ⏹ Detener
         </button>
       ) : (
-        <button id="btn-preview" onClick={onPlayAnimation} className={btn(false)} title={t('editor.toolbar.preview_title')}>
+        <button
+          id="btn-preview"
+          onClick={onPlayAnimation}
+          disabled={scenes.length < 2}
+          className={clsx(btn(false), scenes.length < 2 && 'opacity-40 cursor-not-allowed')}
+          title={scenes.length < 2 ? t('editor.preview.need_two_toolbar') : t('editor.toolbar.preview_title')}
+        >
           ▶ Preview
         </button>
       )}
