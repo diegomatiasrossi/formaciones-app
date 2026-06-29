@@ -5,6 +5,7 @@ import { toggleLanguage, getLangLabel } from '@/i18n'
 import { FormationDemo } from '@/components/ui/FormationDemo'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
+import poleoLogo from '@/assets/diego-poleo-logo.png'
 
 const FEATURES = [
   { icon: '⬡', title: '20+ Formaciones', desc: 'Línea, círculo, espiral, ola, bloques, X, flecha y más.' },
@@ -131,9 +132,11 @@ export function LandingPage() {
       {/* Credencial */}
       <section className="border-y border-borde-light bg-blanco">
         <div className="max-w-4xl mx-auto px-8 py-16 flex flex-col md:flex-row items-center gap-10">
-          <div className="w-20 h-20 rounded-full bg-rojo/10 border border-rojo/30 flex items-center justify-center shrink-0 text-2xl font-semibold text-rojo">
-            DP
-          </div>
+          <img
+            src={poleoLogo}
+            alt="Diego Póleo"
+            className="h-16 w-auto shrink-0"
+          />
           <div className="flex-1 text-center md:text-left">
             <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">Quién está detrás</div>
             <h2 className="text-xl font-semibold mb-3">
