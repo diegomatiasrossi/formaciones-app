@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toggleLanguage, getLangLabel } from '@/i18n'
 import { FormationDemo } from '@/components/ui/FormationDemo'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
 import poleoLogo from '@/assets/diego-poleo-logo.png'
@@ -35,6 +36,11 @@ export function LandingPage() {
   const [showDemo, setShowDemo] = useState(false)
   const [demoDancers, setDemoDancers] = useState(7)
   const [demoColor, setDemoColor] = useState('#C9A961')
+  const isMobile = useIsMobile()
+  // Canvas de FormationDemo: Konva necesita px fijos, no puede ser responsive por CSS.
+  // 375px viewport − 64px padding (px-8 × 2) = 311px disponibles → 280px cabe con holgura.
+  const demoW = isMobile ? 280 : 384
+  const demoH = isMobile ? 190 : 260
 
   const [newsletterEmail, setNewsletterEmail] = useState('')
   const [newsletterSent, setNewsletterSent] = useState(false)
@@ -68,19 +74,24 @@ export function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="flex-1 flex items-center max-w-6xl mx-auto px-8 py-24 gap-20 w-full">
+      {/* Hero
+           Mobile (flex-col, <768px):  headline → body → [animación] → [botones]
+           Desktop (flex-row, ≥768px): [texto + botones] ←→ [animación]
+           Los botones se duplican en JSX (desktop: dentro del div de texto;
+           mobile: elemento independiente) para evitar hacks de order en
+           flex anidado. */}
+      <section className="flex-1 flex flex-col md:flex-row items-center max-w-6xl mx-auto px-8 py-16 md:py-24 gap-10 md:gap-20 w-full">
+
+        {/* Columna de texto — en mobile solo lleva headline y body */}
         <div className="flex-1 min-w-0">
           <h1 className="text-5xl md:text-6xl font-semibold leading-[1.1] tracking-tight mb-4">
             {t('landing.headline')}
           </h1>
-          <p className="text-xl font-light text-negro/70 mb-4 max-w-lg">
-            {t('landing.subheadline')}
-          </p>
           <p className="text-gris text-base leading-relaxed mb-10 max-w-md">
             {t('landing.body')}
           </p>
-          <div className="flex gap-4 flex-wrap">
+          {/* Botones en desktop — ocultos en mobile (van debajo de la animación) */}
+          <div className="hidden md:flex gap-4 flex-wrap">
             <button onClick={() => navigate('/projects')} className="px-8 py-3.5 bg-rojo hover:bg-rojo-oscuro text-blanco font-semibold rounded-xl transition-all text-sm shadow-card hover:-translate-y-0.5">
               {t('landing.cta')} →
             </button>
@@ -89,10 +100,12 @@ export function LandingPage() {
             </button>
           </div>
         </div>
-        <div className="w-80 shrink-0 hidden md:block">
+
+        {/* Animación — columna derecha en desktop, entre texto y botones en mobile */}
+        <div className="shrink-0 self-center">
           <div className="relative">
             <div className="rounded-2xl border border-borde-light bg-negro overflow-hidden shadow-card">
-              <FormationDemo width={320} height={220} dancerCount={7} color="#C9A961" />
+              <FormationDemo width={demoW} height={demoH} dancerCount={7} color="#C9A961" />
             </div>
             <div className="absolute -bottom-3 -right-3 bg-blanco border border-borde-light rounded-xl px-3 py-2 shadow-card">
               <div className="text-dorado text-xs font-semibold">7 integrantes</div>
@@ -100,6 +113,18 @@ export function LandingPage() {
             </div>
           </div>
         </div>
+
+        {/* Botones en mobile — debajo de la animación (ocultos en desktop).
+            mt-4 extra para respirar del badge -bottom-3 de la animación. */}
+        <div className="flex md:hidden gap-4 flex-wrap mt-4">
+          <button onClick={() => navigate('/projects')} className="px-8 py-3.5 bg-rojo hover:bg-rojo-oscuro text-blanco font-semibold rounded-xl transition-all text-sm shadow-card hover:-translate-y-0.5">
+            {t('landing.cta')} →
+          </button>
+          <button onClick={() => setShowDemo(true)} className="px-8 py-3.5 border border-borde-light hover:border-dorado text-negro/80 hover:text-negro rounded-xl transition-colors text-sm bg-blanco">
+            {t('landing.cta_demo')} →
+          </button>
+        </div>
+
       </section>
 
       {/* Stats strip */}
