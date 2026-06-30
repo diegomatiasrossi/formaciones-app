@@ -15,9 +15,6 @@ interface Props {
   onToggleChecklist: () => void
   showChecklist: boolean
   checklistLocked?: boolean
-  onToggleMembers: () => void
-  showMembers: boolean
-  membersLocked?: boolean
   onPlayAnimation: () => void
   isAnimating: boolean
   onStopAnimation: () => void
@@ -31,7 +28,6 @@ export function Toolbar({
   onToggleAudio, showAudio, audioLocked, audioComingSoon,
   onToggleStats, showStats, statsLocked,
   onToggleChecklist, showChecklist, checklistLocked,
-  onToggleMembers, showMembers, membersLocked,
   onPlayAnimation, isAnimating, onStopAnimation,
   animationDuration, onAnimationDurationChange,
   onShare, maxDancers = Infinity,
@@ -243,15 +239,6 @@ export function Toolbar({
         title={checklistLocked ? t('editor.toolbar.checklist_locked') : t('editor.toolbar.checklist_title')}
       >
         ☑ {t('editor.toolbar.checklist')}{checklistLocked && ' 🔒'}
-      </button>
-
-      {/* Integrantes */}
-      <button
-        onClick={onToggleMembers}
-        className={clsx(btn(showMembers && !membersLocked), membersLocked && 'opacity-50')}
-        title={membersLocked ? t('editor.toolbar.members_panel_locked') : t('editor.toolbar.members_panel_title')}
-      >
-        ◉ {t('editor.toolbar.members_panel')}{membersLocked && ' 🔒'}
       </button>
 
       {/* Spacer */}

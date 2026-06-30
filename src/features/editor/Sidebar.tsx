@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
 import { FORMATION_CARDS } from '@/lib/formations'
 import { FormationCardButton } from './FormationCard'
+import { MembersPanel } from './MembersPanel'
 import type { DancerLevel } from '@/types'
 import { LEVEL_META, LEVEL_OPACITY, LEVEL_SCALE } from '@/types'
 import clsx from 'clsx'
@@ -87,7 +88,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-48 shrink-0 border-r border-borde bg-negro overflow-y-auto p-3 text-sm flex flex-col">
+    <aside className="w-56 shrink-0 border-r border-borde bg-negro overflow-y-auto p-3 text-sm flex flex-col">
 
       {/* ── Botón colapsar ─────────────────────────────────────── */}
       <button
@@ -133,6 +134,10 @@ export function Sidebar() {
       )}
 
       {/* ── Acordeón ─────────────────────────────────────────────── */}
+      {section('members', t('editor.toolbar.members_panel'), (
+        <MembersPanel embedded />
+      ))}
+
       {section('formations', t('editor.sidebar.formations'),
         FORMATION_CARDS.map(card => (
           <FormationCardButton
