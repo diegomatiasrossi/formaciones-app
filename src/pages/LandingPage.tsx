@@ -53,14 +53,17 @@ export function LandingPage() {
       <nav className="flex items-center justify-between px-8 py-4 border-b border-borde-light sticky top-0 z-50 bg-crema/95 backdrop-blur-sm">
         <Logo size={30} />
         <div className="flex items-center gap-5">
-          <button className="text-[10px] text-gris hover:text-negro uppercase tracking-wider transition-colors" onClick={toggleLanguage}>
-            {getLangLabel(i18n.language)}
+          <button
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gris hover:text-negro border border-borde-light hover:border-gris rounded-full uppercase tracking-wider transition-colors bg-blanco/60"
+            onClick={toggleLanguage}
+          >
+            <span aria-hidden="true">🌐</span> {getLangLabel(i18n.language)}
           </button>
           <button onClick={() => navigate('/login')} className="text-sm text-gris hover:text-negro transition-colors">
             {t('auth.sign_in')}
           </button>
           <button onClick={() => navigate('/projects')} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">
-            Abrir app
+            {t('landing.open_app')}
           </button>
         </div>
       </nav>

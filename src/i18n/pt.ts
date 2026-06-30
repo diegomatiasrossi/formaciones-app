@@ -395,6 +395,7 @@ export default {
     choose_event: 'Escolha um evento',
   },
   landing: {
+    open_app: 'Entrar',
     headline: 'Seu escritório coreográfico.',
     subheadline: 'Tudo o que acontece antes de pisar no palco, em um só lugar.',
     body: 'Da ideia ao ensaio: planeje sua coreografia, organize seu crew e visualize o espaço cênico.',
