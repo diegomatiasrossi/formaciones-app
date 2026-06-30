@@ -75,6 +75,7 @@ interface EditorActions {
   setSnapEnabled: (v: boolean) => void
   setStageSize: (w: number, h: number) => void
   setStageRect: (rect: { x: number; y: number; w: number; h: number }) => void
+  rescaleStage: (oldRect: { x: number; y: number; w: number; h: number }, newRect: { x: number; y: number; w: number; h: number }) => void
   setNewColor: (c: string) => void
   setNewShape: (s: DancerShape) => void
   setNewSize: (s: number) => void
@@ -134,6 +135,42 @@ function updateActive(
   fn: (s: Scene) => Scene,
 ): Scene[] {
   return scenes.map(s => s.id === activeId ? fn(s) : s)
+}
+
+type StageRect = { x: number; y: number; w: number; h: number }
+
+function isOutsideStage(d: Dancer, rect: StageRect): boolean {
+  return d.x < rect.x || d.x > rect.x + rect.w || d.y < rect.y || d.y > rect.y + rect.h
+}
+
+// Reescala TODOS los dancers de una escena (bounding box → centrado + escalado
+// a `rect`) para que la disposición relativa entre adentro del escenario
+// actual, preservando el arreglo proporcional. Solo se aplica si hace falta
+// (algún dancer activo fuera de los límites) — corrige datos ya guardados con
+// la inconsistencia de "posiciones absolutas vs escenario reducido".
+function fitSceneToStage(scene: Scene, rect: StageRect): Scene {
+  const active = scene.dancers.filter(d => d.active !== false)
+  if (active.length === 0 || !active.some(d => isOutsideStage(d, rect))) return scene
+
+  const xs = scene.dancers.map(d => d.x), ys = scene.dancers.map(d => d.y)
+  const minX = Math.min(...xs), maxX = Math.max(...xs)
+  const minY = Math.min(...ys), maxY = Math.max(...ys)
+  const bw = (maxX - minX) || 1, bh = (maxY - minY) || 1
+  const bcx = (minX + maxX) / 2, bcy = (minY + maxY) / 2
+
+  const margin = 0.85
+  const scale = Math.min((rect.w * margin) / bw, (rect.h * margin) / bh, 1)
+  const ccx = rect.x + rect.w / 2
+  const ccy = rect.y + rect.h / 2
+
+  return {
+    ...scene,
+    dancers: scene.dancers.map(d => ({
+      ...d,
+      x: Math.round(ccx + (d.x - bcx) * scale),
+      y: Math.round(ccy + (d.y - bcy) * scale),
+    })),
+  }
 }
 
 // Aplica una transformación a un subconjunto de dancers (los seleccionados si
@@ -596,6 +633,29 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
   setSnapEnabled: v => set({ snapEnabled: v }),
   setStageSize: (w, h) => set({ stageWidth: w, stageHeight: h }),
   setStageRect: rect => set({ stageRect: rect }),
+
+  // Cuando el área visible del escenario cambia de tamaño (ej: se abre el panel
+  // de audio y el canvas se achica), reposiciona a TODOS los integrantes de
+  // TODAS las escenas para que mantengan su posición proporcional al nuevo
+  // tamaño en vez de la misma coordenada absoluta (que los dejaba fuera del
+  // área visible). Se llama desde StageCanvas comparando el rect anterior vs
+  // el nuevo cada vez que el contenedor se redimensiona.
+  rescaleStage: (oldRect, newRect) => {
+    if (oldRect.w <= 0 || oldRect.h <= 0) return
+    const scaleX = newRect.w / oldRect.w
+    const scaleY = newRect.h / oldRect.h
+    set(s => ({
+      hasUnsavedChanges: true,
+      scenes: s.scenes.map(sc => ({
+        ...sc,
+        dancers: sc.dancers.map(d => ({
+          ...d,
+          x: Math.round(newRect.x + (d.x - oldRect.x) * scaleX),
+          y: Math.round(newRect.y + (d.y - oldRect.y) * scaleY),
+        })),
+      })),
+    }))
+  },
   setNewColor: c => set({ newColor: c }),
   setNewShape: s => set({ newShape: s }),
   setNewSize: s => set({ newSize: s }),
@@ -607,12 +667,20 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
     set(s => ({ hasUnsavedChanges: true, canons: s.canons.filter(c => c.id !== id) })),
 
   loadScenes: (scenes, activeId, audioMarkers, canons) =>
-    set({
-      scenes: scenes.map(migrateSceneTransition),
-      activeSceneId: activeId, selectedIds: [], _past: [], _future: [],
-      ...(audioMarkers ? { audioMarkers } : {}),
-      canons: canons ?? [],
-      hasUnsavedChanges: false,
+    set(s => {
+      const migrated = scenes.map(migrateSceneTransition)
+      // Self-heal: si el proyecto trae dancers fuera del escenario actual
+      // (guardados así por la inconsistencia de resize), los reencuadra al
+      // cargar. Si no hace falta corregir nada, queda igual (sin marcar dirty).
+      const fitted = migrated.map(sc => fitSceneToStage(sc, s.stageRect))
+      const healed = fitted.some((sc, i) => sc !== migrated[i])
+      return {
+        scenes: fitted,
+        activeSceneId: activeId, selectedIds: [], _past: [], _future: [],
+        ...(audioMarkers ? { audioMarkers } : {}),
+        canons: canons ?? [],
+        hasUnsavedChanges: healed,
+      }
     }),
 
   markSaved: () => set({ hasUnsavedChanges: false }),

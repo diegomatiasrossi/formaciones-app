@@ -152,8 +152,19 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
 
   // Publicar el rectángulo real del escenario al store (lo usa applyFormation
   // para encajar las formaciones dentro del área visible en cualquier orientación).
+  // Si el TAMAÑO visible cambia (ej: se abre el panel de audio y el canvas se
+  // achica verticalmente), reposicionamos a todos los integrantes para que
+  // mantengan su posición proporcional al nuevo escenario — sin esto quedaban
+  // en la misma coordenada absoluta, fuera del área visible reducida.
+  const prevStageRectRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null)
   useEffect(() => {
-    setStageRect({ x: sx, y: sy, w: sw, h: sh })
+    const next = { x: sx, y: sy, w: sw, h: sh }
+    const prev = prevStageRectRef.current
+    if (prev && prev.w > 0 && prev.h > 0 && (Math.abs(next.w - prev.w) > 1 || Math.abs(next.h - prev.h) > 1)) {
+      useEditorStore.getState().rescaleStage(prev, next)
+    }
+    prevStageRectRef.current = next
+    setStageRect(next)
   }, [sx, sy, sw, sh, setStageRect])
 
   // ── Grid ──────────────────────────────────────────────────────
