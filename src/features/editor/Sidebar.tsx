@@ -10,6 +10,10 @@ import clsx from 'clsx'
 export function Sidebar() {
   const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1280)
+  // Acordeón: todas las secciones colapsadas por defecto, varias pueden estar
+  // abiertas a la vez (no exclusivo).
+  const [open, setOpen] = useState<Record<string, boolean>>({})
+  const toggleSection = (id: string) => setOpen(o => ({ ...o, [id]: !o[id] }))
   const {
     rotateAll, mirrorH, mirrorV, scaleFormation,
     showGrid, setShowGrid,
@@ -22,12 +26,6 @@ export function Sidebar() {
 
   const activeScene = scenes.find(s => s.id === activeSceneId)
   const selectedDancers = (activeScene?.dancers ?? []).filter(d => selectedIds.includes(d.id))
-
-  const heading = (label: string) => (
-    <div className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em] mt-4 mb-2 first:mt-0">
-      {label}
-    </div>
-  )
 
   const sideBtn = (label: string, onClick: () => void) => (
     <button
@@ -51,6 +49,23 @@ export function Sidebar() {
       {label}
     </label>
   )
+
+  // Sección colapsable del acordeón.
+  const section = (id: string, title: string, content: React.ReactNode) => {
+    const isOpen = !!open[id]
+    return (
+      <div key={id} className="border-b border-borde/40">
+        <button
+          onClick={() => toggleSection(id)}
+          className="flex items-center justify-between w-full py-2.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-gris/60 hover:text-dorado transition-colors"
+        >
+          <span>{title}</span>
+          <span className="text-gris/40 text-[8px]">{isOpen ? '▼' : '▶'}</span>
+        </button>
+        {isOpen && <div className="pb-3">{content}</div>}
+      </div>
+    )
+  }
 
   if (collapsed) {
     return (
@@ -77,11 +92,11 @@ export function Sidebar() {
       {/* ── Botón colapsar ─────────────────────────────────────── */}
       <button
         onClick={() => setCollapsed(true)}
-        className="self-end text-gris hover:text-dorado transition-colors text-sm mb-2"
+        className="self-end text-gris hover:text-dorado transition-colors text-sm mb-1"
         title={t('editor.sidebar.collapse')}
       >‹</button>
 
-      {/* ── Panel de selección múltiple ─────────────────────────── */}
+      {/* ── Panel de selección múltiple (contextual, siempre visible) ─── */}
       {selectedDancers.length > 1 && (
         <div className="mb-3 p-2.5 rounded-lg border border-dorado/30 bg-dorado/5">
           <div className="text-[10px] text-dorado uppercase tracking-wider mb-2">
@@ -106,7 +121,7 @@ export function Sidebar() {
                 key={lv}
                 onClick={() => setMultiLevel(selectedIds, lv)}
                 title={meta.label}
-                className="flex-1 py-1.5 text-xs border border-borde rounded hover:border-dorado/50 hover:text-dorado transition-colors text-gris flex flex-col items-center"
+                className="flex-1 py-1.5 text-sm border border-borde rounded hover:border-dorado/50 hover:text-dorado transition-colors text-gris flex flex-col items-center"
               >
                 <span style={{ opacity: LEVEL_OPACITY[lv], transform: `scale(${LEVEL_SCALE[lv]})` }}>
                   {meta.emoji}
@@ -117,49 +132,57 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* ── Formaciones ──────────────────────────────────────────── */}
-      {heading(t('editor.sidebar.formations'))}
-      {FORMATION_CARDS.map(card => (
-        <FormationCardButton
-          key={card.id}
-          card={card}
-          id={card.id === 'triangle' ? 'btn-triangle' : undefined}
-        />
+      {/* ── Acordeón ─────────────────────────────────────────────── */}
+      {section('formations', t('editor.sidebar.formations'),
+        FORMATION_CARDS.map(card => (
+          <FormationCardButton
+            key={card.id}
+            card={card}
+            id={card.id === 'triangle' ? 'btn-triangle' : undefined}
+          />
+        )),
+      )}
+
+      {section('transform', t('editor.sidebar.transform'), (
+        <>
+          {sideBtn(t('editor.sidebar.rotate_minus'), () => rotateAll(-15))}
+          {sideBtn(t('editor.sidebar.rotate_plus'), () => rotateAll(15))}
+          {sideBtn(t('editor.sidebar.mirror_h'), mirrorH)}
+          {sideBtn(t('editor.sidebar.mirror_v'), mirrorV)}
+          {sideBtn(t('editor.sidebar.scale_up'), () => scaleFormation(1.15))}
+          {sideBtn(t('editor.sidebar.scale_down'), () => scaleFormation(0.87))}
+        </>
       ))}
 
-      {/* ── Transformar ──────────────────────────────────────────── */}
-      {heading(t('editor.sidebar.transform'))}
-      {sideBtn(t('editor.sidebar.rotate_minus'), () => rotateAll(-15))}
-      {sideBtn(t('editor.sidebar.rotate_plus'), () => rotateAll(15))}
-      {sideBtn(t('editor.sidebar.mirror_h'), mirrorH)}
-      {sideBtn(t('editor.sidebar.mirror_v'), mirrorV)}
-      {sideBtn(t('editor.sidebar.scale_up'), () => scaleFormation(1.15))}
-      {sideBtn(t('editor.sidebar.scale_down'), () => scaleFormation(0.87))}
+      {section('view', t('editor.sidebar.view'), (
+        <>
+          {toggle(t('editor.sidebar.show_grid'), showGrid, setShowGrid)}
+          {toggle(t('editor.sidebar.show_labels'), showLabels, setShowLabels)}
+          {toggle(t('editor.sidebar.show_zones'), showZones, setShowZones)}
+          {toggle(t('editor.sidebar.snap'), snapEnabled, setSnapEnabled)}
+        </>
+      ))}
 
-      {/* ── Vista ────────────────────────────────────────────────── */}
-      {heading(t('editor.sidebar.view'))}
-      {toggle(t('editor.sidebar.show_grid'), showGrid, setShowGrid)}
-      {toggle(t('editor.sidebar.show_labels'), showLabels, setShowLabels)}
-      {toggle(t('editor.sidebar.show_zones'), showZones, setShowZones)}
-      {toggle(t('editor.sidebar.snap'), snapEnabled, setSnapEnabled)}
-
-      {/* ── Leyenda de niveles ───────────────────────────────────── */}
-      {heading('Niveles')}
-      <div className="space-y-1 mb-2">
-        {(Object.entries(LEVEL_META) as [DancerLevel, typeof LEVEL_META[DancerLevel]][]).map(([lv, meta]) => (
-          <div key={lv} className="flex items-center gap-2 text-xs text-blanco-calido/70">
-            <div
-              className="w-4 h-4 rounded-full bg-dorado shrink-0"
-              style={{ opacity: LEVEL_OPACITY[lv], transform: `scale(${LEVEL_SCALE[lv]})` }}
-            />
-            <span>{meta.emoji} {meta.label}</span>
-            <span className="text-gris/50 text-[10px]">
-              {Math.round(LEVEL_OPACITY[lv] * 100)}%
-            </span>
-          </div>
-        ))}
+      {/* ── Leyenda de niveles (pie de sidebar, estática) ──────────── */}
+      <div className="mt-auto pt-3">
+        <div className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em] mb-2">Niveles</div>
+        <div className="space-y-1 mb-2">
+          {(Object.entries(LEVEL_META) as [DancerLevel, typeof LEVEL_META[DancerLevel]][]).map(([lv, meta]) => (
+            <div key={lv} className="flex items-center gap-2 text-xs text-blanco-calido/70">
+              <div
+                className="w-4 h-4 rounded-full bg-dorado shrink-0"
+                style={{ opacity: LEVEL_OPACITY[lv], transform: `scale(${LEVEL_SCALE[lv]})` }}
+              />
+              <span className="text-sm">{meta.emoji}</span>
+              <span className="font-medium">{meta.label}</span>
+              <span className="text-gris/50 text-[10px]">
+                {Math.round(LEVEL_OPACITY[lv] * 100)}%
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-gris/40">Doble click en integrante para editar nivel</p>
       </div>
-      <p className="text-[10px] text-gris/40 mb-2">Doble click en integrante para editar nivel</p>
     </aside>
   )
 }
