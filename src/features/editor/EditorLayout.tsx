@@ -6,7 +6,6 @@ import { Sidebar } from './Sidebar'
 import { StageCanvas } from './StageCanvas'
 import { StatisticsPanel } from './StatisticsPanel'
 import { DancersListPanel } from './DancersListPanel'
-import { MembersPanel } from './MembersPanel'
 import { PreviewModal } from './PreviewModal'
 import { ScenePanel } from '@/features/scenes/ScenePanel'
 import { AudioPanel } from '@/features/audio/AudioPanel'
@@ -43,7 +42,6 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
   const [showAudioSoon, setShowAudioSoon] = useState(false)
   const [showStats, setShowStats]       = useState(false)
   const [showChecklist, setShowChecklist] = useState(false)
-  const [showMembers, setShowMembers]   = useState(false)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showPreview, setShowPreview]   = useState(false)
   const [transitionDuration, setTransitionDuration] = useState(1500)
@@ -172,12 +170,9 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
         onToggleStats={() => setShowStats(v => !v)}
         showStats={showStats}
         statsLocked={!features.statsEnabled}
-        onToggleChecklist={() => { setShowChecklist(v => !v); setShowMembers(false) }}
+        onToggleChecklist={() => setShowChecklist(v => !v)}
         showChecklist={showChecklist}
         checklistLocked={!features.membersEnabled}
-        onToggleMembers={() => { setShowMembers(v => !v); setShowChecklist(false) }}
-        showMembers={showMembers}
-        membersLocked={!features.membersEnabled}
         onPlayAnimation={() => setShowPreview(true)}
         isAnimating={isPlaying}
         onStopAnimation={stop}
@@ -207,7 +202,6 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
             <StageCanvas animationOverride={animOverride} stageRatio={stageRatio} customStageW={customStageW} customStageH={customStageH} maxDancers={features.maxDancers} memberNames={memberNames} memberNameById={memberNameById} showMemberNames={features.membersEnabled} />
             {showStats && <StatisticsPanel onClose={() => setShowStats(false)} locked={!features.statsEnabled} />}
             {showChecklist && <DancersListPanel onClose={() => setShowChecklist(false)} />}
-            {showMembers && <MembersPanel onClose={() => setShowMembers(false)} />}
           </div>
 
           {AUDIO_FEATURE_ENABLED && showAudio && <AudioPanel onSceneChange={handleAudioSceneChange} locked={!features.audioEnabled} />}

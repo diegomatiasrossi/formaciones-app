@@ -7,12 +7,17 @@ import { useEditorStore } from '@/store/editorStore'
 import { usePlan } from '@/hooks/usePlan'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import { supabase } from '@/features/auth/supabaseClient'
+import clsx from 'clsx'
 
-interface Props { onClose: () => void }
+interface Props {
+  onClose?: () => void
+  /** Modo integrado en el sidebar (sin wrapper flotante ni botón cerrar). */
+  embedded?: boolean
+}
 
 const inputCls = 'w-full bg-negro border border-borde rounded-md px-2.5 py-1.5 text-xs text-blanco-calido focus:outline-none focus:border-dorado placeholder:text-gris/30'
 
-export function MembersPanel({ onClose }: Props) {
+export function MembersPanel({ onClose, embedded = false }: Props) {
   const { t } = useTranslation()
   const { projectId } = useParams<{ projectId: string }>()
   const { projects, saveProject } = useProjectStore()
@@ -156,6 +161,14 @@ export function MembersPanel({ onClose }: Props) {
   }
 
   if (!features.membersEnabled) {
+    if (embedded) {
+      return (
+        <UpgradeGate requiredPlan="solo_pro" featureName={t('editor.toolbar.members_panel_title')}
+          headline={t('upgrade.members_headline')}
+          description={t('upgrade.members_desc')}
+          ctaText={t('upgrade.cta_solo_pro')} />
+      )
+    }
     return (
       <div className="absolute top-3 right-3 z-20 w-80 max-w-[calc(100vw-5rem)] bg-negro border border-borde rounded-xl shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
@@ -177,15 +190,23 @@ export function MembersPanel({ onClose }: Props) {
   })
 
   return (
-    <div className="absolute top-3 right-3 z-20 w-80 max-w-[calc(100vw-5rem)] bg-negro border border-borde rounded-xl shadow-2xl flex flex-col max-h-[85vh]">
+    <div className={clsx(
+      embedded
+        ? 'flex flex-col'
+        : 'absolute top-3 right-3 z-20 w-80 max-w-[calc(100vw-5rem)] bg-negro border border-borde rounded-xl shadow-2xl flex flex-col max-h-[85vh]',
+    )}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-borde/40 shrink-0">
-        <div>
-          <span className="text-[10px] text-dorado uppercase tracking-widest">{t('editor.toolbar.members_panel')}</span>
-          <p className="text-[10px] text-gris/50 mt-0.5">{members.length} {t('scenes.members_total')} · {memberIdsInScene.size} {t('scenes.in_stage')}</p>
+      {embedded ? (
+        <p className="text-[10px] text-gris/50 pb-2">{members.length} {t('scenes.members_total')} · {memberIdsInScene.size} {t('scenes.in_stage')}</p>
+      ) : (
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-borde/40 shrink-0">
+          <div>
+            <span className="text-[10px] text-dorado uppercase tracking-widest">{t('editor.toolbar.members_panel')}</span>
+            <p className="text-[10px] text-gris/50 mt-0.5">{members.length} {t('scenes.members_total')} · {memberIdsInScene.size} {t('scenes.in_stage')}</p>
+          </div>
+          <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
         </div>
-        <button onClick={onClose} className="text-gris hover:text-blanco-calido text-lg leading-none">×</button>
-      </div>
+      )}
 
       {/* Migración en progreso */}
       {migrating && (
@@ -230,7 +251,7 @@ export function MembersPanel({ onClose }: Props) {
       )}
 
       {/* Lista */}
-      <div className="overflow-y-auto flex-1">
+      <div className={clsx('overflow-y-auto', embedded ? 'max-h-64' : 'flex-1')}>
         {members.length === 0 && (
           <div className="flex flex-col items-center justify-center py-10 text-center px-4">
             <p className="text-gris/40 text-xs">Sin integrantes todavía</p>

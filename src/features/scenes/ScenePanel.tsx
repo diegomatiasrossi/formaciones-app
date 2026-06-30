@@ -45,21 +45,21 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
 
   return (
     <div className="border-t border-borde bg-negro shrink-0">
-      {/* Tabs de escenas */}
-      <div className="flex items-center gap-1 px-3 py-1.5 overflow-x-auto">
-        <span className="text-[10px] text-gris uppercase tracking-wider mr-1.5 shrink-0">
+      {/* Timeline de escenas — bloques tipo editor de video */}
+      <div className="flex items-center gap-2 px-3 py-2.5 overflow-x-auto">
+        <span className="text-[10px] text-gris uppercase tracking-wider mr-1 shrink-0">
           {t('scenes.title')}
         </span>
 
         {scenes.map((scene, i) => (
-          <div key={scene.id} className="flex items-center shrink-0 gap-1">
-            <div className="flex items-center shrink-0 gap-0.5">
+          <div key={scene.id} className="flex items-center shrink-0 gap-2">
+            <div className="relative shrink-0">
               {editingId === scene.id && editField === 'name' ? (
                 <input
                   autoFocus value={editValue}
                   onChange={e => setEditValue(e.target.value)}
                   onBlur={commitEdit} onKeyDown={handleKey}
-                  className="w-28 bg-negro border border-dorado rounded px-2 py-0.5 text-xs text-blanco-calido focus:outline-none"
+                  className="w-28 h-16 bg-negro border border-dorado rounded-lg px-2 text-xs text-blanco-calido focus:outline-none text-center"
                 />
               ) : (
                 <button
@@ -67,33 +67,35 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
                   onDoubleClick={namesLocked ? undefined : () => startEdit(scene.id, 'name', scene.name)}
                   title={namesLocked ? t('plan.scene_names_locked') : 'Doble click para renombrar'}
                   className={clsx(
-                    'px-2.5 py-1 rounded text-xs transition-colors border whitespace-nowrap flex items-center gap-1',
+                    'w-16 h-16 rounded-lg border flex flex-col items-center justify-center gap-0.5 transition-colors',
                     scene.id === activeSceneId
-                      ? 'bg-dorado text-negro border-dorado font-semibold'
-                      : 'text-blanco-calido/70 border-borde hover:border-dorado/40 hover:text-blanco-calido',
+                      ? 'bg-dorado text-negro border-dorado'
+                      : 'bg-surface-1 text-blanco-calido/70 border-borde hover:border-dorado/40 hover:text-blanco-calido',
                   )}
                 >
-                  {i + 1}. {scene.name}
+                  <span className="text-xl font-bold leading-none tabular-nums">{i + 1}</span>
+                  <span className="text-[9px] leading-tight truncate max-w-[3.5rem] px-1">{scene.name}</span>
                   {namesLocked && <UpgradeGate requiredPlan="solo_pro" featureName={t('plan.scene_names_locked')} compact />}
                 </button>
               )}
 
-              {scene.id === activeSceneId && (
-                <>
+              {/* Duplicar / borrar — solo en la escena activa (esquina sup. der.) */}
+              {scene.id === activeSceneId && editingId !== scene.id && (
+                <div className="absolute -top-1.5 -right-1.5 flex gap-0.5">
                   <button
                     id="btn-dup-scene"
                     onClick={() => duplicateScene(scene.id)}
-                    title={`${t('common.duplicate')}`}
-                    className="w-5 h-5 flex items-center justify-center text-[11px] text-gris hover:text-dorado transition-colors"
+                    title={t('common.duplicate')}
+                    className="w-5 h-5 flex items-center justify-center text-[10px] rounded-full bg-negro border border-borde text-gris hover:text-dorado hover:border-dorado/50 transition-colors"
                   >⧉</button>
                   {scenes.length > 1 && (
                     <button
                       onClick={() => setSceneToDelete(scene.id)}
                       title={t('common.delete')}
-                      className="w-5 h-5 flex items-center justify-center text-[11px] text-gris hover:text-red-400 transition-colors"
+                      className="w-5 h-5 flex items-center justify-center text-[10px] rounded-full bg-negro border border-borde text-gris hover:text-red-400 hover:border-red-400/50 transition-colors"
                     >×</button>
                   )}
-                </>
+                </div>
               )}
             </div>
 
@@ -110,12 +112,17 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
           </div>
         ))}
 
+        {/* + Agregar escena — bloque protagonista (el más grande) */}
         <button
           id="btn-new-scene"
           onClick={addScene}
-          className="px-2 py-1 text-xs text-gris border border-borde border-dashed rounded hover:border-dorado/50 hover:text-dorado transition-colors shrink-0 ml-1"
+          title={t('scenes.add')}
+          className="w-20 h-20 shrink-0 ml-1 rounded-xl border-2 border-dashed border-dorado/50 bg-dorado/5
+                     text-dorado flex flex-col items-center justify-center gap-1
+                     hover:bg-dorado/10 hover:border-dorado transition-colors"
         >
-          + {t('scenes.add')}
+          <span className="text-3xl leading-none font-light">+</span>
+          <span className="text-[9px] uppercase tracking-wider">{t('scenes.add')}</span>
         </button>
       </div>
 

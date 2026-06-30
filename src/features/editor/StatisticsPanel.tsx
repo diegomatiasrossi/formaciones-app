@@ -108,7 +108,7 @@ export function StatisticsPanel({ onClose, locked }: Props) {
             return (
               <div key={i} className="relative rounded-md flex flex-col items-center justify-center py-2 text-[10px] border border-borde/30 transition-colors"
                 style={{ backgroundColor: `rgba(201,169,97,${intensity * 0.35 + 0.03})` }}>
-                <span className="text-blanco-calido/90 font-semibold text-xs">{count}</span>
+                <span className="text-blanco-calido/90 font-bold text-base">{count}</span>
                 <span className="text-gris/60 leading-none">{ZONE_LABELS[i]}</span>
               </div>
             )
@@ -121,12 +121,15 @@ export function StatisticsPanel({ onClose, locked }: Props) {
         <div className="space-y-1.5">
           {(Object.entries(levelDist) as [DancerLevel, number][]).map(([lv, count]) => (
             <div key={lv} className="flex items-center gap-2">
-              <span className="text-[10px] text-gris w-16 shrink-0">{LEVEL_META[lv].emoji} {LEVEL_META[lv].label}</span>
+              <span className="text-xs text-gris w-20 shrink-0 flex items-center gap-1">
+                <span className="text-base leading-none">{LEVEL_META[lv].emoji}</span>
+                <span className="font-semibold">{LEVEL_META[lv].label}</span>
+              </span>
               <div className="flex-1 h-3 bg-borde/40 rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all"
                   style={{ width: dancers.length ? `${(count / dancers.length) * 100}%` : '0%', backgroundColor: LEVEL_COLORS[lv] }} />
               </div>
-              <span className="text-[10px] text-gris tabular-nums w-6 text-right shrink-0">{count}</span>
+              <span className="text-xs text-gris tabular-nums w-6 text-right shrink-0">{count}</span>
             </div>
           ))}
         </div>
@@ -169,8 +172,8 @@ function PanelHeader({ onClose }: { onClose: () => void }) {
 function Stat({ value, label, color }: { value: string | number; label: string; color: string }) {
   return (
     <div className="flex-1 bg-negro/60 rounded-lg border border-borde/40 p-2 text-center">
-      <div className={clsx('text-lg font-bold tabular-nums leading-none', color)}>{value}</div>
-      <div className="text-[9px] text-gris/60 mt-0.5">{label}</div>
+      <div className={clsx('text-2xl font-bold tabular-nums leading-none', color)}>{value}</div>
+      <div className="text-[10px] text-gris/60 mt-1">{label}</div>
     </div>
   )
 }
