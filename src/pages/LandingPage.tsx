@@ -114,8 +114,9 @@ export function LandingPage() {
           </div>
         </div>
 
-        {/* Botones en mobile — debajo de la animación (ocultos en desktop) */}
-        <div className="flex md:hidden gap-4 flex-wrap">
+        {/* Botones en mobile — debajo de la animación (ocultos en desktop).
+            mt-4 extra para respirar del badge -bottom-3 de la animación. */}
+        <div className="flex md:hidden gap-4 flex-wrap mt-4">
           <button onClick={() => navigate('/projects')} className="px-8 py-3.5 bg-rojo hover:bg-rojo-oscuro text-blanco font-semibold rounded-xl transition-all text-sm shadow-card hover:-translate-y-0.5">
             {t('landing.cta')} →
           </button>
