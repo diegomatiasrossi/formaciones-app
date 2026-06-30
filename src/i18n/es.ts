@@ -395,6 +395,7 @@ export default {
     choose_event: 'Elegí un evento',
   },
   landing: {
+    open_app: 'Entrar',
     headline: 'Tu oficina coreográfica.',
     subheadline: 'Todo lo que pasa antes de pisar el escenario, en un solo lugar.',
     body: 'De la idea al ensayo: planificá tu coreografía, organizá tu crew y visualizá el espacio escénico.',

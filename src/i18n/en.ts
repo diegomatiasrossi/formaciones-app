@@ -395,6 +395,7 @@ export default {
     choose_event: 'Choose an event',
   },
   landing: {
+    open_app: 'Enter',
     headline: 'Your choreographic office.',
     subheadline: 'Everything that happens before hitting the stage, in one place.',
     body: 'From idea to rehearsal: plan your choreography, organize your crew, and visualize the stage space.',

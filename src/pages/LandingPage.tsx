@@ -60,7 +60,7 @@ export function LandingPage() {
             {t('auth.sign_in')}
           </button>
           <button onClick={() => navigate('/projects')} className="px-5 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg transition-colors">
-            Abrir app
+            {t('landing.open_app')}
           </button>
         </div>
       </nav>
