@@ -8,6 +8,7 @@ interface Props {
   onToggleAudio: () => void
   showAudio: boolean
   audioLocked?: boolean
+  audioComingSoon?: boolean
   onToggleStats: () => void
   showStats: boolean
   statsLocked?: boolean
@@ -27,7 +28,7 @@ interface Props {
 }
 
 export function Toolbar({
-  onToggleAudio, showAudio, audioLocked,
+  onToggleAudio, showAudio, audioLocked, audioComingSoon,
   onToggleStats, showStats, statsLocked,
   onToggleChecklist, showChecklist, checklistLocked,
   onToggleMembers, showMembers, membersLocked,
@@ -203,10 +204,27 @@ export function Toolbar({
       {/* Audio */}
       <button
         onClick={onToggleAudio}
-        className={clsx(btn(showAudio && !audioLocked), audioLocked && 'opacity-50')}
-        title={audioLocked ? t('editor.toolbar.audio_locked') : t('editor.toolbar.audio_title')}
+        className={clsx(
+          'relative',
+          // Durante el bloqueo temporal el botón se ve normal (clickeable, sin
+          // gris ni candado de plan): el aviso "próximamente" aplica a todos.
+          audioComingSoon
+            ? btn(false)
+            : clsx(btn(showAudio && !audioLocked), audioLocked && 'opacity-50'),
+        )}
+        title={
+          audioComingSoon
+            ? t('editor.audio_coming_soon')
+            : audioLocked ? t('editor.toolbar.audio_locked') : t('editor.toolbar.audio_title')
+        }
       >
-        🎵 Audio{audioLocked && ' 🔒'}
+        🎵 Audio{!audioComingSoon && audioLocked && ' 🔒'}
+        {audioComingSoon && (
+          <span
+            className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-dorado ring-1 ring-negro"
+            aria-hidden="true"
+          />
+        )}
       </button>
 
       {/* Estadísticas */}

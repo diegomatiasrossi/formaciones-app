@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
 import { Toolbar } from './Toolbar'
 import { Sidebar } from './Sidebar'
@@ -12,6 +13,7 @@ import { AudioPanel } from '@/features/audio/AudioPanel'
 import { useAnimationPlayer, interpolateScenes, ease, type AnimFrame } from '@/hooks/useAnimationPlayer'
 import { useEditorStore } from '@/store/editorStore'
 import { usePlan } from '@/hooks/usePlan'
+import { AUDIO_FEATURE_ENABLED } from '@/config/features'
 import { KeyboardShortcutsModal } from '@/components/ui/KeyboardShortcutsModal'
 
 const AUDIO_TRANSITION_MS = 450
@@ -34,9 +36,11 @@ interface Props {
 }
 
 export function EditorLayout({ projectName, groupName, choreographyName, stageRatio, customStageW, customStageH, memberNames, memberNameById, onBack, onSave, onShare, isSaving, justSaved }: Props) {
+  const { t } = useTranslation()
   const { scenes, setActiveScene, stageWidth, stageHeight } = useEditorStore()
   const { features } = usePlan()
   const [showAudio, setShowAudio]       = useState(false)
+  const [showAudioSoon, setShowAudioSoon] = useState(false)
   const [showStats, setShowStats]       = useState(false)
   const [showChecklist, setShowChecklist] = useState(false)
   const [showMembers, setShowMembers]   = useState(false)
@@ -157,9 +161,14 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
 
       {/* Toolbar */}
       <Toolbar
-        onToggleAudio={() => setShowAudio(v => !v)}
+        onToggleAudio={() => {
+          // Bloqueo temporal: el panel real no se abre, se muestra el aviso.
+          if (!AUDIO_FEATURE_ENABLED) { setShowAudioSoon(true); return }
+          setShowAudio(v => !v)
+        }}
         showAudio={showAudio}
         audioLocked={!features.audioEnabled}
+        audioComingSoon={!AUDIO_FEATURE_ENABLED}
         onToggleStats={() => setShowStats(v => !v)}
         showStats={showStats}
         statsLocked={!features.statsEnabled}
@@ -201,7 +210,20 @@ export function EditorLayout({ projectName, groupName, choreographyName, stageRa
             {showMembers && <MembersPanel onClose={() => setShowMembers(false)} />}
           </div>
 
-          {showAudio && <AudioPanel onSceneChange={handleAudioSceneChange} locked={!features.audioEnabled} />}
+          {AUDIO_FEATURE_ENABLED && showAudio && <AudioPanel onSceneChange={handleAudioSceneChange} locked={!features.audioEnabled} />}
+
+          {/* Aviso temporal: Audio próximamente (septiembre) */}
+          {showAudioSoon && (
+            <div className="border-t border-dorado/30 bg-negro px-4 py-2.5 flex items-center gap-2 text-xs text-dorado shrink-0">
+              <span aria-hidden="true">🕐</span>
+              <span className="flex-1">{t('editor.audio_coming_soon')}</span>
+              <button
+                onClick={() => setShowAudioSoon(false)}
+                className="text-gris hover:text-blanco-calido text-sm leading-none px-1"
+                title={t('common.close')}
+              >×</button>
+            </div>
+          )}
 
           <ScenePanel canonLocked={!features.canonEnabled} namesLocked={!features.membersEnabled} />
         </main>
