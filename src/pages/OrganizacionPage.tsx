@@ -161,10 +161,8 @@ export function OrganizacionPage() {
     if (!parsedName.success) { setCreateError(t(firstErrorKey(parsedName)!)); return }
     setSaving(true)
     setCreateError(null)
-    console.log('[org] calling create_organization RPC with name:', orgName.trim())
     const { data, error } = await supabase.rpc('create_organization', { org_name: orgName.trim() })
     setSaving(false)
-    console.log('[org] RPC result — data:', data, '| error:', error)
     if (error) {
       // Mapear el rechazo de plan del backend a un mensaje amigable
       setCreateError(
@@ -180,10 +178,8 @@ export function OrganizacionPage() {
     }
     const newOrgId = String(data)
     await loadMemberships()
-    console.log('[org] after loadMemberships, memberships in store:', useWorkspaceStore.getState().memberships)
     // Primary path: switchToOrg reads from the updated memberships store
     switchToOrg(newOrgId)
-    console.log('[org] after switchToOrg, activeWorkspace:', useWorkspaceStore.getState().activeWorkspace)
     // Defensive fallback: if switchToOrg didn't find the membership (e.g. loadMemberships
     // returned empty due to a transient RLS or query issue), set the workspace directly
     // using the data we already have from the RPC call.
