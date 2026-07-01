@@ -10,12 +10,12 @@ type Cycle = 'monthly' | 'yearly'
 
 const PRICES = {
   solo_pro: {
-    monthly: { id: import.meta.env.VITE_STRIPE_PRICE_SOLO_PRO_MONTHLY ?? '', label: '$9.99', period: '/mes' },
-    yearly:  { id: import.meta.env.VITE_STRIPE_PRICE_SOLO_PRO_YEARLY  ?? '', label: '$7.99', period: '/mes · cobrado anual' },
+    monthly: { id: import.meta.env.VITE_STRIPE_PRICE_SOLO_PRO_MONTHLY ?? '', label: '$9.99' },
+    yearly:  { id: import.meta.env.VITE_STRIPE_PRICE_SOLO_PRO_YEARLY  ?? '', label: '$7.99' },
   },
   studio: {
-    monthly: { id: import.meta.env.VITE_STRIPE_STUDIO_PRICE_ID ?? '', label: '$24.99', period: '/mes' },
-    yearly:  { id: import.meta.env.VITE_STRIPE_PRICE_STUDIO_YEARLY  ?? '', label: '$19.99', period: '/mes · cobrado anual' },
+    monthly: { id: import.meta.env.VITE_STRIPE_STUDIO_PRICE_ID ?? '', label: '$24.99' },
+    yearly:  { id: import.meta.env.VITE_STRIPE_PRICE_STUDIO_YEARLY  ?? '', label: '$19.99' },
   },
 }
 
@@ -118,7 +118,7 @@ export function PricingPage() {
               <div className="text-[11px] text-gris mb-3">{t(getPlan('solo_pro').descKey)}</div>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-semibold text-rojo">{PRICES.solo_pro[cycle].label}</span>
-                <span className="text-gris text-xs">{PRICES.solo_pro[cycle].period}</span>
+                <span className="text-gris text-xs">{t(cycle === 'yearly' ? 'pricing.per_month_yearly' : 'pricing.per_month')}</span>
               </div>
               {cycle === 'monthly' && (
                 <div className="text-[10px] text-rojo/70 mt-1">{t('pricing.trial_note')}</div>
@@ -147,7 +147,7 @@ export function PricingPage() {
               <div className="text-[11px] text-gris mb-3">{t(getPlan('studio').descKey)}</div>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-semibold text-dorado">{PRICES.studio[cycle].label}</span>
-                <span className="text-gris text-xs">{PRICES.studio[cycle].period}</span>
+                <span className="text-gris text-xs">{t(cycle === 'yearly' ? 'pricing.per_month_yearly' : 'pricing.per_month')}</span>
               </div>
             </div>
             <ul className="space-y-2 flex-1">
