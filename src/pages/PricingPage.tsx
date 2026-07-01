@@ -5,6 +5,7 @@ import { Logo } from '@/components/ui/Logo'
 import { usePlan } from '@/hooks/usePlan'
 import { useAuth } from '@/features/auth/useAuth'
 import { getPlan } from '@/data/pricingPlans'
+import { trackEvent } from '@/lib/metaPixel'
 
 type Cycle = 'monthly' | 'yearly'
 
@@ -35,6 +36,7 @@ export function PricingPage() {
     if (!price.id) { setCheckoutError(t('pricing.checkout_unavailable')); return }
     try {
       setLoading(plan)
+      trackEvent('InitiateCheckout', { content_name: plan })
       await startCheckout(price.id, user.email ?? '')
     } catch (err) {
       // Mostrar el mensaje real del backend (no un genérico) para poder diagnosticar.

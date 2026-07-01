@@ -14,6 +14,7 @@ import { ModuleNav } from '@/components/ui/ModuleNav'
 import { toggleLanguage } from '@/i18n'
 import { usePlan } from '@/hooks/usePlan'
 import { projectSchema, firstErrorKey } from '@/lib/validation'
+import { trackEvent } from '@/lib/metaPixel'
 import type { Project, StageRatio } from '@/types'
 import clsx from 'clsx'
 
@@ -90,6 +91,12 @@ export function ProjectsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const preloadedEventId = searchParams.get('eventId')
   const showCheckoutBanner = searchParams.get('checkout') === 'success'
+
+  // Dispara el evento Purchase una sola vez al volver exitoso del checkout.
+  useEffect(() => {
+    if (showCheckoutBanner) trackEvent('Purchase')
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function dismissCheckoutBanner() {
     const next = new URLSearchParams(searchParams)
