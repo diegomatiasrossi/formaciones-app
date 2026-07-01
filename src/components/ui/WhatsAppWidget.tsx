@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COOKIE_CONSENT_KEY } from './CookieBanner'
 
@@ -15,17 +15,19 @@ export function WhatsAppWidget() {
     try { return !!localStorage.getItem(COOKIE_CONSENT_KEY) } catch { return false }
   })
 
-  // Si el usuario interactúa con el banner mientras este widget ya está
-  // montado, la próxima vez que el widget re-renderice (por cualquier
-  // motivo) leerá el estado actualizado. Suficiente para el caso de uso:
-  // el usuario hace click en el banner → la página re-renderiza → el
-  // widget sube/baja. No necesitamos un storage-event listener.
-  if (!cookiesDismissed) {
-    try {
-      const fresh = !!localStorage.getItem(COOKIE_CONSENT_KEY)
-      if (fresh !== cookiesDismissed) setCookiesDismissed(fresh)
-    } catch { /* ignore */ }
-  }
+  // CookieBanner está en un subárbol diferente (fuera de BrowserRouter), así
+  // que no hay re-render compartido cuando el usuario acepta/rechaza cookies.
+  // Escuchamos el evento custom que CookieBanner dispara al cerrar para bajar
+  // el widget de bottom-24 a bottom-4 al instante, sin esperar navegación.
+  useEffect(() => {
+    function handleConsentChanged() {
+      try {
+        setCookiesDismissed(!!localStorage.getItem(COOKIE_CONSENT_KEY))
+      } catch { /* ignore */ }
+    }
+    window.addEventListener('cookie-consent-changed', handleConsentChanged)
+    return () => window.removeEventListener('cookie-consent-changed', handleConsentChanged)
+  }, [])
 
   const message = encodeURIComponent(t('whatsapp.prefill_message'))
   const href = `https://wa.me/${WA_NUMBER}?text=${message}`
