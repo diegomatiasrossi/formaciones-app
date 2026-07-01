@@ -5,6 +5,7 @@ import { useAuth } from './useAuth'
 import { Logo } from '@/components/ui/Logo'
 import { registerSchema, firstErrorKey } from '@/lib/validation'
 import { trackEvent } from '@/lib/metaPixel'
+import { trackGA4Event } from '@/lib/ga4'
 
 export function AuthPage() {
   const { t } = useTranslation()
@@ -41,6 +42,7 @@ export function AuthPage() {
       // Supabase requires email confirmation — show the pending screen
       // instead of navigating (user has no session yet)
       trackEvent('CompleteRegistration')
+      trackGA4Event('sign_up')
       setPendingEmail(email)
     } else {
       navigate(redirectTo)
