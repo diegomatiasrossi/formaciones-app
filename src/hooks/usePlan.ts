@@ -53,7 +53,7 @@ export const PLAN_FEATURES: Record<PlanName, PlanFeatures> = {
     statsEnabled:     true,
     reportsEnabled:   true,
     pdfExport:        true,
-    maxCollaborators: 5,
+    maxCollaborators: 3, // alineado con included_seats=3 (supabase-studio-migration.sql)
   },
 }
 
