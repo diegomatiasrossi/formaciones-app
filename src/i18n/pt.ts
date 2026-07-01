@@ -550,6 +550,20 @@ export default {
   splash: {
     skip: 'Continuar →',
   },
+  onboarding: {
+    headline: 'Seja bem-vindo(a) ao Crewficina',
+    subtitle: 'Seu escritório de planejamento coreográfico. Ative os módulos que precisar.',
+    cta: 'Começar →',
+    cta_explore: 'Explorar por conta própria',
+    pillar_space_title: 'Espaço',
+    pillar_space_desc: 'Editor visual de formações com drag & drop. Até 50 integrantes, 20+ formações predefinidas e animações entre cenas.',
+    pillar_activities_title: 'Atividades',
+    pillar_activities_desc: 'Checklists de produção e planejamento semanal com tarefas organizadas por etapas do projeto.',
+    pillar_events_title: 'Eventos',
+    pillar_events_desc: 'Registre apresentações e competições. Acompanhe a preparação, datas e status de cada evento.',
+    pillar_members_title: 'Integrantes',
+    pillar_members_desc: 'Banco de dados do seu grupo: nome, estilos, música e notas personalizadas por projeto.',
+  },
   checkout: {
     success_banner: 'Bem-vindo(a) — sua assinatura está ativa. Se o seu plano ainda não aparecer, aguarde alguns segundos e atualize a página.',
   },

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Logo } from './Logo'
 
 interface Props {
@@ -5,34 +6,18 @@ interface Props {
   onClose: () => void
 }
 
+// Los iconos y colores de acento son constantes de diseño (no texto de usuario),
+// así que se mantienen fuera del sistema i18n. Los textos pasan todos por t().
 const PILLARS = [
-  {
-    icon: '⬡',
-    title: 'Espacio',
-    desc: 'Canvas de formaciones con drag & drop. Hasta 50 integrantes, 20+ formaciones prediseñadas y animaciones entre escenas.',
-    accentColor: '#C9343D',
-  },
-  {
-    icon: '✓',
-    title: 'Actividades',
-    desc: 'Checklists de producción y planning semanal con tareas organizadas por etapas del proyecto.',
-    accentColor: '#C9A961',
-  },
-  {
-    icon: '◈',
-    title: 'Eventos',
-    desc: 'Registrá presentaciones y competencias. Seguimiento de preparación, fechas y estado de cada evento.',
-    accentColor: '#C9343D',
-  },
-  {
-    icon: '◉',
-    title: 'Integrantes',
-    desc: 'Base de datos de tu crew: nombre, estilos, música y notas personalizadas por proyecto.',
-    accentColor: '#C9A961',
-  },
-]
+  { icon: '⬡', titleKey: 'onboarding.pillar_space_title',      descKey: 'onboarding.pillar_space_desc',      accentColor: '#C9343D' },
+  { icon: '✓', titleKey: 'onboarding.pillar_activities_title',  descKey: 'onboarding.pillar_activities_desc',  accentColor: '#C9A961' },
+  { icon: '◈', titleKey: 'onboarding.pillar_events_title',      descKey: 'onboarding.pillar_events_desc',      accentColor: '#C9343D' },
+  { icon: '◉', titleKey: 'onboarding.pillar_members_title',     descKey: 'onboarding.pillar_members_desc',     accentColor: '#C9A961' },
+] as const
 
 export function OnboardingModal({ open, onClose }: Props) {
+  const { t } = useTranslation()
+
   if (!open) return null
 
   return (
@@ -42,10 +27,7 @@ export function OnboardingModal({ open, onClose }: Props) {
     >
       <div
         className="w-full max-w-2xl rounded-2xl overflow-hidden"
-        style={{
-          background: '#f5f5f0',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
-        }}
+        style={{ background: '#f5f5f0', boxShadow: '0 24px 64px rgba(0,0,0,0.18)' }}
       >
         {/* Header */}
         <div className="px-8 pt-8 pb-6 text-center">
@@ -53,10 +35,10 @@ export function OnboardingModal({ open, onClose }: Props) {
             <Logo size={32} />
           </div>
           <h2 style={{ fontSize: 22, fontWeight: 600, color: '#1a1a1a', marginBottom: 6, fontFamily: 'Inter, sans-serif' }}>
-            Bienvenido a Crewficina
+            {t('onboarding.headline')}
           </h2>
           <p style={{ fontSize: 14, color: '#888', fontFamily: 'Inter, sans-serif', lineHeight: 1.5 }}>
-            Tu oficina de planificación coreográfica. Activá los módulos que necesites.
+            {t('onboarding.subtitle')}
           </p>
         </div>
 
@@ -64,37 +46,25 @@ export function OnboardingModal({ open, onClose }: Props) {
         <div className="grid grid-cols-2 gap-3 px-8 pb-6">
           {PILLARS.map(p => (
             <div
-              key={p.title}
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e8e6e0',
-                borderRadius: 12,
-                padding: '20px 18px',
-              }}
+              key={p.titleKey}
+              style={{ background: '#ffffff', border: '1px solid #e8e6e0', borderRadius: 12, padding: '20px 18px' }}
             >
               <div
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
+                  width: 36, height: 36, borderRadius: 8,
                   background: p.accentColor + '15',
                   border: `1px solid ${p.accentColor}30`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 18,
-                  marginBottom: 12,
-                  color: p.accentColor,
-                  fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 18, marginBottom: 12, color: p.accentColor, fontWeight: 700,
                 }}
               >
                 {p.icon}
               </div>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>
-                {p.title}
+                {t(p.titleKey)}
               </div>
               <div style={{ fontSize: 12, color: '#888', lineHeight: 1.5, fontFamily: 'Inter, sans-serif' }}>
-                {p.desc}
+                {t(p.descKey)}
               </div>
             </div>
           ))}
@@ -105,39 +75,25 @@ export function OnboardingModal({ open, onClose }: Props) {
           <button
             onClick={onClose}
             style={{
-              width: '100%',
-              padding: '12px 0',
-              background: '#C9343D',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
-              letterSpacing: '0.01em',
-              transition: 'background 0.15s',
+              width: '100%', padding: '12px 0',
+              background: '#C9343D', color: '#ffffff', border: 'none',
+              borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'Inter, sans-serif', letterSpacing: '0.01em', transition: 'background 0.15s',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = '#a82830')}
             onMouseLeave={e => (e.currentTarget.style.background = '#C9343D')}
           >
-            Comenzar →
+            {t('onboarding.cta')}
           </button>
           <button
             onClick={onClose}
             style={{
-              width: '100%',
-              padding: '10px 0',
-              background: 'transparent',
-              color: '#888',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 12,
-              cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
+              width: '100%', padding: '10px 0',
+              background: 'transparent', color: '#888', border: 'none',
+              borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'Inter, sans-serif',
             }}
           >
-            Explorar por mi cuenta
+            {t('onboarding.cta_explore')}
           </button>
         </div>
       </div>

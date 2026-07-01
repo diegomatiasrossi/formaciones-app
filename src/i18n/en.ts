@@ -550,6 +550,20 @@ export default {
   splash: {
     skip: 'Continue →',
   },
+  onboarding: {
+    headline: 'Welcome to Crewficina',
+    subtitle: 'Your choreographic planning office. Activate the modules you need.',
+    cta: 'Get started →',
+    cta_explore: 'Explore on my own',
+    pillar_space_title: 'Space',
+    pillar_space_desc: 'Visual formation editor with drag & drop. Up to 50 members, 20+ preset formations and scene transitions.',
+    pillar_activities_title: 'Activities',
+    pillar_activities_desc: 'Production checklists and weekly planning with tasks organized by project stage.',
+    pillar_events_title: 'Events',
+    pillar_events_desc: 'Log performances and competitions. Track preparation, dates and status for each event.',
+    pillar_members_title: 'Members',
+    pillar_members_desc: 'Your crew database: name, styles, music and custom notes per project.',
+  },
   checkout: {
     success_banner: 'Welcome — your subscription is now active. If your plan is not reflected yet, wait a few seconds and refresh the page.',
   },
