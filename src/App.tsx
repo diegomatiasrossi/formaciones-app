@@ -17,6 +17,7 @@ import { InvitePage } from '@/pages/InvitePage'
 import { AuthPage } from '@/features/auth/AuthPage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { CookieBanner } from '@/components/ui/CookieBanner'
+import { WhatsAppWidget } from '@/components/ui/WhatsAppWidget'
 import { useAuth } from '@/features/auth/useAuth'
 import { useSessionGuard } from '@/hooks/useSessionGuard'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -47,6 +48,8 @@ function EditorOrMobile() {
 function AppWithAuth() {
   const { user } = useAuth()
   const { loadMemberships } = useWorkspaceStore()
+  const location = useLocation()
+  const isEditor = location.pathname.startsWith('/editor/')
 
   // Load org memberships once the user is authenticated.
   // Pass user.id directly to avoid a redundant supabase.auth.getUser() network
@@ -56,7 +59,9 @@ function AppWithAuth() {
   }, [user, loadMemberships])
 
   return (
-    <Routes>
+    <>
+      {!isEditor && <WhatsAppWidget />}
+      <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route
         path="/projects"
@@ -89,6 +94,7 @@ function AppWithAuth() {
       <Route path="/terms" element={<Navigate to="/terminos" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }
 

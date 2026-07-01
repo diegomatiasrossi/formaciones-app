@@ -1,25 +1,25 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-const KEY = 'crewficina_cookies_accepted'
+export const COOKIE_CONSENT_KEY = 'crewficina_cookies_accepted'
 
 export function CookieBanner() {
   const { t } = useTranslation()
   // try/catch: si localStorage no es accesible (modos privados), mostrar el banner
   // por defecto en vez de crashear el render (que lo ocultaría vía ErrorBoundary).
   const [visible, setVisible] = useState(() => {
-    try { return !localStorage.getItem(KEY) } catch { return true }
+    try { return !localStorage.getItem(COOKIE_CONSENT_KEY) } catch { return true }
   })
 
   if (!visible) return null
 
   function accept() {
-    try { localStorage.setItem(KEY, 'all') } catch { /* ignore */ }
+    try { localStorage.setItem(COOKIE_CONSENT_KEY, 'all') } catch { /* ignore */ }
     setVisible(false)
   }
 
   function essential() {
-    try { localStorage.setItem(KEY, 'essential') } catch { /* ignore */ }
+    try { localStorage.setItem(COOKIE_CONSENT_KEY, 'essential') } catch { /* ignore */ }
     setVisible(false)
   }
 

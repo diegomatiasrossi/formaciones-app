@@ -567,6 +567,10 @@ export default {
   checkout: {
     success_banner: 'Bem-vindo(a) — sua assinatura está ativa. Se o seu plano ainda não aparecer, aguarde alguns segundos e atualize a página.',
   },
+  whatsapp: {
+    aria_label: 'Fale conosco pelo WhatsApp',
+    prefill_message: 'Olá! Tenho uma dúvida sobre o Crewficina',
+  },
   cookies: {
     message: 'Usamos cookies para melhorar sua experiência. Você pode aceitar todos ou apenas os essenciais.',
     accept_all: 'Aceitar todos',
