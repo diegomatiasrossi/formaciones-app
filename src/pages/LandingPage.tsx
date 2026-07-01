@@ -6,6 +6,7 @@ import { FormationDemo } from '@/components/ui/FormationDemo'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { Modal } from '@/components/ui/Modal'
 import { Logo } from '@/components/ui/Logo'
+import { PRICING_PLANS } from '@/data/pricingPlans'
 import poleoLogo from '@/assets/diego-poleo-logo.png'
 
 const FEATURES = [
@@ -22,12 +23,6 @@ const STATS = [
   { value: '50',  labelKey: 'landing.stats_members' },
   { value: '4',   labelKey: 'landing.stats_levels' },
   { value: '∞',   labelKey: 'landing.stats_scenes' },
-]
-
-const PLANS = [
-  { name: 'Free', price: '$0', period: '', desc: 'Para explorar', features: ['10 integrantes por escena', '3 proyectos', '3 grupos', '3 eventos', '20+ formaciones', 'Preview de transiciones', 'Link de solo lectura'], cta: 'Empezar gratis', highlight: false },
-  { name: 'Solo Pro', price: '$9.99', period: '/mes', desc: 'Para coreógrafos activos', features: ['50 integrantes', 'Proyectos ilimitados', 'Audio + timeline', 'Canon + PDF', '14 días gratis'], cta: 'Empezar Solo Pro', highlight: true },
-  { name: 'Studio', price: '$24.99', period: '/mes', desc: 'Para academias', features: ['Integrantes ilimitados', 'Todo de Solo Pro', 'Estadísticas avanzadas', 'Hasta 3 usuarios incluidos'], cta: 'Empezar Studio', highlight: false },
 ]
 
 export function LandingPage() {
@@ -194,28 +189,28 @@ export function LandingPage() {
           <h2 className="text-3xl font-semibold tracking-tight">Empezá gratis. Crecé cuando lo necesites.</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {PLANS.map(plan => (
-            <div key={plan.name} className={`rounded-2xl border p-6 flex flex-col gap-5 transition-all bg-blanco
+          {PRICING_PLANS.map(plan => (
+            <div key={plan.id} className={`rounded-2xl border p-6 flex flex-col gap-5 transition-all bg-blanco
               ${plan.highlight ? 'border-2 border-rojo shadow-card' : 'border-borde-light shadow-soft'}`}>
               <div>
-                {plan.highlight && <div className="text-[9px] text-rojo uppercase tracking-[0.3em] mb-2 font-bold">Más popular</div>}
+                {plan.highlight && <div className="text-[9px] text-rojo uppercase tracking-[0.3em] mb-2 font-bold">{t('pricing.most_popular')}</div>}
                 <div className="text-base font-semibold">{plan.name}</div>
-                <div className="text-[11px] text-gris mb-2">{plan.desc}</div>
+                <div className="text-[11px] text-gris mb-2">{t(plan.descKey)}</div>
                 <div className="flex items-baseline gap-0.5">
                   <span className={`text-3xl font-semibold ${plan.highlight ? 'text-rojo' : 'text-negro'}`}>{plan.price}</span>
-                  <span className="text-gris text-xs">{plan.period}</span>
+                  <span className="text-gris text-xs">{plan.periodKey ? t(plan.periodKey) : ''}</span>
                 </div>
               </div>
               <ul className="space-y-2 flex-1">
-                {plan.features.map(f => (
-                  <li key={f} className="flex items-center gap-2 text-xs text-negro/75">
-                    <span className="text-green-600 shrink-0">✓</span>{f}
+                {plan.features.filter(f => f.available).map(f => (
+                  <li key={f.key} className="flex items-center gap-2 text-xs text-negro/75">
+                    <span className="text-green-600 shrink-0">✓</span>{t(f.key)}
                   </li>
                 ))}
               </ul>
               <button onClick={() => navigate('/pricing')} className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-colors
                 ${plan.highlight ? 'bg-rojo hover:bg-rojo-oscuro text-blanco' : 'border border-borde-light text-negro hover:border-dorado'}`}>
-                {plan.cta}
+                {t(plan.ctaKey)}
               </button>
             </div>
           ))}

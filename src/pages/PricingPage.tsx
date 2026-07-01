@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Logo } from '@/components/ui/Logo'
 import { usePlan } from '@/hooks/usePlan'
 import { useAuth } from '@/features/auth/useAuth'
+import { getPlan } from '@/data/pricingPlans'
 
 type Cycle = 'monthly' | 'yearly'
 
@@ -18,6 +20,7 @@ const PRICES = {
 }
 
 export function PricingPage() {
+  const { t }     = useTranslation()
   const navigate  = useNavigate()
   const { user }  = useAuth()
   const { planName, startCheckout } = usePlan()
@@ -90,18 +93,13 @@ export function PricingPage() {
           <div className="rounded-2xl border border-borde-light p-6 flex flex-col gap-4 bg-blanco shadow-soft">
             <div>
               <div className="text-base font-semibold">Free</div>
-              <div className="text-[11px] text-gris mb-3">Para explorar</div>
+              <div className="text-[11px] text-gris mb-3">{t(getPlan('free').descKey)}</div>
               <div className="text-3xl font-semibold">$0</div>
             </div>
             <ul className="space-y-2 flex-1">
-              {['10 integrantes por escena', '3 proyectos', 'Canvas drag & drop', '20+ formaciones', 'Link de solo lectura'].map(f => (
-                <li key={f} className="flex items-start gap-2 text-xs text-negro/75">
-                  <span className="text-green-600 mt-0.5 shrink-0">✓</span>{f}
-                </li>
-              ))}
-              {['Audio + timeline', 'Canon', 'PDF export', 'Estadísticas'].map(f => (
-                <li key={f} className="flex items-start gap-2 text-xs text-gris/40">
-                  <span className="shrink-0 mt-0.5">✕</span>{f}
+              {getPlan('free').features.map(f => (
+                <li key={f.key} className={`flex items-start gap-2 text-xs ${f.available ? 'text-negro/75' : 'text-gris/40'}`}>
+                  <span className={`shrink-0 mt-0.5 ${f.available ? 'text-green-600' : ''}`}>{f.available ? '✓' : '✕'}</span>{t(f.key)}
                 </li>
               ))}
             </ul>
@@ -117,7 +115,7 @@ export function PricingPage() {
             </div>
             <div>
               <div className="text-base font-semibold">Solo Pro</div>
-              <div className="text-[11px] text-gris mb-3">Para coreógrafos activos</div>
+              <div className="text-[11px] text-gris mb-3">{t(getPlan('solo_pro').descKey)}</div>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-semibold text-rojo">{PRICES.solo_pro[cycle].label}</span>
                 <span className="text-gris text-xs">{PRICES.solo_pro[cycle].period}</span>
@@ -127,14 +125,9 @@ export function PricingPage() {
               )}
             </div>
             <ul className="space-y-2 flex-1">
-              {['50 integrantes por escena', 'Proyectos ilimitados', 'Todo de Free', 'Audio + timeline', 'Transiciones en canon', 'PDF sin marca de agua'].map(f => (
-                <li key={f} className="flex items-start gap-2 text-xs text-negro/75">
-                  <span className="text-green-600 mt-0.5 shrink-0">✓</span>{f}
-                </li>
-              ))}
-              {['Estadísticas avanzadas'].map(f => (
-                <li key={f} className="flex items-start gap-2 text-xs text-gris/40">
-                  <span className="shrink-0 mt-0.5">✕</span>{f}
+              {getPlan('solo_pro').features.map(f => (
+                <li key={f.key} className={`flex items-start gap-2 text-xs ${f.available ? 'text-negro/75' : 'text-gris/40'}`}>
+                  <span className={`shrink-0 mt-0.5 ${f.available ? 'text-green-600' : ''}`}>{f.available ? '✓' : '✕'}</span>{t(f.key)}
                 </li>
               ))}
             </ul>
@@ -151,16 +144,16 @@ export function PricingPage() {
           <div className="rounded-2xl border border-borde-light p-6 flex flex-col gap-4 bg-blanco shadow-soft">
             <div>
               <div className="text-base font-semibold">Studio</div>
-              <div className="text-[11px] text-gris mb-3">Para academias y equipos</div>
+              <div className="text-[11px] text-gris mb-3">{t(getPlan('studio').descKey)}</div>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-semibold text-dorado">{PRICES.studio[cycle].label}</span>
                 <span className="text-gris text-xs">{PRICES.studio[cycle].period}</span>
               </div>
             </div>
             <ul className="space-y-2 flex-1">
-              {['Integrantes ilimitados', 'Proyectos ilimitados', 'Todo de Solo Pro', 'Estadísticas + mapa de zonas', 'Hasta 5 usuarios', 'Soporte prioritario'].map(f => (
-                <li key={f} className="flex items-start gap-2 text-xs text-negro/75">
-                  <span className="text-green-600 mt-0.5 shrink-0">✓</span>{f}
+              {getPlan('studio').features.map(f => (
+                <li key={f.key} className={`flex items-start gap-2 text-xs ${f.available ? 'text-negro/75' : 'text-gris/40'}`}>
+                  <span className={`shrink-0 mt-0.5 ${f.available ? 'text-green-600' : ''}`}>{f.available ? '✓' : '✕'}</span>{t(f.key)}
                 </li>
               ))}
             </ul>
