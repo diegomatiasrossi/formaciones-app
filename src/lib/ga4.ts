@@ -36,6 +36,10 @@ export function loadGA4(): void {
     window.gtag('js', new Date())
     window.gtag('config', MEASUREMENT_ID, { send_page_view: false })
     ga4Loaded = true
+    // Avisar a App.tsx que el script terminó de cargar para que dispare el
+    // page_view de la primera ruta. Sin esto se pierde por race condition:
+    // el useEffect de pathname ya corrió antes de que el script cargara.
+    window.dispatchEvent(new Event('ga4-ready'))
   }
   document.head.appendChild(script)
 }
