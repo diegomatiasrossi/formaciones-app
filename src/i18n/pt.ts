@@ -98,6 +98,8 @@ export default {
     toolbar: {
       style: 'Estilo',
       shape: 'Forma',
+      tool_section: 'Ferramenta',
+      more: 'Mais',
       size: 'Tamanho',
       color: 'Cor',
       dancers: 'Integrantes',

@@ -1,21 +1,28 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
+import { usePlan } from '@/hooks/usePlan'
 import { FORMATION_CARDS } from '@/lib/formations'
 import { FormationCardButton } from './FormationCard'
 import { MembersPanel } from './MembersPanel'
 import type { DancerLevel } from '@/types'
-import { LEVEL_META, LEVEL_OPACITY, LEVEL_SCALE } from '@/types'
+import { LEVEL_META, LEVEL_OPACITY, LEVEL_SCALE, SIZE_OPTIONS } from '@/types'
 import clsx from 'clsx'
 
 export function Sidebar() {
   const { t } = useTranslation()
+  const { features } = usePlan()
   const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1280)
   // Acordeón: todas las secciones colapsadas por defecto, varias pueden estar
   // abiertas a la vez (no exclusivo).
   const [open, setOpen] = useState<Record<string, boolean>>({})
   const toggleSection = (id: string) => setOpen(o => ({ ...o, [id]: !o[id] }))
   const {
+    tool, setTool,
+    newColor, setNewColor,
+    newSize, setNewSize,
+    newDancerCount, setNewDancerCount,
+    setSize,
     rotateAll, mirrorH, mirrorV, scaleFormation,
     showGrid, setShowGrid,
     showLabels, setShowLabels,
@@ -27,6 +34,16 @@ export function Sidebar() {
 
   const activeScene = scenes.find(s => s.id === activeSceneId)
   const selectedDancers = (activeScene?.dancers ?? []).filter(d => selectedIds.includes(d.id))
+
+  // Herramienta de creación (movido desde el Toolbar). Misma lógica: el tamaño
+  // setea el default para nuevos integrantes y también se aplica a la selección.
+  const maxDancers = features.maxDancers
+  const dancerCount = activeScene?.dancers.length ?? 0
+  const limitReached = dancerCount >= maxDancers
+  function pickSize(size: number) {
+    setNewSize(size)
+    if (selectedIds.length > 0) setSize(selectedIds, size)
+  }
 
   const sideBtn = (label: string, onClick: () => void) => (
     <button
@@ -134,6 +151,78 @@ export function Sidebar() {
       )}
 
       {/* ── Acordeón ─────────────────────────────────────────────── */}
+      {section('tool', t('editor.toolbar.tool_section'), (
+        <div className="space-y-3">
+          {/* Agregar integrante (herramienta) */}
+          <button
+            onClick={() => !limitReached && setTool('add')}
+            disabled={limitReached}
+            title={limitReached
+              ? t('plan.member_limit_reached', { limit: maxDancers === Infinity ? '∞' : maxDancers })
+              : t('editor.tool_add_hint')}
+            className={clsx(
+              'w-full px-2.5 py-1.5 text-xs rounded-md border transition-colors',
+              tool === 'add'
+                ? 'bg-dorado text-negro border-dorado font-semibold'
+                : 'text-blanco-calido border-borde hover:border-dorado/60 hover:text-dorado',
+              limitReached && 'opacity-40 cursor-not-allowed',
+            )}
+          >
+            + {t('editor.tool_add')}
+          </button>
+
+          {/* Tamaño */}
+          <div>
+            <div className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em] mb-1.5">{t('editor.toolbar.size')}</div>
+            <div className="flex gap-1">
+              {SIZE_OPTIONS.map(s => (
+                <button
+                  key={s.value}
+                  onClick={() => pickSize(s.value)}
+                  title={`${s.label} (${s.value}px)`}
+                  className={clsx(
+                    'flex-1 flex flex-col items-center gap-1 py-1.5 rounded-md border text-[11px] transition-colors',
+                    newSize === s.value
+                      ? 'bg-surface-2 border-borde-hover text-blanco-calido font-semibold'
+                      : 'border-borde text-blanco-calido/70 hover:border-borde-hover hover:text-blanco-calido',
+                  )}
+                >
+                  <span className="rounded-full bg-current inline-block shrink-0"
+                    style={{ width: s.value * 0.7, height: s.value * 0.7, minWidth: 6, minHeight: 6 }} />
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Color */}
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.color')}</span>
+            <input
+              id="color-picker"
+              type="color"
+              value={newColor}
+              onChange={e => setNewColor(e.target.value)}
+              className="w-8 h-7 rounded cursor-pointer border border-borde bg-transparent p-0.5"
+              title={t('editor.toolbar.color')}
+            />
+          </div>
+
+          {/* Cantidad */}
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.dancers')}</span>
+            <input
+              type="number"
+              value={newDancerCount}
+              min={1}
+              max={50}
+              onChange={e => setNewDancerCount(Number(e.target.value))}
+              className="w-16 bg-negro border border-borde rounded px-2 py-1.5 text-xs text-blanco-calido focus:outline-none focus:border-dorado"
+            />
+          </div>
+        </div>
+      ))}
+
       {section('members', t('editor.toolbar.members_panel'), (
         <MembersPanel embedded />
       ))}
