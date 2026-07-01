@@ -29,6 +29,9 @@ export function loadPixel(): void {
   const script = document.createElement('script')
   script.async = true
   script.src = 'https://connect.facebook.net/en_US/fbevents.js'
+  // Disparar PageView en cuanto fbevents.js termina de cargar y redefine
+  // window.fbq con la función real (antes de onload, fbq es solo la cola stub).
+  script.onload = () => trackEvent('PageView')
   document.head.appendChild(script)
 
   // noscript fallback (para entornos sin JS — buena práctica aunque Vite
