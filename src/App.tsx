@@ -18,6 +18,7 @@ import { AuthPage } from '@/features/auth/AuthPage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { CookieBanner } from '@/components/ui/CookieBanner'
 import { WhatsAppWidget } from '@/components/ui/WhatsAppWidget'
+import { trackGA4Event } from '@/lib/ga4'
 import { useAuth } from '@/features/auth/useAuth'
 import { useSessionGuard } from '@/hooks/useSessionGuard'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -50,6 +51,14 @@ function AppWithAuth() {
   const { loadMemberships } = useWorkspaceStore()
   const location = useLocation()
   const isEditor = location.pathname.startsWith('/editor/')
+
+  // Dispara page_view en cada cambio de ruta (SPA — el script de gtag tiene
+  // send_page_view:false para que no lo duplique en la carga inicial).
+  // trackGA4Event tiene guard ga4Loaded: si el usuario no aceptó cookies,
+  // este useEffect es un no-op y no queda nada encolado.
+  useEffect(() => {
+    trackGA4Event('page_view', { page_path: location.pathname })
+  }, [location.pathname])
 
   // Load org memberships once the user is authenticated.
   // Pass user.id directly to avoid a redundant supabase.auth.getUser() network
