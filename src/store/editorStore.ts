@@ -42,6 +42,7 @@ interface EditorActions {
   removeScene: (id: string) => void
   renameScene: (id: string, name: string) => void
   duplicateScene: (id: string) => void
+  reorderScenes: (fromIndex: number, toIndex: number) => void
   addDancerAt: (x: number, y: number, memberName?: string) => void
   moveDancer: (id: string, x: number, y: number) => void
   moveDancers: (deltas: { id: string; x: number; y: number }[]) => void
@@ -287,6 +288,25 @@ export const useEditorStore = create<EditorState & EditorActions>()((set, get) =
     }
     set(s => ({
       ...withHistory(s, () => ({ scenes: [...s.scenes, copy], activeSceneId: copy.id })),
+    }))
+  },
+
+  // Reordena escenas (drag & drop en el timeline). Usa withHistory para que
+  // Ctrl+Z pueda deshacer el reorden, igual que removeScene/duplicateScene.
+  reorderScenes: (fromIndex, toIndex) => {
+    const { scenes } = get()
+    if (
+      fromIndex === toIndex ||
+      fromIndex < 0 || toIndex < 0 ||
+      fromIndex >= scenes.length || toIndex >= scenes.length
+    ) return
+    set(s => ({
+      ...withHistory(s, () => {
+        const next = [...s.scenes]
+        const [moved] = next.splice(fromIndex, 1)
+        next.splice(toIndex, 0, moved)
+        return { scenes: next }
+      }),
     }))
   },
 
