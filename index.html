@@ -50,6 +50,14 @@
     }
     </script>
 
+    <!-- GA4 — stub de cola solamente. El script real de gtag se carga
+         dinámicamente desde src/lib/ga4.ts ÚNICAMENTE cuando el usuario
+         acepta todas las cookies. Sin consentimiento, nada se transmite. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+    </script>
+
     <!-- Meta Pixel — stub de cola solamente. El script real de fbq se carga
          dinámicamente desde src/lib/metaPixel.ts ÚNICAMENTE cuando el usuario
          acepta todas las cookies (COOKIE_CONSENT_KEY === 'all'). Esto cumple
