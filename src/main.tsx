@@ -4,6 +4,12 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './i18n'
 import './index.css'
+import { initPixelListener } from './lib/metaPixel'
+
+// Carga el Pixel si ya hay consentimiento, o lo activa cuando el usuario
+// acepta cookies (escucha 'cookie-consent-changed'). Sin consentimiento, el
+// script externo de Meta nunca se carga (cumple /privacidad).
+initPixelListener()
 
 Sentry.init({
   dsn: "https://8d07041c4787010b52d95d5792399362@o4511623586709504.ingest.de.sentry.io/4511623602962512",

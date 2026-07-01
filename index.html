@@ -50,6 +50,19 @@
     }
     </script>
 
+    <!-- Meta Pixel — stub de cola solamente. El script real de fbq se carga
+         dinámicamente desde src/lib/metaPixel.ts ÚNICAMENTE cuando el usuario
+         acepta todas las cookies (COOKIE_CONSENT_KEY === 'all'). Esto cumple
+         con la política de privacidad en /privacidad. -->
+    <script>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
+      /* El <img> noscript y el connect.facebook.net se cargan desde metaPixel.ts */
+      }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1738555567593579');
+    </script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
