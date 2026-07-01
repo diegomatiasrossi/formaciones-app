@@ -32,13 +32,13 @@ export function PricingPage() {
     if (!user) { navigate('/login?redirect=/pricing'); return }
     setCheckoutError(null)
     const price = PRICES[plan][cycle]
-    if (!price.id) { setCheckoutError('El pago todavía no está disponible para este plan. Probá de nuevo en un rato.'); return }
+    if (!price.id) { setCheckoutError(t('pricing.checkout_unavailable')); return }
     try {
       setLoading(plan)
       await startCheckout(price.id, user.email ?? '')
     } catch (err) {
       // Mostrar el mensaje real del backend (no un genérico) para poder diagnosticar.
-      const message = err instanceof Error ? err.message : 'No se pudo iniciar el pago.'
+      const message = err instanceof Error ? err.message : t('pricing.checkout_error')
       setCheckoutError(message)
       setLoading(null)
     }
@@ -51,7 +51,7 @@ export function PricingPage() {
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-5 border-b border-borde-light bg-blanco">
         <button onClick={() => navigate(-1)} className="text-gris hover:text-negro text-sm transition-colors flex items-center gap-1">
-          ← Volver
+          ← {t('pricing.back')}
         </button>
         <Logo size={24} />
       </nav>
@@ -59,9 +59,9 @@ export function PricingPage() {
       <div className="flex-1 max-w-5xl mx-auto px-8 py-16 w-full">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">Planes</div>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">Elegí tu plan</h1>
-          <p className="text-gris text-sm">Empezá gratis. Pagás cuando crece tu proyecto.</p>
+          <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">{t('pricing.eyebrow')}</div>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">{t('pricing.page_title')}</h1>
+          <p className="text-gris text-sm">{t('pricing.page_subtitle')}</p>
 
           {/* Toggle */}
           <div className="flex items-center justify-center gap-2 mt-8 p-1 bg-blanco border border-borde-light rounded-full w-fit mx-auto">
@@ -69,13 +69,13 @@ export function PricingPage() {
               onClick={() => setCycle('monthly')}
               className={`text-sm px-5 py-1.5 rounded-full transition-colors ${cycle === 'monthly' ? 'bg-negro text-blanco' : 'text-gris hover:text-negro'}`}
             >
-              Mensual
+              {t('pricing.monthly')}
             </button>
             <button
               onClick={() => setCycle('yearly')}
               className={`text-sm px-5 py-1.5 rounded-full transition-colors ${cycle === 'yearly' ? 'bg-negro text-blanco' : 'text-gris hover:text-negro'}`}
             >
-              Anual <span className="text-xs text-rojo ml-1 font-semibold">−20%</span>
+              {t('pricing.yearly')} <span className="text-xs text-rojo ml-1 font-semibold">{t('pricing.yearly_discount')}</span>
             </button>
           </div>
         </div>
@@ -104,14 +104,14 @@ export function PricingPage() {
               ))}
             </ul>
             <button disabled className="w-full py-2.5 rounded-xl text-sm border border-borde-light text-gris cursor-default">
-              {isCurrentPlan('free') ? 'Plan actual' : 'Gratis siempre'}
+              {isCurrentPlan('free') ? t('pricing.current_plan') : t('pricing.free_forever')}
             </button>
           </div>
 
           {/* Solo Pro */}
           <div className="rounded-2xl border-2 border-rojo p-6 flex flex-col gap-4 bg-blanco shadow-card relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-[9px] text-blanco font-bold bg-rojo px-3 py-1 rounded-full uppercase tracking-wider">
-              Más popular
+              {t('pricing.most_popular')}
             </div>
             <div>
               <div className="text-base font-semibold">Solo Pro</div>
@@ -121,7 +121,7 @@ export function PricingPage() {
                 <span className="text-gris text-xs">{PRICES.solo_pro[cycle].period}</span>
               </div>
               {cycle === 'monthly' && (
-                <div className="text-[10px] text-rojo/70 mt-1">14 días gratis · sin tarjeta al inicio</div>
+                <div className="text-[10px] text-rojo/70 mt-1">{t('pricing.trial_note')}</div>
               )}
             </div>
             <ul className="space-y-2 flex-1">
@@ -136,7 +136,7 @@ export function PricingPage() {
               disabled={!!loading || isCurrentPlan('solo_pro')}
               className="w-full py-2.5 rounded-xl text-sm font-semibold transition-colors bg-rojo hover:bg-rojo-oscuro text-blanco disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading === 'solo_pro' ? 'Redirigiendo...' : isCurrentPlan('solo_pro') ? 'Plan actual' : 'Empezar Solo Pro →'}
+              {loading === 'solo_pro' ? t('pricing.redirecting') : isCurrentPlan('solo_pro') ? t('pricing.current_plan') : `${t('pricing.cta_solo_pro')} →`}
             </button>
           </div>
 
@@ -162,7 +162,7 @@ export function PricingPage() {
               disabled={!!loading || isCurrentPlan('studio')}
               className="w-full py-2.5 rounded-xl text-sm font-semibold transition-colors border-2 border-dorado text-dorado-oscuro hover:bg-dorado/10 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading === 'studio' ? 'Redirigiendo...' : isCurrentPlan('studio') ? 'Plan actual' : 'Empezar Studio →'}
+              {loading === 'studio' ? t('pricing.redirecting') : isCurrentPlan('studio') ? t('pricing.current_plan') : `${t('pricing.cta_studio')} →`}
             </button>
           </div>
 
@@ -170,8 +170,8 @@ export function PricingPage() {
 
         {/* Footer notes */}
         <div className="text-center mt-10 space-y-2">
-          <p className="text-[11px] text-gris/60">Pagos procesados por Stripe · Cancelá cuando quieras desde tu panel</p>
-          <p className="text-[11px] text-gris/50">El cobro es en USD. Si estás en Argentina, tu banco puede aplicar impuestos adicionales (PAÍS, etc.)</p>
+          <p className="text-[11px] text-gris/60">{t('pricing.footer_payment')}</p>
+          <p className="text-[11px] text-gris/50">{t('pricing.footer_usd')}</p>
         </div>
       </div>
     </div>

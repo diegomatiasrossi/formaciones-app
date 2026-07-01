@@ -10,13 +10,13 @@ import { PRICING_PLANS } from '@/data/pricingPlans'
 import poleoLogo from '@/assets/diego-poleo-logo.png'
 
 const FEATURES = [
-  { icon: '⬡', title: '20+ Formaciones', desc: 'Línea, círculo, espiral, ola, bloques, X, flecha y más.' },
-  { icon: '◉', title: 'Niveles coreográficos', desc: 'Suelo, medio, de pie y aéreo. Opacidad y escala representan visualmente cada nivel.' },
-  { icon: '▶', title: 'Preview de transición', desc: 'Transiciones suaves entre escenas, en tiempo real.' },
-  { icon: '♪', title: 'Línea de audio', desc: 'Sincronizá cada escena con un marcador temporal en la pista de audio.' },
-  { icon: '⊞', title: 'Multi-escena', desc: 'Creá hasta 100 escenas por proyecto. Duplicá, renombrá y reordenás en segundos.' },
-  { icon: '◎', title: 'Estadísticas', desc: 'Mapa de zonas, distribución de niveles, densidad del escenario y colores por grupo.' },
-]
+  { icon: '⬡', titleKey: 'landing.feat_formations_title', descKey: 'landing.feat_formations_desc' },
+  { icon: '◉', titleKey: 'landing.feat_levels_title',     descKey: 'landing.feat_levels_desc' },
+  { icon: '▶', titleKey: 'landing.feat_preview_title',    descKey: 'landing.feat_preview_desc' },
+  { icon: '♪', titleKey: 'landing.feat_audio_title',      descKey: 'landing.feat_audio_desc' },
+  { icon: '⊞', titleKey: 'landing.feat_multiscene_title', descKey: 'landing.feat_multiscene_desc' },
+  { icon: '◎', titleKey: 'landing.feat_stats_title',      descKey: 'landing.feat_stats_desc' },
+] as const
 
 const STATS = [
   { value: '20+', labelKey: 'landing.stats_formations' },
@@ -103,8 +103,8 @@ export function LandingPage() {
               <FormationDemo width={demoW} height={demoH} dancerCount={7} color="#C9A961" />
             </div>
             <div className="absolute -bottom-3 -right-3 bg-blanco border border-borde-light rounded-xl px-3 py-2 shadow-card">
-              <div className="text-dorado text-xs font-semibold">7 integrantes</div>
-              <div className="text-gris text-[10px]">Demo en vivo</div>
+              <div className="text-dorado text-xs font-semibold">{t('landing.hero_badge', { count: 7 })}</div>
+              <div className="text-gris text-[10px]">{t('landing.hero_badge_live')}</div>
             </div>
           </div>
         </div>
@@ -138,15 +138,15 @@ export function LandingPage() {
       {/* Features */}
       <section className="max-w-6xl mx-auto px-8 py-20 w-full">
         <div className="text-center mb-14">
-          <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">Herramientas</div>
-          <h2 className="text-3xl font-semibold tracking-tight">Todo lo que necesitás para coreografiar</h2>
+          <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">{t('landing.features_eyebrow')}</div>
+          <h2 className="text-3xl font-semibold tracking-tight">{t('landing.features_title')}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map(f => (
-            <div key={f.title} className="p-6 rounded-2xl border border-borde-light bg-blanco hover:border-dorado/50 hover:shadow-soft transition-all group hover:-translate-y-0.5">
+            <div key={f.titleKey} className="p-6 rounded-2xl border border-borde-light bg-blanco hover:border-dorado/50 hover:shadow-soft transition-all group hover:-translate-y-0.5">
               <div className="text-2xl mb-4 text-dorado">{f.icon}</div>
-              <h3 className="text-sm font-semibold text-negro mb-2">{f.title}</h3>
-              <p className="text-xs text-gris leading-relaxed">{f.desc}</p>
+              <h3 className="text-sm font-semibold text-negro mb-2">{t(f.titleKey)}</h3>
+              <p className="text-xs text-gris leading-relaxed">{t(f.descKey)}</p>
             </div>
           ))}
         </div>
@@ -161,7 +161,7 @@ export function LandingPage() {
             className="h-16 w-auto shrink-0"
           />
           <div className="flex-1 text-center md:text-left">
-            <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">Quién está detrás</div>
+            <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">{t('landing.credential_eyebrow')}</div>
             <h2 className="text-xl font-semibold mb-3">
               Diego <span className="text-dorado-oscuro">"Póleo"</span> Rossi
             </h2>
@@ -173,9 +173,9 @@ export function LandingPage() {
             </a>
           </div>
           <div className="hidden md:flex flex-col gap-3 shrink-0">
-            {['Juez', 'Bailarín', 'Docente'].map(tag => (
-              <span key={tag} className="px-3 py-1 text-[10px] border border-dorado/30 text-dorado-oscuro rounded-full tracking-wider text-center">
-                {tag}
+            {['landing.tag_judge', 'landing.tag_dancer', 'landing.tag_teacher'].map(tagKey => (
+              <span key={tagKey} className="px-3 py-1 text-[10px] border border-dorado/30 text-dorado-oscuro rounded-full tracking-wider text-center">
+                {t(tagKey)}
               </span>
             ))}
           </div>
@@ -185,8 +185,8 @@ export function LandingPage() {
       {/* Precios */}
       <section className="max-w-6xl mx-auto px-8 py-20 w-full">
         <div className="text-center mb-14">
-          <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">Planes</div>
-          <h2 className="text-3xl font-semibold tracking-tight">Empezá gratis. Crecé cuando lo necesites.</h2>
+          <div className="text-[10px] text-rojo uppercase tracking-[0.3em] mb-3 font-semibold">{t('pricing.eyebrow')}</div>
+          <h2 className="text-3xl font-semibold tracking-tight">{t('pricing.landing_title')}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {PRICING_PLANS.map(plan => (
@@ -220,7 +220,7 @@ export function LandingPage() {
       {/* Newsletter */}
       <section className="border-t border-borde-light bg-negro">
         <div className="max-w-xl mx-auto px-8 py-20 text-center">
-          <div className="text-[10px] text-dorado uppercase tracking-[0.3em] mb-4 font-semibold">Newsletter</div>
+          <div className="text-[10px] text-dorado uppercase tracking-[0.3em] mb-4 font-semibold">{t('landing.newsletter_eyebrow')}</div>
           <h2 className="text-3xl font-semibold tracking-tight mb-3 text-crema">{t('landing.waitlist_headline')}</h2>
           <p className="text-gris text-sm mb-8 leading-relaxed">{t('landing.waitlist_body')}</p>
 
@@ -275,16 +275,16 @@ export function LandingPage() {
         <div className="max-w-6xl mx-auto px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <Logo size={24} />
           <nav className="flex items-center gap-6 text-xs text-gris flex-wrap justify-center">
-            <button onClick={() => navigate('/')} className="hover:text-negro transition-colors">Inicio</button>
-            <button onClick={() => navigate('/pricing')} className="hover:text-negro transition-colors">Precios</button>
+            <button onClick={() => navigate('/')} className="hover:text-negro transition-colors">{t('landing.footer_home')}</button>
+            <button onClick={() => navigate('/pricing')} className="hover:text-negro transition-colors">{t('landing.footer_pricing')}</button>
             <a href="mailto:hola@crewficina.com" className="hover:text-negro transition-colors">hola@crewficina.com</a>
-            <button onClick={() => navigate('/privacidad')} className="hover:text-negro transition-colors">Privacidad</button>
-            <button onClick={() => navigate('/terminos')} className="hover:text-negro transition-colors">Términos</button>
+            <button onClick={() => navigate('/privacidad')} className="hover:text-negro transition-colors">{t('landing.footer_privacy')}</button>
+            <button onClick={() => navigate('/terminos')} className="hover:text-negro transition-colors">{t('landing.footer_terms')}</button>
           </nav>
           <div className="flex items-center gap-3 text-[10px] text-gris/60">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              En vivo
+              {t('landing.footer_live')}
             </span>
             <span>© 2026 Crewficina</span>
           </div>
@@ -292,23 +292,23 @@ export function LandingPage() {
       </footer>
 
       {/* Modal demo */}
-      <Modal open={showDemo} onClose={() => setShowDemo(false)} title="Demo en vivo" className="max-w-2xl">
+      <Modal open={showDemo} onClose={() => setShowDemo(false)} title={t('landing.demo_title')} className="max-w-2xl">
         <div className="space-y-5">
           <div className="rounded-xl overflow-hidden border border-borde-light bg-negro flex items-center justify-center">
             <FormationDemo width={560} height={340} dancerCount={demoDancers} color={demoColor} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] text-gris uppercase tracking-wider mb-2">Integrantes: {demoDancers}</label>
+              <label className="block text-[10px] text-gris uppercase tracking-wider mb-2">{t('landing.demo_members', { count: demoDancers })}</label>
               <input type="range" min={7} max={20} value={demoDancers} onChange={e => setDemoDancers(Number(e.target.value))} className="w-full accent-[#C9343D]" />
             </div>
             <div>
-              <label className="block text-[10px] text-gris uppercase tracking-wider mb-2">Color</label>
+              <label className="block text-[10px] text-gris uppercase tracking-wider mb-2">{t('landing.demo_color')}</label>
               <input type="color" value={demoColor} onChange={e => setDemoColor(e.target.value)} className="h-8 w-full rounded cursor-pointer bg-transparent border border-borde-light" />
             </div>
           </div>
           <button onClick={() => { setShowDemo(false); navigate('/projects') }} className="w-full py-3 bg-rojo hover:bg-rojo-oscuro text-blanco font-semibold rounded-lg transition-colors text-sm">
-            Empezar gratis →
+            {t('pricing.cta_free')} →
           </button>
         </div>
       </Modal>
