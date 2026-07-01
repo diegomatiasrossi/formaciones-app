@@ -12,7 +12,7 @@ import { ModuleNav } from '@/components/ui/ModuleNav'
 import { ActivitiesPanel } from '@/components/ui/ActivitiesPanel'
 import { PresetChecklistSelector } from '@/components/ui/PresetChecklistSelector'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
-import { nameSchema, firstErrorKey } from '@/lib/validation'
+import { nameSchema, eventDateSchema, locationSchema, firstErrorKey } from '@/lib/validation'
 import type { CrewEvent } from '@/types'
 import clsx from 'clsx'
 
@@ -46,6 +46,12 @@ export function EventosPage() {
     if (!form.name.trim() || !canEdit || atLimit) return
     const parsed = nameSchema.safeParse({ name: form.name })
     if (!parsed.success) { setNewError(t(firstErrorKey(parsed)!)); return }
+    if (form.eventDate) {
+      const d = eventDateSchema.safeParse(form.eventDate)
+      if (!d.success) { setNewError(t(firstErrorKey(d)!)); return }
+    }
+    const loc = locationSchema.safeParse(form.location)
+    if (!loc.success) { setNewError(t(firstErrorKey(loc)!)); return }
     setNewError('')
     const newEvent = await createEvent({
       name: form.name.trim(),

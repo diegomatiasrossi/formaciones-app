@@ -10,6 +10,7 @@ import { Logo } from '@/components/ui/Logo'
 import { Modal } from '@/components/ui/Modal'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import { DangerZoneDeleteOrg } from '@/components/ui/DangerZoneDeleteOrg'
+import { emailSchema, orgNameSchema, firstErrorKey } from '@/lib/validation'
 import type { OrgMember, OrgInvite, OrgRole } from '@/types'
 
 export function OrganizacionPage() {
@@ -90,6 +91,8 @@ export function OrganizacionPage() {
 
   async function handleInvite() {
     if (!orgId || !inviteEmail.trim() || !user) return
+    const parsedEmail = emailSchema.safeParse(inviteEmail)
+    if (!parsedEmail.success) { setInviteError(t(firstErrorKey(parsedEmail)!)); return }
     setSaving(true)
     setInviteError(null)
     const { data, error } = await supabase
@@ -145,6 +148,7 @@ export function OrganizacionPage() {
 
   async function handleSaveName() {
     if (!orgId || !orgName.trim()) return
+    if (!orgNameSchema.safeParse(orgName).success) return
     setSaving(true)
     await supabase.from('organizations').update({ name: orgName.trim() }).eq('id', orgId)
     await loadMemberships()
@@ -153,12 +157,12 @@ export function OrganizacionPage() {
 
   async function handleCreateOrg() {
     if (!orgName.trim()) return
+    const parsedName = orgNameSchema.safeParse(orgName)
+    if (!parsedName.success) { setCreateError(t(firstErrorKey(parsedName)!)); return }
     setSaving(true)
     setCreateError(null)
-    console.log('[org] calling create_organization RPC with name:', orgName.trim())
     const { data, error } = await supabase.rpc('create_organization', { org_name: orgName.trim() })
     setSaving(false)
-    console.log('[org] RPC result — data:', data, '| error:', error)
     if (error) {
       // Mapear el rechazo de plan del backend a un mensaje amigable
       setCreateError(
@@ -174,10 +178,8 @@ export function OrganizacionPage() {
     }
     const newOrgId = String(data)
     await loadMemberships()
-    console.log('[org] after loadMemberships, memberships in store:', useWorkspaceStore.getState().memberships)
     // Primary path: switchToOrg reads from the updated memberships store
     switchToOrg(newOrgId)
-    console.log('[org] after switchToOrg, activeWorkspace:', useWorkspaceStore.getState().activeWorkspace)
     // Defensive fallback: if switchToOrg didn't find the membership (e.g. loadMemberships
     // returned empty due to a transient RLS or query issue), set the workspace directly
     // using the data we already have from the RPC call.

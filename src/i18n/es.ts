@@ -341,6 +341,10 @@ export default {
     name_required: 'El nombre es obligatorio.',
     name_max: 'El nombre no puede superar los 100 caracteres.',
     nickname_max: 'El apodo no puede superar los 50 caracteres.',
+    date_invalid: 'Fecha inválida (usá el formato AAAA-MM-DD).',
+    date_range: 'La fecha debe estar entre 2020 y dentro de 5 años.',
+    location_max: 'La ubicación no puede superar los 200 caracteres.',
+    checklist_max: 'La tarea no puede superar los 150 caracteres.',
   },
   auth: {
     invalid_credentials: 'Email o contraseña incorrectos.',

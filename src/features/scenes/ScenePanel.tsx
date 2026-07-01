@@ -12,7 +12,7 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
   const { t } = useTranslation()
   const {
     scenes, activeSceneId,
-    setActiveScene, addScene, removeScene, renameScene, duplicateScene,
+    setActiveScene, addScene, removeScene, renameScene, duplicateScene, reorderScenes,
     setFormationName, setTransitionType,
   } = useEditorStore()
 
@@ -22,6 +22,9 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
   const [sceneToDelete, setSceneToDelete] = useState<string | null>(null)
   const [transitionMenu, setTransitionMenu] = useState(false)
   const [canonSceneId, setCanonSceneId] = useState<string | null>(null)
+  // Drag & drop para reordenar escenas (patrón HTML5 nativo, como CanonModal).
+  const [dragIdx, setDragIdx] = useState<number | null>(null)
+  const [overIdx, setOverIdx] = useState<number | null>(null)
 
   function startEdit(id: string, field: 'name' | 'formation', current: string) {
     setEditingId(id); setEditField(field); setEditValue(current)
@@ -53,7 +56,23 @@ export function ScenePanel({ canonLocked, namesLocked }: Props) {
 
         {scenes.map((scene, i) => (
           <div key={scene.id} className="flex items-center shrink-0 gap-2">
-            <div className="relative shrink-0">
+            <div
+              className={clsx(
+                'relative shrink-0 rounded-lg transition-opacity',
+                editingId !== scene.id && 'cursor-grab active:cursor-grabbing',
+                dragIdx === i && 'opacity-40',
+                overIdx === i && dragIdx !== null && dragIdx !== i && 'ring-2 ring-dorado',
+              )}
+              draggable={editingId !== scene.id}
+              onDragStart={() => setDragIdx(i)}
+              onDragOver={e => { e.preventDefault(); if (overIdx !== i) setOverIdx(i) }}
+              onDrop={e => {
+                e.preventDefault()
+                if (dragIdx !== null && dragIdx !== i) reorderScenes(dragIdx, i)
+                setDragIdx(null); setOverIdx(null)
+              }}
+              onDragEnd={() => { setDragIdx(null); setOverIdx(null) }}
+            >
               {editingId === scene.id && editField === 'name' ? (
                 <input
                   autoFocus value={editValue}
