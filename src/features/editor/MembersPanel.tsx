@@ -7,6 +7,7 @@ import { useEditorStore } from '@/store/editorStore'
 import { usePlan } from '@/hooks/usePlan'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
 import { supabase } from '@/features/auth/supabaseClient'
+import { memberSchema, firstErrorKey } from '@/lib/validation'
 import clsx from 'clsx'
 
 interface Props {
@@ -26,6 +27,7 @@ export function MembersPanel({ onClose, embedded = false }: Props) {
   const { features } = usePlan()
 
   const [quickName, setQuickName] = useState('')
+  const [quickError, setQuickError] = useState('')
   const [search, setSearch] = useState('')
   const [migrating, setMigrating] = useState(false)
   const [migrated, setMigrated] = useState(false)
@@ -111,6 +113,9 @@ export function MembersPanel({ onClose, embedded = false }: Props) {
   async function quickAdd() {
     const name = quickName.trim()
     if (!name) return
+    const parsed = memberSchema.safeParse({ name })
+    if (!parsed.success) { setQuickError(t(firstErrorKey(parsed)!)); return }
+    setQuickError('')
     const parts = name.split(' ')
     const firstName = parts[0]
     const lastName = parts.slice(1).join(' ') || undefined
@@ -226,7 +231,7 @@ export function MembersPanel({ onClose, embedded = false }: Props) {
           <input
             placeholder="Agregar integrante rápido..."
             value={quickName}
-            onChange={e => setQuickName(e.target.value)}
+            onChange={e => { setQuickName(e.target.value); if (quickError) setQuickError('') }}
             onKeyDown={e => e.key === 'Enter' && quickAdd()}
             className={inputCls}
           />
@@ -236,6 +241,7 @@ export function MembersPanel({ onClose, embedded = false }: Props) {
             className="px-2.5 py-1 text-xs bg-dorado/15 hover:bg-dorado/25 text-dorado rounded-md border border-dorado/30 disabled:opacity-40 transition-colors shrink-0"
           >+</button>
         </div>
+        {quickError && <p className="text-rojo text-[10px] mt-1">{quickError}</p>}
       </div>
 
       {/* Búsqueda */}

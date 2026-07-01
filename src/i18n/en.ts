@@ -341,6 +341,10 @@ export default {
     name_required: 'Name is required.',
     name_max: 'Name cannot exceed 100 characters.',
     nickname_max: 'Nickname cannot exceed 50 characters.',
+    date_invalid: 'Invalid date (use the format YYYY-MM-DD).',
+    date_range: 'The date must be between 2020 and within 5 years.',
+    location_max: 'Location cannot exceed 200 characters.',
+    checklist_max: 'The task cannot exceed 150 characters.',
   },
   auth: {
     invalid_credentials: 'Incorrect email or password.',

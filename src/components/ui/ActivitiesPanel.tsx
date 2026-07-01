@@ -4,6 +4,7 @@ import { useCrewStore } from '@/store/crewStore'
 import { usePlan } from '@/hooks/usePlan'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import { UpgradeGate } from '@/components/ui/UpgradeGate'
+import { checklistItemSchema, firstErrorKey } from '@/lib/validation'
 import type { ActivityContext } from '@/types'
 import clsx from 'clsx'
 
@@ -19,6 +20,7 @@ export function ActivitiesPanel({ contextType, contextId }: Props) {
   const canEdit = wsRole === null || wsRole === 'admin' || wsRole === 'editor'
   const { activitiesFor, createActivity, toggleActivity, deleteActivity } = useCrewStore()
   const [newTitle, setNewTitle] = useState('')
+  const [addError, setAddError] = useState('')
 
   if (!can('checklistEnabled')) {
     return <UpgradeGate requiredPlan="solo_pro" featureName={t('activities.title')}
@@ -33,6 +35,9 @@ export function ActivitiesPanel({ contextType, contextId }: Props) {
 
   async function add() {
     if (!newTitle.trim() || !canEdit) return
+    const parsed = checklistItemSchema.safeParse(newTitle)
+    if (!parsed.success) { setAddError(t(firstErrorKey(parsed)!)); return }
+    setAddError('')
     await createActivity(newTitle.trim(), contextType, contextId, false)
     setNewTitle('')
   }
@@ -46,13 +51,14 @@ export function ActivitiesPanel({ contextType, contextId }: Props) {
 
       {canEdit && (
         <div className="flex gap-2 mb-3">
-          <input type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)}
+          <input type="text" value={newTitle} onChange={e => { setNewTitle(e.target.value); if (addError) setAddError('') }}
             onKeyDown={e => e.key === 'Enter' && add()}
             placeholder={t('activities.placeholder')}
             className="flex-1 bg-crema border border-borde-light rounded-lg px-3 py-2 text-sm text-negro focus:outline-none focus:border-rojo placeholder:text-gris/50" />
           <button onClick={add} className="px-3 py-2 bg-rojo hover:bg-rojo-oscuro text-blanco text-sm font-semibold rounded-lg">+</button>
         </div>
       )}
+      {addError && <p className="text-rojo text-[11px] mb-3 -mt-1">{addError}</p>}
 
       {items.length === 0 ? (
         <p className="text-xs text-gris/60 text-center py-6">{t('activities.empty')}</p>
