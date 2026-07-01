@@ -550,6 +550,9 @@ export default {
   splash: {
     skip: 'Continuar →',
   },
+  checkout: {
+    success_banner: 'Bem-vindo(a) — sua assinatura está ativa. Se o seu plano ainda não aparecer, aguarde alguns segundos e atualize a página.',
+  },
   cookies: {
     message: 'Usamos cookies para melhorar sua experiência. Você pode aceitar todos ou apenas os essenciais.',
     accept_all: 'Aceitar todos',

@@ -8,6 +8,7 @@ import { useEditorStore } from '@/store/editorStore'
 import { Modal } from '@/components/ui/Modal'
 import { SkeletonGrid } from '@/components/ui/SkeletonCard'
 import { OnboardingModal } from '@/components/ui/OnboardingModal'
+import { PostCheckoutBanner } from '@/components/ui/PostCheckoutBanner'
 import { Logo } from '@/components/ui/Logo'
 import { ModuleNav } from '@/components/ui/ModuleNav'
 import { toggleLanguage } from '@/i18n'
@@ -86,8 +87,15 @@ export function ProjectsPage() {
   const { projects, loading, fetchProjects, createLocalProject, saveProject, deleteProject, linkProjectToEvent } = useProjectStore()
   const { groups, events, fetchAll, membersOfGroup } = useCrewStore()
   const loadScenes = useEditorStore(s => s.loadScenes)
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const preloadedEventId = searchParams.get('eventId')
+  const showCheckoutBanner = searchParams.get('checkout') === 'success'
+
+  function dismissCheckoutBanner() {
+    const next = new URLSearchParams(searchParams)
+    next.delete('checkout')
+    setSearchParams(next, { replace: true })
+  }
 
   const { canCreateProject: canCreate, features } = usePlan()
   const isFreePlan       = features.maxProjects !== Infinity
@@ -193,6 +201,7 @@ export function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-crema text-negro">
+      {showCheckoutBanner && <PostCheckoutBanner onDismiss={dismissCheckoutBanner} />}
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-borde-light sticky top-0 z-10 bg-crema/95 backdrop-blur-sm">
         <button onClick={() => navigate('/')} className="opacity-90 hover:opacity-100 transition-opacity">
