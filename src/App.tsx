@@ -18,6 +18,7 @@ import { AuthPage } from '@/features/auth/AuthPage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { CookieBanner } from '@/components/ui/CookieBanner'
 import { WhatsAppWidget } from '@/components/ui/WhatsAppWidget'
+import { trackGA4Event } from '@/lib/ga4'
 import { useAuth } from '@/features/auth/useAuth'
 import { useSessionGuard } from '@/hooks/useSessionGuard'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -50,6 +51,28 @@ function AppWithAuth() {
   const { loadMemberships } = useWorkspaceStore()
   const location = useLocation()
   const isEditor = location.pathname.startsWith('/editor/')
+
+  // Dispara page_view en cada cambio de ruta subsiguiente (SPA).
+  // send_page_view:false en la config evita duplicado en la carga inicial.
+  // trackGA4Event tiene guard ga4Loaded: sin consentimiento es no-op.
+  useEffect(() => {
+    trackGA4Event('page_view', { page_path: location.pathname })
+  }, [location.pathname])
+
+  // Cubre el page_view de la PRIMERA página de la sesión: el efecto de arriba
+  // ya corrió antes de que el script de gtag terminara de cargar (race condition
+  // async). Cuando 'ga4-ready' llega, ga4Loaded ya es true y disparamos con el
+  // pathname vigente en ese momento. En conexiones lentas puede llegar un
+  // page_view extra si el usuario ya navegó, pero es preferible a perder el dato.
+  useEffect(() => {
+    function handleGA4Ready() {
+      trackGA4Event('page_view', { page_path: location.pathname })
+    }
+    window.addEventListener('ga4-ready', handleGA4Ready)
+    return () => window.removeEventListener('ga4-ready', handleGA4Ready)
+  // location.pathname como dep para que el closure siempre capture el pathname
+  // actual si el componente re-renderizó entre que se montó y llegó 'ga4-ready'.
+  }, [location.pathname])
 
   // Load org memberships once the user is authenticated.
   // Pass user.id directly to avoid a redundant supabase.auth.getUser() network

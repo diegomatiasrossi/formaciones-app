@@ -15,6 +15,7 @@ import { toggleLanguage } from '@/i18n'
 import { usePlan } from '@/hooks/usePlan'
 import { projectSchema, firstErrorKey } from '@/lib/validation'
 import { trackEvent } from '@/lib/metaPixel'
+import { trackGA4Event } from '@/lib/ga4'
 import type { Project, StageRatio } from '@/types'
 import clsx from 'clsx'
 
@@ -102,6 +103,7 @@ export function ProjectsPage() {
   useEffect(() => {
     if (showCheckoutBanner && !sessionStorage.getItem(PURCHASE_KEY)) {
       trackEvent('Purchase')
+      trackGA4Event('purchase')
       sessionStorage.setItem(PURCHASE_KEY, '1')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
