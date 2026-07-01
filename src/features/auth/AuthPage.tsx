@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from './useAuth'
 import { Logo } from '@/components/ui/Logo'
 import { registerSchema, firstErrorKey } from '@/lib/validation'
+import { trackEvent } from '@/lib/metaPixel'
 
 export function AuthPage() {
   const { t } = useTranslation()
@@ -39,6 +40,7 @@ export function AuthPage() {
     } else if (mode === 'signup' && !result.data.session) {
       // Supabase requires email confirmation — show the pending screen
       // instead of navigating (user has no session yet)
+      trackEvent('CompleteRegistration')
       setPendingEmail(email)
     } else {
       navigate(redirectTo)

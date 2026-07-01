@@ -14,6 +14,7 @@ import { ModuleNav } from '@/components/ui/ModuleNav'
 import { toggleLanguage } from '@/i18n'
 import { usePlan } from '@/hooks/usePlan'
 import { projectSchema, firstErrorKey } from '@/lib/validation'
+import { trackEvent } from '@/lib/metaPixel'
 import type { Project, StageRatio } from '@/types'
 import clsx from 'clsx'
 
@@ -90,6 +91,21 @@ export function ProjectsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const preloadedEventId = searchParams.get('eventId')
   const showCheckoutBanner = searchParams.get('checkout') === 'success'
+
+  // Dispara Purchase una sola vez por sesión de navegador al volver del checkout.
+  // La flag en sessionStorage evita el duplicado si el usuario refresca /projects?checkout=success.
+  // LIMITACIÓN CONOCIDA: si el mismo usuario hace una segunda compra real en la misma pestaña
+  // (ej: upgrade de plan), ese segundo Purchase NO se disparará porque la flag ya está seteada.
+  // Para deduplicar con precisión real haría falta un ID de transacción de Stripe, que hoy
+  // no está disponible en este punto. Aceptable por ahora — el caso del refresh es el prioritario.
+  const PURCHASE_KEY = 'meta_purchase_tracked'
+  useEffect(() => {
+    if (showCheckoutBanner && !sessionStorage.getItem(PURCHASE_KEY)) {
+      trackEvent('Purchase')
+      sessionStorage.setItem(PURCHASE_KEY, '1')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function dismissCheckoutBanner() {
     const next = new URLSearchParams(searchParams)
