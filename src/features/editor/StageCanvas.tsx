@@ -84,6 +84,29 @@ export const StageCanvas = memo(function StageCanvas({ animationOverride, stageR
     return () => ro.disconnect()
   }, [setStageSize])
 
+  // ── Auto-pan al seleccionar (ej: desde la lista de integrantes) ────────────
+  // Si la selección no está visible en el área actual, ajusta SOLO el pan
+  // (no el zoom que el usuario haya seteado) para centrarla. Si ya está visible
+  // — típico al clickear un dancer en el canvas — no mueve nada. Corre sólo
+  // cuando cambia selectedIds.
+  useEffect(() => {
+    if (selectedIds.length === 0) return
+    const container = containerRef.current
+    if (!container) return
+    const sel = dancers.filter(d => selectedIds.includes(d.id) && d.active !== false)
+    if (sel.length === 0) return
+    const cx = sel.reduce((a, d) => a + d.x, 0) / sel.length
+    const cy = sel.reduce((a, d) => a + d.y, 0) / sel.length
+    const cw = container.clientWidth
+    const ch = container.clientHeight
+    const screenX = stagePos.x + cx * scale
+    const screenY = stagePos.y + cy * scale
+    const margin = 60
+    const visible = screenX >= margin && screenX <= cw - margin && screenY >= margin && screenY <= ch - margin
+    if (!visible) setStagePos({ x: cw / 2 - cx * scale, y: ch / 2 - cy * scale })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIds])
+
   // ── Cursor contextual — 4.2 ────────────────────────────────────
   useEffect(() => {
     setCursorStyle(tool === 'add' ? 'crosshair' : 'default')
