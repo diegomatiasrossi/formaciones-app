@@ -231,7 +231,7 @@ const INITIAL: EditorState = {
   newColor: '#C9A961',
   newShape: 'circle',
   newSize: 14,
-  newDancerCount: 12,
+  newDancerCount: 10,
   stageWidth: 800,
   stageHeight: 560,
   stageRect: { x: 40, y: 40, w: 720, h: 480 },

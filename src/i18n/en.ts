@@ -98,6 +98,8 @@ export default {
     toolbar: {
       style: 'Style',
       shape: 'Shape',
+      tool_section: 'Tool',
+      more: 'More',
       size: 'Size',
       color: 'Color',
       dancers: 'Members',

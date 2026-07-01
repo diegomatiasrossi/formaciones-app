@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEditorStore } from '@/store/editorStore'
-import { SIZE_OPTIONS } from '@/types'
 import { toggleLanguage } from '@/i18n'
 import clsx from 'clsx'
 
@@ -33,27 +33,16 @@ export function Toolbar({
   onShare, maxDancers = Infinity,
 }: Props) {
   const { t, i18n } = useTranslation()
+  const [moreOpen, setMoreOpen] = useState(false)
   const {
     tool, setTool,
-    newColor, setNewColor,
-    newSize, setNewSize,
-    newDancerCount, setNewDancerCount,
     selectedIds, deleteSelected, clearAll,
-    setSize,
     undo, redo,
     scenes, activeSceneId,
   } = useEditorStore()
 
-  // Tamaño: setea el default para nuevos integrantes Y, si hay selección,
-  // se aplica también a los integrantes seleccionados en el canvas.
-  function pickSize(size: number) {
-    setNewSize(size)
-    if (selectedIds.length > 0) setSize(selectedIds, size)
-  }
-
   const activeScene = scenes.find(s => s.id === activeSceneId)
   const dancerCount = activeScene?.dancers.length ?? 0
-  const limitReached = dancerCount >= maxDancers
 
   const btn = (active: boolean, extra?: string) =>
     clsx(
@@ -69,70 +58,10 @@ export function Toolbar({
   return (
     <div className="flex flex-wrap md:flex-nowrap md:overflow-x-auto items-center gap-1.5 px-3 py-2 border-b border-borde bg-negro text-blanco-calido select-none shrink-0">
 
-      {/* Herramienta */}
+      {/* Herramienta — Selección (Agregar/Tamaño/Color/Cantidad viven en el Sidebar) */}
       <button className={btn(tool === 'select')} onClick={() => setTool('select')} title={t('editor.tool_select_hint')}>
         ↖ {t('editor.tool_select')}
       </button>
-      <button
-        className={clsx(btn(tool === 'add'), limitReached && 'opacity-40 cursor-not-allowed')}
-        onClick={() => !limitReached && setTool('add')}
-        title={limitReached
-          ? t('plan.member_limit_reached', { limit: maxDancers === Infinity ? '∞' : maxDancers })
-          : t('editor.tool_add_hint')}
-      >
-        + {t('editor.tool_add')}
-      </button>
-
-      {sep}
-
-      {/* Tamaño visual — 4.1 */}
-      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.size')}</span>
-      {SIZE_OPTIONS.map(s => (
-        <button
-          key={s.value}
-          onClick={() => pickSize(s.value)}
-          title={`${s.label} (radio ${s.value}px)`}
-          className={clsx(
-            'flex items-center gap-1.5 rounded-[5px] px-[10px] py-[5px] border text-[11px] transition-colors',
-            newSize === s.value
-              ? 'bg-surface-2 border-borde-hover text-blanco-calido font-semibold'
-              : 'border-borde text-blanco-calido/70 hover:border-borde-hover hover:text-blanco-calido',
-          )}
-        >
-          <span
-            className="rounded-full bg-current inline-block shrink-0"
-            style={{ width: s.value * 0.75, height: s.value * 0.75, minWidth: 6, minHeight: 6 }}
-          />
-          {s.label}
-        </button>
-      ))}
-
-      {sep}
-
-      {/* Color */}
-      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.color')}</span>
-      <input
-        id="color-picker"
-        type="color"
-        value={newColor}
-        onChange={e => setNewColor(e.target.value)}
-        className="w-7 h-7 rounded cursor-pointer border border-borde bg-transparent p-0.5"
-        title={t('editor.toolbar.color')}
-      />
-
-      {sep}
-
-      {/* Cantidad */}
-      <span className="text-[9px] font-semibold text-gris/50 uppercase tracking-[0.1em]">{t('editor.toolbar.dancers')}</span>
-      <input
-        type="number"
-        value={newDancerCount}
-        min={1}
-        max={50}
-        onChange={e => setNewDancerCount(Number(e.target.value))}
-        className="w-12 bg-negro border border-borde rounded px-2 py-1.5 text-xs text-blanco-calido
-                   focus:outline-none focus:border-dorado"
-      />
 
       {sep}
 
@@ -197,49 +126,62 @@ export function Toolbar({
 
       {sep}
 
-      {/* Audio */}
-      <button
-        onClick={onToggleAudio}
-        className={clsx(
-          'relative',
-          // Durante el bloqueo temporal el botón se ve normal (clickeable, sin
-          // gris ni candado de plan): el aviso "próximamente" aplica a todos.
-          audioComingSoon
-            ? btn(false)
-            : clsx(btn(showAudio && !audioLocked), audioLocked && 'opacity-50'),
-        )}
-        title={
-          audioComingSoon
-            ? t('editor.audio_coming_soon')
-            : audioLocked ? t('editor.toolbar.audio_locked') : t('editor.toolbar.audio_title')
-        }
-      >
-        🎵 Audio{!audioComingSoon && audioLocked && ' 🔒'}
-        {audioComingSoon && (
-          <span
-            className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-dorado ring-1 ring-negro"
-            aria-hidden="true"
-          />
-        )}
-      </button>
+      {/* Audio / Stats / Lista — agrupados en un menú "⋯" */}
+      <div className="relative">
+        <button
+          onClick={() => setMoreOpen(v => !v)}
+          className={clsx(btn(moreOpen))}
+          title={t('editor.toolbar.more')}
+        >⋯</button>
 
-      {/* Estadísticas */}
-      <button
-        onClick={onToggleStats}
-        className={clsx(btn(showStats && !statsLocked), statsLocked && 'opacity-50')}
-        title={statsLocked ? t('editor.toolbar.stats_locked') : t('editor.toolbar.stats_title')}
-      >
-        ◎ Stats{statsLocked && ' 🔒'}
-      </button>
+        {moreOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setMoreOpen(false)} />
+            <div className="absolute right-0 top-full mt-1 z-20 w-44 bg-negro border border-borde rounded-lg shadow-card p-1 flex flex-col gap-0.5">
+              {/* Audio */}
+              <button
+                onClick={() => { setMoreOpen(false); onToggleAudio() }}
+                className={clsx(
+                  'relative w-full text-left px-2 py-1.5 text-xs rounded transition-colors hover:bg-surface-2',
+                  audioComingSoon ? 'text-blanco-calido/80' : audioLocked ? 'text-blanco-calido/40' : showAudio ? 'text-dorado' : 'text-blanco-calido/80',
+                )}
+                title={
+                  audioComingSoon
+                    ? t('editor.audio_coming_soon')
+                    : audioLocked ? t('editor.toolbar.audio_locked') : t('editor.toolbar.audio_title')
+                }
+              >
+                🎵 Audio{!audioComingSoon && audioLocked && ' 🔒'}
+                {audioComingSoon && <span className="absolute top-1 right-1.5 w-1.5 h-1.5 rounded-full bg-dorado" aria-hidden="true" />}
+              </button>
 
-      {/* Checklist */}
-      <button
-        onClick={onToggleChecklist}
-        className={clsx(btn(showChecklist && !checklistLocked), checklistLocked && 'opacity-50')}
-        title={checklistLocked ? t('editor.toolbar.checklist_locked') : t('editor.toolbar.checklist_title')}
-      >
-        ☑ {t('editor.toolbar.checklist')}{checklistLocked && ' 🔒'}
-      </button>
+              {/* Estadísticas */}
+              <button
+                onClick={() => { setMoreOpen(false); onToggleStats() }}
+                className={clsx(
+                  'w-full text-left px-2 py-1.5 text-xs rounded transition-colors hover:bg-surface-2',
+                  statsLocked ? 'text-blanco-calido/40' : showStats ? 'text-dorado' : 'text-blanco-calido/80',
+                )}
+                title={statsLocked ? t('editor.toolbar.stats_locked') : t('editor.toolbar.stats_title')}
+              >
+                ◎ Stats{statsLocked && ' 🔒'}
+              </button>
+
+              {/* Checklist */}
+              <button
+                onClick={() => { setMoreOpen(false); onToggleChecklist() }}
+                className={clsx(
+                  'w-full text-left px-2 py-1.5 text-xs rounded transition-colors hover:bg-surface-2',
+                  checklistLocked ? 'text-blanco-calido/40' : showChecklist ? 'text-dorado' : 'text-blanco-calido/80',
+                )}
+                title={checklistLocked ? t('editor.toolbar.checklist_locked') : t('editor.toolbar.checklist_title')}
+              >
+                ☑ {t('editor.toolbar.checklist')}{checklistLocked && ' 🔒'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Spacer */}
       <div className="flex-1" />

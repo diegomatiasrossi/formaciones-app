@@ -23,7 +23,7 @@ export function MembersPanel({ onClose, embedded = false }: Props) {
   const { projectId } = useParams<{ projectId: string }>()
   const { projects, saveProject } = useProjectStore()
   const { members, fetchAll, createMember } = useCrewStore()
-  const { scenes, activeSceneId, addDancerAt, renameDancer } = useEditorStore()
+  const { scenes, activeSceneId, addDancerAt, renameDancer, setSelectedIds } = useEditorStore()
   const { features } = usePlan()
 
   const [quickName, setQuickName] = useState('')
@@ -108,6 +108,14 @@ export function MembersPanel({ onClose, embedded = false }: Props) {
     if (oldMembers.length === 0) return
     runMigration()
   }, [project, migrating, migrated, runMigration])
+
+  // ── Seleccionar en el canvas los dancers de la escena activa que corresponden
+  //    a este integrante (puede tener varias apariciones). Reusa setSelectedIds,
+  //    que dispara el highlight dorado existente + el auto-pan de StageCanvas. ──
+  function selectInScene(memberId: string) {
+    const ids = dancers.filter(d => d.memberId === memberId).map(d => d.id)
+    if (ids.length > 0) setSelectedIds(ids)
+  }
 
   // ── Quick-add: crea member global + dancer en escena ─────────────────────
   async function quickAdd() {
@@ -267,7 +275,15 @@ export function MembersPanel({ onClose, embedded = false }: Props) {
           const displayName = [m.firstName, m.lastName].filter(Boolean).join(' ')
           const inScene = memberIdsInScene.has(m.id)
           return (
-            <div key={m.id} className="flex items-center gap-3 px-3 py-2.5 border-b border-borde/20 hover:bg-blanco-calido/3 group">
+            <div
+              key={m.id}
+              onClick={inScene ? () => selectInScene(m.id) : undefined}
+              title={inScene ? 'Destacar en el escenario' : undefined}
+              className={clsx(
+                'flex items-center gap-3 px-3 py-2.5 border-b border-borde/20 group',
+                inScene ? 'cursor-pointer hover:bg-dorado/5' : 'hover:bg-blanco-calido/3',
+              )}
+            >
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium text-blanco-calido/90 truncate">{displayName}</div>
                 {m.nickname && <div className="text-[10px] text-dorado/60">"{m.nickname}"</div>}
