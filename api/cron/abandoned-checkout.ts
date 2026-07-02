@@ -1,23 +1,27 @@
 // Cron de carritos abandonados — corre cada 30 min vía Vercel Cron.
-// Detecta checkout.sessions con status='open' creadas hace más de 2hs,
-// cruza por session.id contra las completadas para no reenviar mails,
-// y manda un mail de recuperación por cada una (una sola vez).
+// Detecta checkout.sessions con status='open' creadas hace más de 2hs
+// y manda un mail de recuperación por cada una, una sola vez.
 //
-// Protección de reenvío: se lleva un Set en memoria de IDs ya procesados
-// en esta invocación. Para producción real con múltiples instancias sería
-// mejor persistir en Redis/DB, pero para el volumen de Crewficina alcanza.
+// Dedup persistente: tabla `abandoned_checkout_emails` en Supabase
+// (session_id PK). Antes de enviar se consulta si ya existe; después
+// de enviar exitosamente se inserta. Usa service role (bypasea RLS).
 
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import Stripe from 'stripe'
+import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '../lib/sendEmail'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
   apiVersion: '2026-05-27.dahlia',
 })
 
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL ?? '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
+)
+
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000
 
-// Protege el endpoint: solo Vercel Cron puede invocarlo (header estándar de Vercel).
 function isAuthorized(req: VercelRequest): boolean {
   return req.headers['authorization'] === `Bearer ${process.env.CRON_SECRET ?? ''}`
 }
@@ -43,17 +47,32 @@ function buildEmailHtml(): string {
   `
 }
 
+/** Devuelve true si ya se mandó mail para esta sesión (dedup persistente). */
+async function alreadySent(sessionId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('abandoned_checkout_emails')
+    .select('session_id')
+    .eq('session_id', sessionId)
+    .maybeSingle()
+  return !!data
+}
+
+/** Registra el envío para evitar duplicados en ejecuciones futuras. */
+async function markSent(sessionId: string): Promise<void> {
+  await supabase
+    .from('abandoned_checkout_emails')
+    .insert({ session_id: sessionId })
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!isAuthorized(req)) return res.status(401).json({ error: 'Unauthorized' })
 
-  const cutoffTs = Math.floor((Date.now() - TWO_HOURS_MS) / 1000) // unix seconds
-  const sentInThisRun = new Set<string>()
+  const cutoffTs = Math.floor((Date.now() - TWO_HOURS_MS) / 1000)
   let totalSent = 0
   let hasMore = true
   let startingAfter: string | undefined
 
   while (hasMore) {
-    // Paginar sesiones abiertas ordenadas por created desc.
     const page = await stripe.checkout.sessions.list({
       status: 'open',
       limit: 100,
@@ -64,16 +83,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (page.data.length > 0) startingAfter = page.data[page.data.length - 1].id
 
     for (const session of page.data) {
-      // Solo sesiones creadas hace más de 2hs.
       if (session.created >= cutoffTs) continue
-
-      // Si la sesión ya está pagada (Stripe a veces tarda en actualizar status),
-      // la saltamos.
       if (session.payment_status === 'paid') continue
 
       const email = session.customer_details?.email ?? session.customer_email
       if (!email) continue
-      if (sentInThisRun.has(session.id)) continue
+
+      // Dedup persistente: skip si ya se mandó en una ejecución anterior.
+      if (await alreadySent(session.id)) continue
 
       try {
         await sendEmail(
@@ -81,17 +98,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           '¿Tuviste algún problema con el pago?',
           buildEmailHtml(),
         )
-        sentInThisRun.add(session.id)
+        await markSent(session.id)
         totalSent++
         console.log(`[abandoned-checkout] mail enviado a ${email} (session ${session.id})`)
       } catch (err) {
-        // Loguear el error pero continuar con las demás sesiones.
         console.error(`[abandoned-checkout] error enviando a ${email}:`, err)
       }
     }
 
-    // Si la sesión más antigua de la página es más nueva que el cutoff,
-    // no tiene sentido seguir paginando (están ordenadas desc).
+    // Stripe ordena por created desc: si la más antigua de la página es
+    // más nueva que el cutoff, no hay más sesiones elegibles.
     const oldest = page.data[page.data.length - 1]
     if (oldest && oldest.created >= cutoffTs) hasMore = false
   }
