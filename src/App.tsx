@@ -1,20 +1,23 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { LandingPage } from '@/pages/LandingPage'
-import { ProjectsPage } from '@/pages/ProjectsPage'
-import { EditorPage } from '@/pages/EditorPage'
-import { SharePage } from '@/pages/SharePage'
-import { PricingPage } from '@/pages/PricingPage'
-import { PrivacyPage } from '@/pages/PrivacyPage'
-import { TermsPage } from '@/pages/TermsPage'
-import { IntegrantesPage } from '@/pages/IntegrantesPage'
-import { GruposPage } from '@/pages/GruposPage'
-import { EventosPage } from '@/pages/EventosPage'
-import { MobilePreviewPage } from '@/pages/MobilePreviewPage'
-import { ReportesPage } from '@/pages/ReportesPage'
-import { OrganizacionPage } from '@/pages/OrganizacionPage'
-import { InvitePage } from '@/pages/InvitePage'
-import { AuthPage } from '@/features/auth/AuthPage'
+
+// Code-splitting por ruta: cada página carga su chunk solo cuando se navega
+// a ella. Las páginas usan named exports, así que se re-envuelven en {default}.
+const LandingPage      = lazy(() => import('@/pages/LandingPage').then(m => ({ default: m.LandingPage })))
+const ProjectsPage     = lazy(() => import('@/pages/ProjectsPage').then(m => ({ default: m.ProjectsPage })))
+const EditorPage       = lazy(() => import('@/pages/EditorPage').then(m => ({ default: m.EditorPage })))
+const SharePage        = lazy(() => import('@/pages/SharePage').then(m => ({ default: m.SharePage })))
+const PricingPage      = lazy(() => import('@/pages/PricingPage').then(m => ({ default: m.PricingPage })))
+const PrivacyPage      = lazy(() => import('@/pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })))
+const TermsPage        = lazy(() => import('@/pages/TermsPage').then(m => ({ default: m.TermsPage })))
+const IntegrantesPage  = lazy(() => import('@/pages/IntegrantesPage').then(m => ({ default: m.IntegrantesPage })))
+const GruposPage       = lazy(() => import('@/pages/GruposPage').then(m => ({ default: m.GruposPage })))
+const EventosPage      = lazy(() => import('@/pages/EventosPage').then(m => ({ default: m.EventosPage })))
+const MobilePreviewPage = lazy(() => import('@/pages/MobilePreviewPage').then(m => ({ default: m.MobilePreviewPage })))
+const ReportesPage     = lazy(() => import('@/pages/ReportesPage').then(m => ({ default: m.ReportesPage })))
+const OrganizacionPage = lazy(() => import('@/pages/OrganizacionPage').then(m => ({ default: m.OrganizacionPage })))
+const InvitePage       = lazy(() => import('@/pages/InvitePage').then(m => ({ default: m.InvitePage })))
+const AuthPage         = lazy(() => import('@/features/auth/AuthPage').then(m => ({ default: m.AuthPage })))
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { CookieBanner } from '@/components/ui/CookieBanner'
 import { WhatsAppWidget } from '@/components/ui/WhatsAppWidget'
@@ -84,6 +87,7 @@ function AppWithAuth() {
   return (
     <>
       {!isEditor && <WhatsAppWidget />}
+      <Suspense fallback={<FullScreenLoader />}>
       <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route
@@ -117,6 +121,7 @@ function AppWithAuth() {
       <Route path="/terms" element={<Navigate to="/terminos" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
     </>
   )
 }
